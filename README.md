@@ -6,6 +6,14 @@
 - Translate standard input into a specified language
 - Under development on Ubuntu 20.04 LTS
 
+## Install
+
+```bash
+$ pip install deepl-cli
+$ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y
+$ sudo apt update && sudo apt -f install -y
+```
+
 ![demo](https://i.imgur.com/aeZv4aV.png)
 
 ## Requirements
