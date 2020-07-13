@@ -1,7 +1,8 @@
-from .deepl import DeepLCLI
+#!/usr/bin/env python3.8
+from . import deepl
 
 def main():
-    t = DeepLCLI()
+    t = deepl.DeepLCLI()
     t.validate()
     print(t.translate())
 

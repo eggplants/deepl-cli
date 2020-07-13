@@ -14,7 +14,7 @@ $ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y
 $ sudo apt update && sudo apt -f install -y
 ```
 
-![demo](https://i.imgur.com/aeZv4aV.png)
+![demo](https://i.imgur.com/mGbwqO7.png)
 
 ## Requirements
 

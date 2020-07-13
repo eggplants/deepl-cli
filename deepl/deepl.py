@@ -1,3 +1,4 @@
+#!/usr/bin/env python 3.8
 import sys
 import time
 from textwrap import dedent
