@@ -11,7 +11,12 @@ class DeepLCLIArgCheckingError(Exception):
     pass
 
 def usage():
-    print('hello, there.')
+    print(
+        '$ stdin | python3 test.py <from:lang>:<to:lang>',
+        '$ echo Hello | python3 test.py en:ja',
+        '<from:lang>: {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}',
+        '<to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}', sep="\n"
+)
 
 # <fr:lang> ::= {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
 fr_langs = {'auto', 'ja', 'en', 'de', 'fr', 'es', 'pt', 'it', 'nl', 'pl', 'ru', 'zh'}
@@ -45,22 +50,22 @@ if len(scripts) > 5000:
 # else input
 
 o = Options()
-# o.add_argument('--headless')
-# o.add_argument('--disable-gpu')
+o.add_argument('--headless')
+o.add_argument('--disable-gpu')
 o.add_argument('--user-agent='\
     'Mozilla/5.0 (iPhone; CPU iPhone OS 10_2 like Mac OS X) '\
     'AppleWebKit/602.3.12 (KHTML, like Gecko) Version/10.0 Mobile/14C92 Safari/602.1'
 )
 
 d = webdriver.Chrome(options=o)
-d.get('https://www.deepl.com/translator#%s/%s'%[fr_lang, to_lang])
+d.get('https://www.deepl.com/translator#%s/%s'%(fr_lang, to_lang))
 # input: scripts
-sleep(3)
-i_xpath = '//textarea[@class="lmt__textarea lmt__source_textarea lmt__textarea_base_style"]'
-input_textarea = d.find_elements_by_xpath(i_xpath)
+time.sleep(3)
+i_xpath = '//textarea[@dl-test="translator-source-input"]'
+input_textarea = d.find_element_by_xpath(i_xpath)
 input_textarea.send_keys(scripts)
-sleep(10)
-o_xpath = '//textarea[@class="lmt__textarea lmt__target_textarea lmt__textarea_base_style"]'
-res = [i.text for i in d.find_elements_by_xpath(o_xpath).get_attribute('value')]
+time.sleep(10)
+o_xpath = '//textarea[@dl-test="translator-target-input"]'
+res = d.find_element_by_xpath(o_xpath).get_attribute('value')
 print(res)
 d.quit()
