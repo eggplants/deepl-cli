@@ -16,56 +16,55 @@ class DeepLCLIPageLoadError(Exception):
 class DeepLCLI:
 
     def usage(self):
+        """Print usage."""
+
         print(
-        'SYNTAX:',
-        '    $ stdin | python3 test.py <from:lang>:<to:lang>',
-        'USAGE',
-        '    $ echo Hello | python3 test.py en:ja',
-        'LANGUAGE CODES:',
-        '    <from:lang>: {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}',
-        '    <to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}',
-        'TIPS:',
-        '    To use this, run:',
-        '    $ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y',
-        '    $ sudo apt update && sudo apt -f install -y',
-        '    $ pip install selenium',
+            'SYNTAX:',
+            '    $ stdin | python3 test.py <from:lang>:<to:lang>',
+            'USAGE',
+            '    $ echo Hello | python3 test.py en:ja',
+            'LANGUAGE CODES:',
+            '    <from:lang>: {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}',
+            '      <to:lang>: {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}',
+            'To use this, run:',
+            '    $ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y',
+            '    $ sudo apt update && sudo apt -f install -y',
         sep="\n"
     )
 
     def validate(self):
-        # <fr:lang> ::= {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
+        """Check cmdarg and stdin."""
+
         fr_langs = {'auto', 'ja', 'en', 'de', 'fr', 'es', 'pt', 'it', 'nl', 'pl', 'ru', 'zh'}
-        # <to:lang> ::= <fr:lang> - {auto}
         to_langs = fr_langs - {'auto'}
-        # if `$ deepl-cli`
+
         if sys.stdin.isatty() and len(sys.argv) == 1:
+            # if `$ deepl`
             self.usage()
             exit(0)
-        # raise err if stdin is empty
-        if sys.stdin.isatty():
+        elif sys.stdin.isatty():
+            # raise err if stdin is empty
             raise DeepLCLIArgCheckingError('stdin seems to be empty.')
-        # raise err if arity != 1
-        num_opt = len(sys.argv[1::])
-        if num_opt != 1:
+        if (num_opt := len(sys.argv[1::])) != 1:
+            # raise err if arity != 1
             raise DeepLCLIArgCheckingError('num of option is wrong(given %d, expected 1).'%num_opt)
-        # raise err if specify 2 langs is empty
-        opt_lang = sys.argv[1].split(':')
-        if len(opt_lang) != 2 or opt_lang[0] not in fr_langs or opt_lang[1] not in to_langs:
+        if len(opt_lang := sys.argv[1].split(':')) != 2 or opt_lang[0] not in fr_langs or opt_lang[1] not in to_langs:
+            # raise err if specify 2 langs is empty
             raise DeepLCLIArgCheckingError('correct your lang format.')
-        # raise err if <fr:lang> == <to:lang>
-        fr_lang, to_lang = opt_lang
-        if fr_lang == to_lang:
+        if opt_lang[0] == opt_lang[1]:
+            # raise err if <fr:lang> == <to:lang>
             raise DeepLCLIArgCheckingError('two languages cannot be same.')
-        # raise err if stdin > 5000 chr
-        scripts = sys.stdin.read()
-        if len(scripts) > 5000:
+        if len(scripts := sys.stdin.read()) > 5000:
+            # raise err if stdin > 5000 chr
             raise DeepLCLIArgCheckingError('limit of script is less than 5000 chars(Now: %d chars).'%len(scripts))
 
-        self.fr_lang = fr_lang
-        self.to_lang = to_lang
+        self.fr_lang = opt_lang[0]
+        self.to_lang = opt_lang[1]
         self.scripts = scripts
 
     def translate(self):
+        """Open a deepl page and throw a request."""
+
         o = Options()
         o.add_argument('--headless')
         o.add_argument('--disable-gpu')
@@ -73,6 +72,7 @@ class DeepLCLI:
             'Mozilla/5.0 (iPhone; CPU iPhone OS 10_2 like Mac OS X) '\
             'AppleWebKit/602.3.12 (KHTML, like Gecko) Version/10.0 Mobile/14C92 Safari/602.1'
         )
+
         d = webdriver.Chrome(options=o)
         d.get('https://www.deepl.com/translator#%s/%s'%(self.fr_lang, self.to_lang))
         try:
@@ -82,12 +82,15 @@ class DeepLCLI:
         except TimeoutException as te:
             raise DeepLCLIPageLoadError(te)
 
-        i_xpath = '//textarea[@dl-test="translator-source-input"]'
-        input_textarea = d.find_element_by_xpath(i_xpath)
-        input_textarea.send_keys(self.scripts)
+        d.find_element_by_xpath(
+            '//textarea[@dl-test="translator-source-input"]'
+        ).send_keys(self.scripts)
+
         # Wait for the translation process
         time.sleep(10) # fix needed
-        o_xpath = '//textarea[@dl-test="translator-target-input"]'
-        res = d.find_element_by_xpath(o_xpath).get_attribute('value')
+
+        res = d.find_element_by_xpath(
+            '//textarea[@dl-test="translator-target-input"]'
+        ).get_attribute('value').rstrip()
         d.quit()
-        return res.rstrip()
+        return res
