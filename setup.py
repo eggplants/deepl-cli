@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
     name='deepl-cli',
-    version='0.0.1',
+    version='0.0.2',
     description='DeepL Translator CLI using Selenium',
     description_content_type='',
     long_description=open('README.md').read(),
