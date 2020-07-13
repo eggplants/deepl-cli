@@ -22,26 +22,26 @@ class DeepLCLI:
 
         print(
             dedent('''\
-            SYNTAX:
-                $ (...) | deepl <from:lang>:<to:lang>
-                $ deepl <from:lang>:<to:lang> <<'EOS'
-                  (...)
-                  EOS
-                $ deepl <from:lang>:<to:lang> <<<"(...)"
-            USAGE:
-                $ echo Hello | deepl en:ja
-                $ deepl :ru <<'EOS'
-                  good morning!
-                  good night.
-                  EOS
-                $ deepl fr:zh <<<"Mademoiselle"
-            LANGUAGE CODES:
-                <from:lang>: {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
-                  <to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
-            TIPS:
-                To use this, run:
-                $ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y
-                $ sudo apt update && sudo apt -f install -y'''),
+                SYNTAX:
+                    $ (...) | deepl <from:lang>:<to:lang>
+                    $ deepl <from:lang>:<to:lang> <<'EOS'
+                      (...)
+                      EOS
+                    $ deepl <from:lang>:<to:lang> <<<"(...)"
+                USAGE:
+                    $ echo Hello | deepl en:ja
+                    $ deepl :ru <<'EOS' # :ru is equivalent of auto:ru
+                      good morning!
+                      good night.
+                      EOS
+                    $ deepl fr:zh <<<"Mademoiselle"
+                LANGUAGE CODES:
+                    <from:lang>: {(empty)=auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
+                    <to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
+                TIPS:
+                    To use this, run:
+                    $ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y
+                    $ sudo apt update && sudo apt -f install -y'''),
         sep="\n"
     )
 
