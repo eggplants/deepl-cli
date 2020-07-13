@@ -9,6 +9,7 @@
 
 ## Requirements
 
+- Python >= 3.8
 - [chromium-browser](https://packages.ubuntu.com/ja/source/bionic/chromium-browser)
 - [chromium-chromedriver](https://packages.ubuntu.com/ja/bionic/chromium-chromedriver)
 - [python3-selenium](https://packages.debian.org/buster/python3-selenium)
