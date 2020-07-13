@@ -25,5 +25,4 @@ TIPS:
     To use this, run:
     $ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y
     $ sudo apt update && sudo apt -f install -y
-    $ pip install selenium
 ```
