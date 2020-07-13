@@ -23,7 +23,7 @@ SYNTAX:
       (...)
       EOS
     $ deepl <from:lang>:<to:lang> <<<"(...)"
-USAGE
+USAGE:
     $ echo Hello | deepl en:ja
     $ deepl :ru <<'EOS'
       good morning!
