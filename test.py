@@ -12,10 +12,19 @@ class DeepLCLIArgCheckingError(Exception):
 
 def usage():
     print(
-        '$ stdin | python3 test.py <from:lang>:<to:lang>',
-        '$ echo Hello | python3 test.py en:ja',
-        '<from:lang>: {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}',
-        '<to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}', sep="\n"
+        'SYNTAX:',
+        '    $ stdin | python3 test.py <from:lang>:<to:lang>',
+        'USAGE',
+        '    $ echo Hello | python3 test.py en:ja',
+        'LANGUAGE CODES:',
+        '    <from:lang>: {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}',
+        '    <to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}',
+        'TIPS:',
+        '    To use this, run:',
+        '    $ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y',
+        '    $ sudo apt update && sudo apt -f install -y',
+        '    $ pip install selenium',
+        sep="\n"
 )
 
 # <fr:lang> ::= {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
