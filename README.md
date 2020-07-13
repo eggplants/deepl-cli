@@ -3,7 +3,7 @@
 - DeepL Translator CLI using Selenium (Experimental)
 - Under development on Ubuntu 20.04 LTS
 
-![demo](https://i.imgur.com/1sZdPa2)
+![demo](https://i.imgur.com/aeZv4aV.png)
 
 ## Requirements
 
