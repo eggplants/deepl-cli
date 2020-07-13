@@ -37,13 +37,13 @@ SYNTAX:
     $ deepl <from:lang>:<to:lang> <<<"(...)"
 USAGE:
     $ echo Hello | deepl en:ja
-    $ deepl :ru <<'EOS'
+    $ deepl :ru <<'EOS' # :ru is equivalent of auto:ru
       good morning!
       good night.
       EOS
     $ deepl fr:zh <<<"Mademoiselle"
 LANGUAGE CODES:
-    <from:lang>: {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
+    <from:lang>: {(empty)=auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
     <to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
 TIPS:
     To use this, run:
