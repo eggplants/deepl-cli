@@ -45,6 +45,8 @@ class DeepLCLI:
         )
 
     def internet_on(self):
+        """Check an internet connection."""
+
         try:
             response = urlopen('https://www.google.com/', timeout=10)
             return True
@@ -90,7 +92,7 @@ class DeepLCLI:
 
     def translate(self):
         """Open a deepl page and throw a request."""
-        print(1)
+
         if not self.internet_on():
             raise DeepLCLIPageLoadError('Your network seem to be offline.')
 
