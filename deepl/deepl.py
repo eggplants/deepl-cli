@@ -1,6 +1,7 @@
 import sys
 import time
 from textwrap import dedent
+from urllib.request import urlopen
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -44,6 +45,13 @@ class DeepLCLI:
         sep="\n"
     )
 
+    def internet_on(self):
+        try:
+            response = urlopen('https://www.google.com/', timeout=10)
+            return True
+        except:
+            return False
+
     def validate(self):
         """Check cmdarg and stdin."""
 
@@ -83,6 +91,9 @@ class DeepLCLI:
 
     def translate(self):
         """Open a deepl page and throw a request."""
+        print(1)
+        if not self.internet_on():
+            raise DeepLCLIPageLoadError('Your network seem to be offline.')
 
         o = Options()
         o.add_argument('--headless')    # if commented. window will be open
