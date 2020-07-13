@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import sys
 import time
 
@@ -92,11 +91,3 @@ class DeepLCLI:
         res = d.find_element_by_xpath(o_xpath).get_attribute('value')
         d.quit()
         return res.rstrip()
-
-def main():
-    t = DeepLCLI()
-    t.validate()
-    print(t.translate())
-
-if __name__ == "__main__":
-    main()
