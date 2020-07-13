@@ -18,7 +18,7 @@ $ sudo apt update && sudo apt -f install -y
 
 ## Requirements
 
-- Python >= 3.8
+- Python >= 3.8 (Because of `:=`, Walrus operator)
 - [chromium-browser](https://packages.ubuntu.com/ja/source/bionic/chromium-browser)
 - [chromium-chromedriver](https://packages.ubuntu.com/ja/bionic/chromium-chromedriver)
 - [python3-selenium](https://packages.debian.org/buster/python3-selenium)
