@@ -1,13 +1,17 @@
 #!/usr/bin/python
-import os
 import sys
 import time
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 class DeepLCLIArgCheckingError(Exception):
+    pass
+
+class DeepLCLIPageLoadError(Exception):
     pass
 
 class DeepLCLI:
@@ -72,12 +76,18 @@ class DeepLCLI:
         )
         d = webdriver.Chrome(options=o)
         d.get('https://www.deepl.com/translator#%s/%s'%(self.fr_lang, self.to_lang))
-        # input: scripts
-        time.sleep(3)
+        try:
+            WebDriverWait(d, 15).until(
+                EC.presence_of_all_elements_located
+            )
+        except TimeoutException as te:
+            raise DeepLCLIPageLoadError(te)
+
         i_xpath = '//textarea[@dl-test="translator-source-input"]'
         input_textarea = d.find_element_by_xpath(i_xpath)
         input_textarea.send_keys(self.scripts)
-        time.sleep(10)
+        # Wait for the translation process
+        time.sleep(10) # fix needed
         o_xpath = '//textarea[@dl-test="translator-target-input"]'
         res = d.find_element_by_xpath(o_xpath).get_attribute('value')
         d.quit()
