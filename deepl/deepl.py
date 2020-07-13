@@ -1,5 +1,6 @@
 import sys
 import time
+from textwrap import dedent
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -19,16 +20,27 @@ class DeepLCLI:
         """Print usage."""
 
         print(
-            'SYNTAX:',
-            '    $ stdin | python3 test.py <from:lang>:<to:lang>',
-            'USAGE',
-            '    $ echo Hello | python3 test.py en:ja',
-            'LANGUAGE CODES:',
-            '    <from:lang>: {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}',
-            '      <to:lang>: {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}',
-            'To use this, run:',
-            '    $ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y',
-            '    $ sudo apt update && sudo apt -f install -y',
+            dedent('''\
+            SYNTAX:
+                $ (...) | deepl <from:lang>:<to:lang>
+                $ deepl <from:lang>:<to:lang> <<'EOS'
+                  (...)
+                  EOS
+                $ deepl <from:lang>:<to:lang> <<<"(...)"
+            USAGE:
+                $ echo Hello | deepl en:ja
+                $ deepl :ru <<'EOS'
+                  good morning!
+                  good night.
+                  EOS
+                $ deepl fr:zh <<<"Mademoiselle"
+            LANGUAGE CODES:
+                <from:lang>: {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
+                  <to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
+            TIPS:
+                To use this, run:
+                $ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y
+                $ sudo apt update && sudo apt -f install -y'''),
         sep="\n"
     )
 
