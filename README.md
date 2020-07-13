@@ -26,6 +26,7 @@ $ sudo apt update && sudo apt -f install -y
 - [selenium@PyPI](https://pypi.org/project/selenium/)
 
 ```bash
+$ deepl
 SYNTAX:
     $ (...) | deepl <from:lang>:<to:lang>
     $ deepl <from:lang>:<to:lang> <<'EOS'
