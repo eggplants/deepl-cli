@@ -35,8 +35,8 @@ class DeepLCLI:
     def validate(self):
         """Check cmdarg and stdin."""
 
-        fr_langs = {'auto', 'ja', 'en', 'de', 'fr', 'es', 'pt', 'it', 'nl', 'pl', 'ru', 'zh'}
-        to_langs = fr_langs - {'auto'}
+        fr_langs = {'', 'auto', 'ja', 'en', 'de', 'fr', 'es', 'pt', 'it', 'nl', 'pl', 'ru', 'zh'}
+        to_langs = fr_langs - {'', 'auto'}
 
         if sys.stdin.isatty() and len(sys.argv) == 1:
             # if `$ deepl`
@@ -58,6 +58,8 @@ class DeepLCLI:
             # raise err if stdin > 5000 chr
             raise DeepLCLIArgCheckingError('limit of script is less than 5000 chars(Now: %d chars).'%len(scripts))
         else:
+            if opt_lang[0] == '':
+                opt_lang[0] = 'auto'
             self.fr_lang = opt_lang[0]
             self.to_lang = opt_lang[1]
             self.scripts = scripts
@@ -66,15 +68,15 @@ class DeepLCLI:
         """Open a deepl page and throw a request."""
 
         o = Options()
-        o.add_argument('--headless')
-        o.add_argument('--disable-gpu')
+        o.add_argument('--headless')    # if commented. window will be open
+        o.add_argument('--disable-gpu') # if commented, window will be open
         o.add_argument('--user-agent='\
             'Mozilla/5.0 (iPhone; CPU iPhone OS 10_2 like Mac OS X) '\
             'AppleWebKit/602.3.12 (KHTML, like Gecko) Version/10.0 Mobile/14C92 Safari/602.1'
         )
 
         d = webdriver.Chrome(options=o)
-        d.get('https://www.deepl.com/translator#%s/%s'%(self.fr_lang, self.to_lang))
+        d.get('https://www.deepl.com/translator#%s/%s/_'%(self.fr_lang, self.to_lang))
         try:
             WebDriverWait(d, 15).until(
                 EC.presence_of_all_elements_located
@@ -82,15 +84,18 @@ class DeepLCLI:
         except TimeoutException as te:
             raise DeepLCLIPageLoadError(te)
 
-        d.find_element_by_xpath(
+        input_area = d.find_element_by_xpath(
             '//textarea[@dl-test="translator-source-input"]'
-        ).send_keys(self.scripts)
+        )
+        input_area.clear()
+        input_area.send_keys(self.scripts)
 
         # Wait for the translation process
         time.sleep(10) # fix needed
 
-        res = d.find_element_by_xpath(
+        output_area = d.find_element_by_xpath(
             '//textarea[@dl-test="translator-target-input"]'
-        ).get_attribute('value').rstrip()
+        )
+        res = output_area.get_attribute('value').rstrip()
         d.quit()
         return res
