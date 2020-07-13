@@ -1,6 +1,9 @@
 # deepl-cli
 
-# Requirements
+- DeepL Translator CLI using Selenium (Experimental)
+- Under development on Ubuntu 20.04 LTS
+
+## Requirements
 
 - [chromium-browser](https://packages.ubuntu.com/ja/source/bionic/chromium-browser)
 - [chromium-chromedriver](https://packages.ubuntu.com/ja/bionic/chromium-chromedriver)
