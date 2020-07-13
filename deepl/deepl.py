@@ -42,27 +42,32 @@ class DeepLCLI:
             # if `$ deepl`
             self.usage()
             exit(0)
-        elif sys.stdin.isatty():
+
+        if sys.stdin.isatty():
             # raise err if stdin is empty
             raise DeepLCLIArgCheckingError('stdin seems to be empty.')
-        elif (num_opt := len(sys.argv[1::])) != 1:
+
+        if (num_opt := len(sys.argv[1::])) != 1:
             # raise err if arity != 1
             raise DeepLCLIArgCheckingError('num of option is wrong(given %d, expected 1).'%num_opt)
-        elif len(opt_lang := sys.argv[1].split(':')) != 2 or opt_lang[0] not in fr_langs or opt_lang[1] not in to_langs:
+
+        if len(opt_lang := sys.argv[1].split(':')) != 2 or opt_lang[0] not in fr_langs or opt_lang[1] not in to_langs:
             # raise err if specify 2 langs is empty
             raise DeepLCLIArgCheckingError('correct your lang format.')
-        elif opt_lang[0] == opt_lang[1]:
+
+        if opt_lang[0] == opt_lang[1]:
             # raise err if <fr:lang> == <to:lang>
             raise DeepLCLIArgCheckingError('two languages cannot be same.')
-        elif len(scripts := sys.stdin.read()) > 5000:
+
+        if len(scripts := sys.stdin.read()) > 5000:
             # raise err if stdin > 5000 chr
             raise DeepLCLIArgCheckingError('limit of script is less than 5000 chars(Now: %d chars).'%len(scripts))
-        else:
-            self.fr_lang = ('auto' if   opt_lang[0] == ''
-                                   else opt_lang[0]
-                           )[0]
-            self.to_lang = opt_lang[1]
-            self.scripts = scripts
+
+        self.fr_lang = ('auto' if   opt_lang[0] == ''
+                               else opt_lang[0]
+                       )[0]
+        self.to_lang = opt_lang[1]
+        self.scripts = scripts
 
     def translate(self):
         """Open a deepl page and throw a request."""
