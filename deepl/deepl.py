@@ -58,9 +58,9 @@ class DeepLCLI:
             # raise err if stdin > 5000 chr
             raise DeepLCLIArgCheckingError('limit of script is less than 5000 chars(Now: %d chars).'%len(scripts))
         else:
-            if opt_lang[0] == '':
-                opt_lang[0] = 'auto'
-            self.fr_lang = opt_lang[0]
+            self.fr_lang = ('auto' if   opt_lang[0] == ''
+                                   else opt_lang[0]
+                           )[0]
             self.to_lang = opt_lang[1]
             self.scripts = scripts
 
