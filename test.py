@@ -60,7 +60,7 @@ class DeepLCLI:
         # raise err if stdin > 5000 chr
         scripts = sys.stdin.read()
         if len(scripts) > 5000:
-            raise DeepLCLIArgCheckingError('limit of script is less than 5000 chars(Now: ).'%len(scripts))
+            raise DeepLCLIArgCheckingError('limit of script is less than 5000 chars(Now: %d chars).'%len(scripts))
 
         self.fr_lang = fr_lang
         self.to_lang = to_lang
