@@ -3,6 +3,8 @@
 - DeepL Translator CLI using Selenium (Experimental)
 - Under development on Ubuntu 20.04 LTS
 
+![demo](https://i.imgur.com/a/1sZdPa2)
+
 ## Requirements
 
 - [chromium-browser](https://packages.ubuntu.com/ja/source/bionic/chromium-browser)
