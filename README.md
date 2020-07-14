@@ -11,16 +11,16 @@
 [![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/eggplants/deepl-cli&tutorial=README.md&shellonly=true)
 
 ```bash
-# First, 
-$ wget -O - https://raw.githubusercontent.com/eggplants/deepl-cli/master/gcp_deeplcli_setup.sh | bash
-# example 
+# First,
+$ wget -O - https://raw.githubusercontent.com/eggplants/deepl-cli/master/deeplcli_setup.sh | bash
+# example
 $ deepl en:ja < README-cloudshell.txt
 ```
 
 ## Install
 
 ```bash
-$ wget -O - https://raw.githubusercontent.com/eggplants/deepl-cli/master/gcp_deeplcli_setup.sh | bash
+$ wget -O - https://raw.githubusercontent.com/eggplants/deepl-cli/master/deeplcli_setup.sh | bash
 ```
 
 ![demo](https://i.imgur.com/mGbwqO7.png)
