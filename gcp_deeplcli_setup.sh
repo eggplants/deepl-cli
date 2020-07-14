@@ -2,7 +2,9 @@
 
 # Python3.8
 which python3.8 || {
-  sudo apt install -y build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev zlib1g-dev openssl libffi-dev python3-dev python3-setuptools wget 
+  sudo apt install -y build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev \
+  libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev zlib1g-dev openssl \
+  libffi-dev python3-dev python3-setuptools wget 
   mkdir /tmp/Python38
   cd /tmp/Python38
   wget https://www.python.org/ftp/python/3.8.0/Python-3.8.0.tar.xz
@@ -22,6 +24,7 @@ which google-chrome || {
   wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
   sudo dpkg -i google-chrome*.deb
 }
+
 # selenium-clhrome-webdriver
 which chromedriver || {
   wget 'https://chromedriver.storage.googleapis.com/83.0.4103.39/chromedriver_linux64.zip' -O temp.zip
@@ -29,13 +32,13 @@ which chromedriver || {
   rm temp.zip
 }
 
+# deepl-cli
 which deepl || {
   sudo pip3.8 install -U deepl-cli
 }
 
 
-sudo apt install python3-selenium -y
+sudo apt install -y python3-selenium
 
 sudo apt update && sudo apt -f install -y
-sudo apt --fix-broken install
 sudo apt autoremove
