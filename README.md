@@ -8,11 +8,11 @@
 
 ## Try on Google Cloud Shell
 
-[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open)
+[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/eggplants/deepl-cli&tutorial=README.md&shellonly=true)
 
 ```bash
 # First, 
-$ wget -O - https://gist.githubusercontent.com/eggplants/9996e976fadff8bae9bdfb8628ce07d3/raw/784e9ea1f4385c05c98e1d42840809aec8ca597f/gcp_deeplcli_setup.sh|bash
+$ wget -O - https://raw.githubusercontent.com/eggplants/deepl-cli/master/gcp_deeplcli_setup.sh | bash
 # example 
 $ deepl en:ja < README-cloudshell.txt
 ```
@@ -20,21 +20,18 @@ $ deepl en:ja < README-cloudshell.txt
 ## Install
 
 ```bash
-$ pip install deepl-cli
-$ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y
-$ sudo apt update && sudo apt -f install -y
+$ wget -O - https://raw.githubusercontent.com/eggplants/deepl-cli/master/gcp_deeplcli_setup.sh | bash
 ```
 
 ![demo](https://i.imgur.com/mGbwqO7.png)
 
 ## Requirements
 
-- Python >= 3.8 (Because of `:=`, Walrus operator)
-- [chromium-browser](https://packages.ubuntu.com/ja/source/bionic/chromium-browser)
-- [chromium-chromedriver](https://packages.ubuntu.com/ja/bionic/chromium-chromedriver)
-- [python3-selenium](https://packages.debian.org/buster/python3-selenium)
-- [selenium](https://github.com/SeleniumHQ/selenium)
-- [selenium@PyPI](https://pypi.org/project/selenium/)
+- [Python >= 3.8](https://www.python.org/ftp/python/)
+    - (Because of `:=`, Walrus operator)
+- [google-chrome >= 83](https://www.google.com/chrome/?platform=linux)
+- [chromedriver >= 83](https://chromedriver.chromium.org/downloads)
+- [selenium](https://pypi.org/project/selenium/)
 
 ## Usage
 
