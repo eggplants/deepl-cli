@@ -98,14 +98,21 @@ class DeepLCLI:
             raise DeepLCLIPageLoadError('Your network seem to be offline.')
 
         o = Options()
+        # o.binary_location = '/usr/bin/google-chrome'
         o.add_argument('--headless')    # if commented. window will be open
         o.add_argument('--disable-gpu') # if commented, window will be open
+        o.add_argument('--disable-dev-shm-usage')
+        o.add_argument('--remote-debugging-port=9222')
+        o.add_argument('--disable-setuid-sandbox')
         o.add_argument('--user-agent='\
             'Mozilla/5.0 (iPhone; CPU iPhone OS 10_2 like Mac OS X) '\
             'AppleWebKit/602.3.12 (KHTML, like Gecko) Version/10.0 Mobile/14C92 Safari/602.1'
         )
 
-        d = webdriver.Chrome(options=o)
+        d = webdriver.Chrome(
+             # executable_path="/mnt/c/chromedriver.exe",
+             options=o
+        )
         d.get('https://www.deepl.com/translator#%s/%s/_'%(self.fr_lang, self.to_lang))
         try:
             WebDriverWait(d, 15).until(
