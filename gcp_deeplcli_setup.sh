@@ -27,8 +27,12 @@ which google-chrome || {
 
 # chrome-webdriver
 which chromedriver || {
-  wget 'https://chromedriver.storage.googleapis.com/83.0.4103.39/chromedriver_linux64.zip' -O temp.zip
-  sudo unzip temp.zip -d /usr/local/bin
+  [[ -d /mnt/c ]] && {
+    wget 'https://chromedriver.storage.googleapis.com/83.0.4103.39/chromedriver_win32.zip' -O tmp.zip
+  } || {
+    wget 'https://chromedriver.storage.googleapis.com/83.0.4103.39/chromedriver_linux64.zip' -O tmp.zip
+  }
+  sudo unzip tmp.zip -d /usr/local/bin
   rm temp.zip
 }
 
