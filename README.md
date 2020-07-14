@@ -12,7 +12,7 @@
 
 ```bash
 # First, 
-wget -O - https://gist.githubusercontent.com/eggplants/acaa6a78dc8556ea5ea1d1f9009df914/raw/289e38fdf975b41692b3268784cc6cfcc050cf27/gcp_deeplcli_setup.sh|bash
+wget -O - https://gist.githubusercontent.com/eggplants/9996e976fadff8bae9bdfb8628ce07d3/raw/784e9ea1f4385c05c98e1d42840809aec8ca597f/gcp_deeplcli_setup.sh|bash
 # example 
 $ deepl en:ja < README-cloudshell.txt
 ```
