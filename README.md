@@ -6,6 +6,17 @@
 - Translate standard input into a specified language
 - Under development on Ubuntu 20.04 LTS
 
+## Try on Google Cloud Shell
+
+[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open)
+
+```bash
+# First, 
+wget -O - https://gist.githubusercontent.com/eggplants/acaa6a78dc8556ea5ea1d1f9009df914/raw/289e38fdf975b41692b3268784cc6cfcc050cf27/gcp_deeplcli_setup.sh|bash
+# example 
+$ deepl en:ja < README-cloudshell.txt
+```
+
 ## Install
 
 ```bash
