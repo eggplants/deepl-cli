@@ -8,7 +8,7 @@
 
 ## Try on Google Cloud Shell
 
-[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open)
+[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/eggplants/deepl-cli&tutorial=README.md&shellonly=true)
 
 ```bash
 # First, 
