@@ -40,11 +40,12 @@ $ wget -O - https://raw.githubusercontent.com/eggplants/deepl-cli/master/deeplcl
 ```bash
 $ deepl
 SYNTAX:
-    $ (...) | deepl <from:lang>:<to:lang>
+    $ ... | deepl <from:lang>:<to:lang>
     $ deepl <from:lang>:<to:lang> <<'EOS'
-      (...)
+      ...
       EOS
-    $ deepl <from:lang>:<to:lang> <<<"(...)"
+    $ deepl <from:lang>:<to:lang> <<<"..."
+    $ deepl <from:lang>:<to:lang> < <filepath>
 USAGE:
     $ echo Hello | deepl en:ja
     $ deepl :ru <<'EOS' # :ru is equivalent of auto:ru
@@ -52,6 +53,7 @@ USAGE:
       good night.
       EOS
     $ deepl fr:zh <<<"Mademoiselle"
+    $ deepl de:pl < README_de.md
 LANGUAGE CODES:
     <from:lang>: {(empty)=auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
     <to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
