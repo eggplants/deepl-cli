@@ -4,7 +4,7 @@
 
 - [DeepL Translator](https://www.deepl.com/translator) CLI using Selenium
 - Translate standard input into a specified language
-- Under development on Ubuntu 20.04 LTS
+- Under development on Ubuntu 20.04 LTS and Python3.8
 
 ## Try on Google Cloud Shell
 
@@ -12,7 +12,7 @@
 
 ```bash
 # First, 
-wget -O - https://gist.githubusercontent.com/eggplants/9996e976fadff8bae9bdfb8628ce07d3/raw/784e9ea1f4385c05c98e1d42840809aec8ca597f/gcp_deeplcli_setup.sh|bash
+$ wget -O - https://gist.githubusercontent.com/eggplants/9996e976fadff8bae9bdfb8628ce07d3/raw/784e9ea1f4385c05c98e1d42840809aec8ca597f/gcp_deeplcli_setup.sh|bash
 # example 
 $ deepl en:ja < README-cloudshell.txt
 ```
