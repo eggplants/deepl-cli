@@ -25,11 +25,16 @@ which google-chrome || {
   sudo dpkg -i google-chrome*.deb
 }
 
-# selenium-clhrome-webdriver
+# chrome-webdriver
 which chromedriver || {
   wget 'https://chromedriver.storage.googleapis.com/83.0.4103.39/chromedriver_linux64.zip' -O temp.zip
   sudo unzip temp.zip -d /usr/local/bin
   rm temp.zip
+}
+
+# python3-selenium
+python3.8 -c 'import selenium' || {
+  pip3.8 install selenium
 }
 
 # deepl-cli
@@ -37,8 +42,6 @@ which deepl || {
   sudo pip3.8 install -U deepl-cli
 }
 
-
-sudo apt install -y python3-selenium
-
+# upgrade
 sudo apt update && sudo apt -f install -y && sudo apt upgrade -y
 sudo apt autoremove
