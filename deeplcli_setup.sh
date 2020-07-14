@@ -49,5 +49,5 @@ which deepl || {
 }
 
 # upgrade
-sudo apt update && sudo apt -f install -y && sudo apt upgrade -y
+sudo apt update && sudo apt -f install -y # && sudo apt upgrade -y
 sudo apt autoremove
