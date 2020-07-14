@@ -4,7 +4,7 @@
 
 - [DeepL Translator](https://www.deepl.com/translator) CLI using Selenium
 - Translate standard input into a specified language
-- Under development on Ubuntu 20.04 LTS
+- Under development on Ubuntu 20.04 LTS and Python3.8
 
 ## Try on Google Cloud Shell
 
