@@ -27,7 +27,8 @@ $ wget -O - https://raw.githubusercontent.com/eggplants/deepl-cli/master/gcp_dee
 
 ## Requirements
 
-- Python >= 3.8 (Because of `:=`, Walrus operator)
+- [Python >= 3.8](https://www.python.org/ftp/python/)
+    - (Because of `:=`, Walrus operator)
 - [google-chrome >= 83](https://www.google.com/chrome/?platform=linux)
 - [chromedriver >= 83](https://chromedriver.chromium.org/downloads)
 - [selenium](https://pypi.org/project/selenium/)
