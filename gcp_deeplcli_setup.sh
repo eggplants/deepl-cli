@@ -40,5 +40,5 @@ which deepl || {
 
 sudo apt install -y python3-selenium
 
-sudo apt update && sudo apt -f install -y
+sudo apt update && sudo apt -f install -y && sudo apt upgrade -y
 sudo apt autoremove
