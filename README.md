@@ -61,6 +61,8 @@ TIPS:
     To use this, run:
     $ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y
     $ sudo apt update && sudo apt -f install -y
+    Or:
+    $ wget -O - https://raw.githubusercontent.com/eggplants/deepl-cli/master/deeplcli_setup.sh | bash
 ```
 
 ## Lisence
