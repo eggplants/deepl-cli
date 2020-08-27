@@ -21,7 +21,7 @@ which google-chrome || {
   sh -e /etc/init.d/xvfb start
   sudo apt update
   sudo apt install -y libappindicator1 fonts-liberation libasound2 libgconf-2-4 libnspr4 libxss1 libnss3 xdg-utils
-  wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  wget https://www.slimjet.com/chrome/download-chrome.php?file=files%2F83.0.4103.116%2Fgoogle-chrome-stable_current_amd64.deb
   sudo dpkg -i google-chrome*.deb
   rm google-chrome*.deb
 }
