@@ -13,9 +13,9 @@
 
 ```bash
 # First,
-$ pip install deepl-cli
+pip3 install deepl-cli
 # example
-$ deepl en:ja < README-cloudshell.txt
+deepl en:ja <<<'Hello, world!'
 ```
 
 ## Install

@@ -88,15 +88,14 @@ class DeepLCLI:
             raise DeepLCLIArgCheckingError('two languages cannot be same.')
 
         scripts = sys.stdin.read()
-        if len(scripts) > self.max_length:
+        if self.max_length != '' and len(scripts) > self.max_length:
             # raise err if stdin > self.max_length chr
             raise DeepLCLIArgCheckingError(
                 'limit of script is less than {} chars(Now: {} chars).'.format(
                     self.max_length, len(scripts)))
 
         self.fr_lang = ('auto' if opt_lang[0] == ''
-                        else opt_lang[0]
-                        )[0]
+                        else opt_lang[0])[0]
         self.to_lang = opt_lang[1]
         self.scripts = scripts.rstrip("\n")
 
