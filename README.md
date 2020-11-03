@@ -4,7 +4,7 @@
 
 [![Downloads](https://pepy.tech/badge/deepl-cli)](https://pepy.tech/project/deepl-cli) [![Downloads](https://pepy.tech/badge/deepl-cli/month)](https://pepy.tech/project/deepl-cli/month) [![Downloads](https://pepy.tech/badge/deepl-cli/week)](https://pepy.tech/project/deepl-cli/week)
 
-- [DeepL Translator](https://www.deepl.com/translator) CLI using Selenium
+- [DeepL Translator](https://www.deepl.com/translator) CLI using pyppeteer
 - Translate standard input into a specified language
 
 ## Install
