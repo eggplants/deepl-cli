@@ -12,8 +12,10 @@
 [![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/eggplants/deepl-cli&tutorial=README.md&shellonly=true)
 
 ```bash
-# First,
-pip3 install deepl-cli
+# first,
+export PATH="$PATH:~/.local/bin/"
+pip3 install deepl-cli # from pypi
+pip3 install -e .      # OR, from develop
 # example
 deepl en:ja <<<'Hello, world!'
 ```
