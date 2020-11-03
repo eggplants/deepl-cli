@@ -95,7 +95,7 @@ class DeepLCLI:
                     self.max_length, len(scripts)))
 
         self.fr_lang = ('auto' if opt_lang[0] == ''
-                        else opt_lang[0])[0]
+                        else opt_lang[0])
         self.to_lang = opt_lang[1]
         self.scripts = scripts.rstrip("\n")
 
@@ -105,13 +105,14 @@ class DeepLCLI:
         if not self.internet_on():
             raise DeepLCLIPageLoadError('Your network seem to be offline.')
 
-        browser: Browser = await launch()
+        browser: Browser = await launch(
+            # headless=False
+        )
         page: Page = await browser.newPage()
         userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6)'\
                     'AppleWebKit/537.36 (KHTML, like Gecko) '\
                     'Chrome/77.0.3864.0 Safari/537.36'
         await page.setUserAgent(userAgent)
-
         await page.goto(
             'https://www.deepl.com/translator#{}/{}/_'.format(
                 self.fr_lang, self.to_lang))
@@ -131,6 +132,10 @@ class DeepLCLI:
             await page.waitForFunction('''
                 () => document.querySelector(
                 'textarea[dl-test=translator-target-input]').value !== ""
+            ''')
+            await page.waitForFunction('''
+                () => !document.querySelector(
+                'textarea[dl-test=translator-target-input]').value.includes("[...]")
             ''')
         except TimeoutError:
             raise DeepLCLIPageLoadError
