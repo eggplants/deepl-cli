@@ -1,5 +1,12 @@
 from setuptools import find_packages, setup
 
+"""Update:
+(change version,)
+sudo rm -rf build dist *.egg-info
+python setup.py sdist bdist_wheel
+python -m twine upload --repository pypi dist/*
+"""
+
 setup(
     name='deepl-cli',
     version='0.0.10',
