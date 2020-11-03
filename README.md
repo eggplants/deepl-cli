@@ -21,7 +21,8 @@ deepl en:ja <<<'Hello, world!'
 ## Install
 
 ```bash
-$ pip install deepl-cli
+# python 3.x
+pip install deepl-cli
 ```
 
 ![demo](https://i.imgur.com/mGbwqO7.png)
