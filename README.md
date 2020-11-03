@@ -16,6 +16,15 @@ pip install deepl-cli
 
 ![demo](https://i.imgur.com/mGbwqO7.png)
 
+## Docker Image
+
+- DockerHub: <https://hub.docker.com/r/eggplanter/deepl-cli>
+
+```bash
+# TRY
+docker run -it --rm eggplanter/deepl-cli:0.1
+```
+
 ## Requirements
 
 - [Python 3.x](https://www.python.org/ftp/python/)
