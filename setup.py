@@ -1,7 +1,8 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
+
 setup(
     name='deepl-cli',
-    version='0.0.7',
+    version='0.0.8',
     description='DeepL Translator CLI using Selenium',
     description_content_type='',
     long_description=open('README.md').read(),
@@ -9,10 +10,10 @@ setup(
     url='https://github.com/eggplants/deepl-cli',
     author='eggplants',
     packages=find_packages(),
-    python_requires='>=3.8',
+    python_requires='>=3.0',
     include_package_data=True,
     license='MIT',
-    install_requires=['selenium==3.141'],
+    install_requires=['pyppeteer'],
     entry_points={
         'console_scripts': [
             'deepl=deepl.main:main'
