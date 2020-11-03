@@ -6,7 +6,6 @@
 
 - [DeepL Translator](https://www.deepl.com/translator) CLI using Selenium
 - Translate standard input into a specified language
-- Under development on Ubuntu 20.04 LTS and Python3.8
 
 ## Try on Google Cloud Shell
 
@@ -14,7 +13,7 @@
 
 ```bash
 # First,
-$ wget -O - https://raw.githubusercontent.com/eggplants/deepl-cli/master/deeplcli_setup.sh | bash
+$ pip install deepl-cli
 # example
 $ deepl en:ja < README-cloudshell.txt
 ```
@@ -22,18 +21,15 @@ $ deepl en:ja < README-cloudshell.txt
 ## Install
 
 ```bash
-$ wget -O - https://raw.githubusercontent.com/eggplants/deepl-cli/master/deeplcli_setup.sh | bash
+$ pip install deepl-cli
 ```
 
 ![demo](https://i.imgur.com/mGbwqO7.png)
 
 ## Requirements
 
-- [Python >= 3.8](https://www.python.org/ftp/python/)
-    - (Because of `:=`, Walrus operator)
-- [google-chrome >= 83](https://www.google.com/chrome/?platform=linux)
-- [chromedriver >= 83](https://chromedriver.chromium.org/downloads)
-- [selenium](https://pypi.org/project/selenium/)
+- [Python 3.x](https://www.python.org/ftp/python/)
+- [pyppeteer](https://github.com/pyppeteer/pyppeteer)
 
 ## Usage
 
@@ -57,12 +53,6 @@ USAGE:
 LANGUAGE CODES:
     <from:lang>: {(empty)=auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
     <to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
-TIPS:
-    To use this, run:
-    $ sudo apt install chromium-browser chromium-chromedriver python3-selenium -y
-    $ sudo apt update && sudo apt -f install -y
-    Or:
-    $ wget -O - https://raw.githubusercontent.com/eggplants/deepl-cli/master/deeplcli_setup.sh | bash
 ```
 
 ## Lisence
