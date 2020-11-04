@@ -2,10 +2,10 @@ import sys
 from textwrap import dedent
 from urllib.request import urlopen
 
-from pyppeteer.browser import Browser
-from pyppeteer.errors import TimeoutError
-from pyppeteer.launcher import launch
-from pyppeteer.page import Page
+from pyppeteer.browser import Browser  # type: ignore
+from pyppeteer.errors import TimeoutError  # type: ignore
+from pyppeteer.launcher import launch  # type: ignore
+from pyppeteer.page import Page  # type: ignore
 
 
 class DeepLCLIArgCheckingError(Exception):
@@ -18,7 +18,7 @@ class DeepLCLIPageLoadError(Exception):
 
 class DeepLCLI:
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     def usage(self) -> None:
@@ -64,11 +64,11 @@ class DeepLCLI:
             # raise err if stdin is empty
             raise DeepLCLIArgCheckingError('stdin seems to be empty.')
 
-    def __chk_auth(self):
+    def __chk_auth(self) -> None:
         """Check if login is required."""
         self.max_length = 5000
 
-    def __chk_lang(self):
+    def __chk_lang(self) -> None:
         """Check if language options are valid."""
         fr_langs = {'', 'auto', 'ja', 'en', 'de', 'fr',
                     'es', 'pt', 'it', 'nl', 'pl', 'ru', 'zh'}
@@ -100,7 +100,7 @@ class DeepLCLI:
                 'num of option is wrong(given %d, expected 1 or 2).' % num_opt)
 
         scripts = sys.stdin.read()
-        if self.max_length != '' and len(scripts) > self.max_length:
+        if self.max_length is not None and len(scripts) > self.max_length:
             # raise err if stdin > self.max_length chr
             raise DeepLCLIArgCheckingError(
                 'limit of script is less than {} chars(Now: {} chars).'.format(

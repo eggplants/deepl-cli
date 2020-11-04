@@ -1,15 +1,8 @@
-from setuptools import find_packages, setup
-
-"""Update:
-(change version,)
-sudo rm -rf build dist *.egg-info
-python setup.py sdist bdist_wheel
-python -m twine upload --repository pypi dist/*
-"""
+from setuptools import find_packages, setup  # type: ignore
 
 setup(
     name='deepl-cli',
-    version='0.0.11',
+    version='0.0.12',
     description='DeepL Translator CLI using Selenium',
     description_content_type='',
     long_description=open('README.md').read(),

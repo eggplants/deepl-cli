@@ -4,7 +4,7 @@ import asyncio
 from . import deepl
 
 
-def main():
+def main() -> None:
     t = deepl.DeepLCLI()
     t.validate()
     if len(t.scripts) > 0:
