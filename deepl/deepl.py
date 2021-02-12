@@ -1,5 +1,7 @@
+import asyncio
 import sys
 from textwrap import dedent
+from typing import Optional, Tuple
 from urllib.request import urlopen
 
 from pyppeteer.browser import Browser  # type: ignore
@@ -18,8 +20,10 @@ class DeepLCLIPageLoadError(Exception):
 
 class DeepLCLI:
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, langs: Optional[Tuple[str, str]] = None) -> None:
+        if langs:
+            self.fr_lang, self.to_lang = self.__chk_lang(langs)
+        self.max_length = 5000
 
     def usage(self) -> None:
         """Print usage."""
@@ -59,58 +63,75 @@ class DeepLCLI:
         if (sys.stdin.isatty() and len(sys.argv) == 1) or '-h' in sys.argv:
             # if `$ deepl` or `$ deepl -h`
             self.usage()
-            exit(0)
+            raise DeepLCLIArgCheckingError('show help.')
         elif sys.stdin.isatty():
             # raise err if stdin is empty
             raise DeepLCLIArgCheckingError('stdin seems to be empty.')
 
-    def __chk_auth(self) -> None:
-        """Check if login is required."""
-        self.max_length = 5000
+    # def __chk_auth(self) -> None:
+    #     """Check if login is required."""
+    #     self.max_length = 5000
 
-    def __chk_lang(self) -> None:
-        """Check if language options are valid."""
-        fr_langs = {'', 'auto', 'ja', 'en', 'de', 'fr',
-                    'es', 'pt', 'it', 'nl', 'pl', 'ru', 'zh'}
-        to_langs = fr_langs - {'', 'auto'}
-        opt_lang = sys.argv[1].split(':')
-        if len(opt_lang) != 2 or opt_lang[0] not in fr_langs \
-                or opt_lang[1] not in to_langs:
-            # raise err if specify 2 langs is empty
-            raise DeepLCLIArgCheckingError('correct your lang format.')
-
-        if opt_lang[0] == opt_lang[1]:
-            # raise err if <fr:lang> == <to:lang>
-            raise DeepLCLIArgCheckingError('two languages cannot be same.')
-
-        self.fr_lang = ('auto' if opt_lang[0] == ''
-                        else opt_lang[0])
-        self.to_lang = opt_lang[1]
-
-    def validate(self) -> None:
-        """Check cmdarg and stdin."""
-        self.__chk_stdin()
-        self.__chk_auth()
-        self.__chk_lang()
-
-        num_opt = len(sys.argv[1::])
+    def __chk_argnum(self, args):
+        """Check if num of args are valid."""
+        num_opt = len(args)
         if num_opt != 1:
             # raise err if arity != 1
             raise DeepLCLIArgCheckingError(
                 'num of option is wrong(given %d, expected 1 or 2).' % num_opt)
 
-        scripts = sys.stdin.read()
-        if self.max_length is not None and len(scripts) > self.max_length:
+    def __chk_lang(self, in_lang) -> Tuple[str, str]:
+        """Check if language options are valid."""
+        fr_langs = {'', 'auto', 'ja', 'en', 'de', 'fr',
+                    'es', 'pt', 'it', 'nl', 'pl', 'ru', 'zh'}
+        to_langs = fr_langs - {'', 'auto'}
+
+        if len(in_lang) != 2 or in_lang[0] not in fr_langs \
+                or in_lang[1] not in to_langs:
+            # raise err if specify 2 langs is empty
+            raise DeepLCLIArgCheckingError('correct your lang format.')
+
+        if in_lang[0] == in_lang[1]:
+            # raise err if <fr:lang> == <to:lang>
+            raise DeepLCLIArgCheckingError('two languages cannot be same.')
+
+        fr = ('auto' if in_lang[0] == ''
+              else in_lang[0])
+        to = in_lang[1]
+
+        return (fr, to)
+
+    def chk_cmdargs(self) -> None:
+        """Check cmdargs and configurate languages.(for using as a command)"""
+        self.__chk_stdin()
+        self.__chk_argnum(sys.argv[1::])
+        # self.__chk_auth()
+
+    def __chk_script(self, script: str) -> str:
+        """Check cmdarg and stdin."""
+
+        script = script.rstrip("\n")
+
+        if self.max_length is not None and len(script) > self.max_length:
             # raise err if stdin > self.max_length chr
             raise DeepLCLIArgCheckingError(
                 'limit of script is less than {} chars(Now: {} chars).'.format(
-                    self.max_length, len(scripts)))
+                    self.max_length, len(script)))
+        if len(script) <= 0:
+            # raise err if stdin <= 0 chr
+            raise DeepLCLIArgCheckingError('script seems to be empty.')
 
-        self.scripts = scripts.rstrip("\n")
+        return script
 
-    async def translate(self) -> str:
+    def translate(self, script: str) -> str:
+        self.fr_lang, self.to_lang = self.__chk_lang(
+            [self.fr_lang, self.to_lang])
+        self.__chk_script(script)
+        return asyncio.get_event_loop().run_until_complete(
+            self.__translate(script))
+
+    async def __translate(self, script: str) -> str:
         """Throw a request."""
-
         if not self.internet_on():
             raise DeepLCLIPageLoadError('Your network seem to be offline.')
 
@@ -130,20 +151,14 @@ class DeepLCLI:
                     'Chrome/77.0.3864.0 Safari/537.36'
         await page.setUserAgent(userAgent)
         await page.goto(
-            'https://www.deepl.com/translator#{}/{}/_'.format(
-                self.fr_lang, self.to_lang))
+            'https://www.deepl.com/translator#{}/{}/{}'.format(
+                self.fr_lang, self.to_lang, script))
         try:
             page.waitForSelector(
                 '#dl_translator > div.lmt__text', timeout=15000)
         except TimeoutError:
             raise DeepLCLIPageLoadError
 
-        input_area = await page.J('textarea[dl-test=translator-source-input]')
-        await page.evaluate('''
-            () => document.querySelector(
-                'textarea[dl-test=translator-source-input]').value = ""
-        ''')
-        await input_area.type(self.scripts)
         try:
             await page.waitForFunction('''
                 () => document.querySelector(
@@ -160,4 +175,4 @@ class DeepLCLI:
             'textarea[dl-test="translator-target-input"]')
         res = await page.evaluate('elm => elm.value', output_area)
         await browser.close()
-        return res.rstrip("\n")
+        return res.rstrip('\n')

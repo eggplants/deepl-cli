@@ -1,8 +1,10 @@
 from setuptools import find_packages, setup  # type: ignore
 
+from deepl import __version__
+
 setup(
     name='deepl-cli',
-    version='0.0.12',
+    version=__version__,
     description='DeepL Translator CLI using Selenium',
     description_content_type='',
     long_description=open('README.md').read(),
@@ -10,7 +12,7 @@ setup(
     url='https://github.com/eggplants/deepl-cli',
     author='eggplants',
     packages=find_packages(),
-    python_requires='>=3.0',
+    python_requires='>=3.5',
     include_package_data=True,
     license='MIT',
     install_requires=['pyppeteer'],
