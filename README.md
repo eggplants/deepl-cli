@@ -4,7 +4,7 @@
 
 [![PyPI version](https://badge.fury.io/py/deepl-cli.svg)](https://badge.fury.io/py/deepl-cli) [![Maintainability](https://api.codeclimate.com/v1/badges/a56630914df8538ca93b/maintainability)](https://codeclimate.com/github/eggplants/deepl-cli/maintainability)
 
-[![Test Coverage](https://api.codeclimate.com/v1/badgesa56630914df8538ca93b/test_coverage)](https://codeclimate.com/github/eggplants/deepl-cli/test_coverage)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a56630914df8538ca93b/test_coverage)](https://codeclimate.com/github/eggplants/deepl-cli/test_coverage)
 
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
