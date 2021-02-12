@@ -38,6 +38,8 @@ docker run -it --rm eggplanter/deepl-cli:0.1
 
 ## Usage
 
+## from CLI
+
 ```bash
 $ deepl
 SYNTAX:
@@ -58,6 +60,15 @@ USAGE:
 LANGUAGE CODES:
     <from:lang>: {(empty)=auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
     <to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
+```
+
+## from Package
+
+```python
+from deepl import deepl
+
+t = deepl.DeepLCLI(langs=('en', 'ja'))
+t.translate('hello') #=> 'こんにちわ'
 ```
 
 ## Lisence
