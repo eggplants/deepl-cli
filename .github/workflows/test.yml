@@ -27,12 +27,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest pytest-cov flake8
-    - name: Run flake8
-      uses: suo/flake8-github-action@releases/v1
-      with:
-        checkName: "test"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Lint with flake8
+      run: |
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --statistics
     # https://docs.codeclimate.com/docs/configuring-test-coverage#quick-guide
     - name: 1. Set Git env
       run: |
