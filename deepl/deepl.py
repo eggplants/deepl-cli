@@ -63,6 +63,7 @@ class DeepLCLI:
         if (sys.stdin.isatty() and len(sys.argv) == 1) or '-h' in sys.argv:
             # if `$ deepl` or `$ deepl -h`
             self.usage()
+            sys.tracebacklimit = 0
             raise DeepLCLIArgCheckingError('show help.')
         elif sys.stdin.isatty():
             # raise err if stdin is empty
