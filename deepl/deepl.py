@@ -22,7 +22,7 @@ class DeepLCLI:
 
     def __init__(self, langs: Optional[Tuple[str, str]] = None) -> None:
         if langs:
-            self.fr_lang, self.to_lang = self.__chk_lang(langs)
+            self.fr_lang, self.to_lang = self._chk_lang(langs)
         self.max_length = 5000
 
     def usage(self) -> None:
@@ -58,7 +58,7 @@ class DeepLCLI:
         except IOError:
             return False
 
-    def __chk_stdin(self) -> None:
+    def _chk_stdin(self) -> None:
         """Check if stdin is entered."""
         if (sys.stdin.isatty() and len(sys.argv) == 1) or '-h' in sys.argv:
             # if `$ deepl` or `$ deepl -h`
@@ -69,11 +69,11 @@ class DeepLCLI:
             # raise err if stdin is empty
             raise DeepLCLIArgCheckingError('stdin seems to be empty.')
 
-    # def __chk_auth(self) -> None:
+    # def _chk_auth(self) -> None:
     #     """Check if login is required."""
     #     self.max_length = 5000
 
-    def __chk_argnum(self, args):
+    def _chk_argnum(self, args):
         """Check if num of args are valid."""
         num_opt = len(args)
         if num_opt != 1:
@@ -81,7 +81,7 @@ class DeepLCLI:
             raise DeepLCLIArgCheckingError(
                 'num of option is wrong(given %d, expected 1 or 2).' % num_opt)
 
-    def __chk_lang(self, in_lang) -> Tuple[str, str]:
+    def _chk_lang(self, in_lang) -> Tuple[str, str]:
         """Check if language options are valid."""
         fr_langs = {'', 'auto', 'ja', 'en', 'de', 'fr',
                     'es', 'pt', 'it', 'nl', 'pl', 'ru', 'zh'}
@@ -104,11 +104,11 @@ class DeepLCLI:
 
     def chk_cmdargs(self) -> None:
         """Check cmdargs and configurate languages.(for using as a command)"""
-        self.__chk_stdin()
-        self.__chk_argnum(sys.argv[1::])
-        # self.__chk_auth()
+        self._chk_stdin()
+        self._chk_argnum(sys.argv[1::])
+        # self._chk_auth()
 
-    def __chk_script(self, script: str) -> str:
+    def _chk_script(self, script: str) -> str:
         """Check cmdarg and stdin."""
 
         script = script.rstrip("\n")
@@ -125,13 +125,13 @@ class DeepLCLI:
         return script
 
     def translate(self, script: str) -> str:
-        self.fr_lang, self.to_lang = self.__chk_lang(
+        self.fr_lang, self.to_lang = self._chk_lang(
             [self.fr_lang, self.to_lang])
-        self.__chk_script(script)
+        self._chk_script(script)
         return asyncio.get_event_loop().run_until_complete(
-            self.__translate(script))
+            self._translate(script))
 
-    async def __translate(self, script: str) -> str:
+    async def _translate(self, script: str) -> str:
         """Throw a request."""
         if not self.internet_on():
             raise DeepLCLIPageLoadError('Your network seem to be offline.')
