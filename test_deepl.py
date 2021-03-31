@@ -38,4 +38,4 @@ def test6():
 
 def test7():
     t = deepl.DeepLCLI(langs=('', 'ja'))
-    assert t.translate('test') == 'しけん'
+    assert t.translate('test') == 'テスト'
