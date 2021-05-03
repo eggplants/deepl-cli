@@ -32,22 +32,24 @@ class DeepLCLI:
         $ deepl
         SYNTAX:
             $ ... | deepl <from:lang>:<to:lang>
-            $ deepl <from:lang>:<to:lang> <<'EOS'
+            $ deepl <from:lang>:<to:lang> << 'EOS'
               ...
               EOS
-            $ deepl <from:lang>:<to:lang> <<<"..."
+            $ deepl <from:lang>:<to:lang> <<< "..."
             $ deepl <from:lang>:<to:lang> < <filepath>
         USAGE:
             $ echo Hello | deepl en:ja
-            $ deepl :ru <<'EOS' # :ru is equivalent of auto:ru
+            $ deepl :ru << 'EOS' # :ru is equivalent of auto:ru
               good morning!
               good night.
               EOS
-            $ deepl fr:zh <<<"Mademoiselle"
+            $ deepl fr:zh <<< "Mademoiselle"
             $ deepl de:pl < README_de.md
         LANGUAGE CODES:
-            <from:lang>: {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
-            <to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
+            <from:lang>: {auto it et nl el sv es sk sl cs da
+                          de hu fi fr bg pl pt lv lt ro ru en zh ja}
+            <to:lang>:   {it et nl el sv es sk sl cs da
+                          de hu fi fr bg pl pt lv lt ro ru en zh ja}
         '''))
 
     def internet_on(self) -> bool:
@@ -73,7 +75,7 @@ class DeepLCLI:
     #     """Check if login is required."""
     #     self.max_length = 5000
 
-    def _chk_argnum(self, args):
+    def _chk_argnum(self, args) -> None:
         """Check if num of args are valid."""
         num_opt = len(args)
         if num_opt != 1:
@@ -83,8 +85,11 @@ class DeepLCLI:
 
     def _chk_lang(self, in_lang) -> Tuple[str, str]:
         """Check if language options are valid."""
-        fr_langs = {'', 'auto', 'ja', 'en', 'de', 'fr',
-                    'es', 'pt', 'it', 'nl', 'pl', 'ru', 'zh'}
+        fr_langs = {'auto', 'it', 'et', 'nl', 'el',
+                    'sv', 'es', 'sk', 'sl', 'cs',
+                    'da', 'de', 'hu', 'fi', 'fr',
+                    'bg', 'pl', 'pt', 'lv', 'lt',
+                    'ro', 'ru', 'en', 'zh', 'ja', ''}
         to_langs = fr_langs - {'', 'auto'}
 
         if len(in_lang) != 2 or in_lang[0] not in fr_langs \
