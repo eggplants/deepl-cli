@@ -5,7 +5,7 @@ from deepl import __version__
 setup(
     name='deepl-cli',
     version=__version__,
-    description='DeepL Translator CLI using Selenium',
+    description='DeepL Translator CLI',
     description_content_type='',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
@@ -15,7 +15,7 @@ setup(
     python_requires='>=3.5',
     include_package_data=True,
     license='MIT',
-    install_requires=['pyppeteer'],
+    install_requires=['translatepy'],
     entry_points={
         'console_scripts': [
             'deepl=deepl.main:main'

@@ -1,28 +1,22 @@
-import asyncio
 import sys
+import urllib.request
 from textwrap import dedent
-from typing import Optional, Tuple
-from urllib.request import urlopen
+from typing import Tuple
 
-from pyppeteer.browser import Browser  # type: ignore
-from pyppeteer.errors import TimeoutError  # type: ignore
-from pyppeteer.launcher import launch  # type: ignore
-from pyppeteer.page import Page  # type: ignore
+from translatepy import Translator  # type: ignore
 
 
 class DeepLCLIArgCheckingError(Exception):
     pass
 
 
-class DeepLCLIPageLoadError(Exception):
+class DeepLCLITranslationFailure(Exception):
     pass
 
 
 class DeepLCLI:
 
-    def __init__(self, langs: Optional[Tuple[str, str]] = None) -> None:
-        if langs:
-            self.fr_lang, self.to_lang = self._chk_lang(langs)
+    def __init__(self) -> None:
         self.max_length = 5000
 
     def usage(self) -> None:
@@ -39,21 +33,23 @@ class DeepLCLI:
             $ deepl <from:lang>:<to:lang> < <filepath>
         USAGE:
             $ echo Hello | deepl en:ja
-            $ deepl :ru <<'EOS' # :ru is equivalent of auto:ru
+            $ deepl en:ru <<'EOS' # :ru is equivalent of auto:ru
               good morning!
               good night.
               EOS
             $ deepl fr:zh <<<"Mademoiselle"
             $ deepl de:pl < README_de.md
         LANGUAGE CODES:
-            <from:lang>: {auto, ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
-            <to:lang>:   {ja, en, de, fr, es, pt, it, nl, pl, ru, zh}
+            <from:lang>: {auto it et nl el sv es sk sl cs da
+                          de hu fi fr bg pl pt lv lt ro ru en zh ja}
+            <to:lang>:   {it et nl el sv es sk sl cs da
+                          de hu fi fr bg pl pt lv lt ro ru en zh ja}
         '''))
 
     def internet_on(self) -> bool:
         """Check an internet connection."""
         try:
-            urlopen('https://www.google.com/', timeout=10)
+            urllib.request.urlopen('https://www.google.com/', timeout=10)
             return True
         except IOError:
             return False
@@ -69,111 +65,56 @@ class DeepLCLI:
             # raise err if stdin is empty
             raise DeepLCLIArgCheckingError('stdin seems to be empty.')
 
-    # def _chk_auth(self) -> None:
-    #     """Check if login is required."""
-    #     self.max_length = 5000
-
-    def _chk_argnum(self, args):
-        """Check if num of args are valid."""
-        num_opt = len(args)
-        if num_opt != 1:
-            # raise err if arity != 1
-            raise DeepLCLIArgCheckingError(
-                'num of option is wrong(given %d, expected 1 or 2).' % num_opt)
-
-    def _chk_lang(self, in_lang) -> Tuple[str, str]:
+    def _chk_lang(self, in_lang: Tuple[str, str]) -> Tuple[str, str]:
         """Check if language options are valid."""
-        fr_langs = {'', 'auto', 'ja', 'en', 'de', 'fr',
-                    'es', 'pt', 'it', 'nl', 'pl', 'ru', 'zh'}
-        to_langs = fr_langs - {'', 'auto'}
+        fr_langs = {'auto', 'it', 'et', 'nl', 'el',
+                    'sv', 'es', 'sk', 'sl', 'cs',
+                    'da', 'de', 'hu', 'fi', 'fr',
+                    'bg', 'pl', 'pt', 'lv', 'lt',
+                    'ro', 'ru', 'en', 'zh', 'ja', ''}
+        to_langs = fr_langs - {'auto', ''}
 
-        if len(in_lang) != 2 or in_lang[0] not in fr_langs \
-                or in_lang[1] not in to_langs:
-            # raise err if specify 2 langs is empty
+        if len(in_lang) != 2:
+            # raise err if langs is not (str, str)
             raise DeepLCLIArgCheckingError('correct your lang format.')
+        else:
+            in_fr_lang, in_to_lang = in_lang
 
-        if in_lang[0] == in_lang[1]:
+        if in_fr_lang not in fr_langs:
+            raise DeepLCLIArgCheckingError('invalid fr_lang: ' + in_fr_lang)
+        elif in_to_lang not in to_langs:
+            raise DeepLCLIArgCheckingError('invalid to_lang: ' + in_to_lang)
+
+        if in_fr_lang == in_to_lang:
             # raise err if <fr:lang> == <to:lang>
             raise DeepLCLIArgCheckingError('two languages cannot be same.')
 
-        fr = ('auto' if in_lang[0] == ''
-              else in_lang[0])
-        to = in_lang[1]
-
-        return (fr, to)
+        return (in_fr_lang.replace('auto', ''), in_to_lang)
 
     def chk_cmdargs(self) -> None:
         """Check cmdargs and configurate languages.(for using as a command)"""
         self._chk_stdin()
-        self._chk_argnum(sys.argv[1::])
-        # self._chk_auth()
 
     def _chk_script(self, script: str) -> str:
         """Check cmdarg and stdin."""
 
-        script = script.rstrip("\n")
+        script = script.rstrip()
 
         if self.max_length is not None and len(script) > self.max_length:
-            # raise err if stdin > self.max_length chr
             raise DeepLCLIArgCheckingError(
                 'limit of script is less than {} chars(Now: {} chars).'.format(
                     self.max_length, len(script)))
         if len(script) <= 0:
-            # raise err if stdin <= 0 chr
             raise DeepLCLIArgCheckingError('script seems to be empty.')
 
         return script
 
-    def translate(self, script: str) -> str:
-        self.fr_lang, self.to_lang = self._chk_lang(
-            [self.fr_lang, self.to_lang])
+    def translate(self, script: str, fr_lang: str, to_lang: str) -> str:
+        self.fr_lang, self.to_lang = self._chk_lang((fr_lang, to_lang))
         self._chk_script(script)
-        return asyncio.get_event_loop().run_until_complete(
-            self._translate(script))
-
-    async def _translate(self, script: str) -> str:
-        """Throw a request."""
-        if not self.internet_on():
-            raise DeepLCLIPageLoadError('Your network seem to be offline.')
-
-        browser: Browser = await launch(
-            headless=True,
-            args=[
-                '--no-sandbox',
-                '--single-process',
-                '--disable-dev-shm-usage',
-                '--disable-gpu',
-                '--no-zygote'
-
-            ])
-        page: Page = await browser.newPage()
-        userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6)'\
-                    'AppleWebKit/537.36 (KHTML, like Gecko) '\
-                    'Chrome/77.0.3864.0 Safari/537.36'
-        await page.setUserAgent(userAgent)
-        await page.goto(
-            'https://www.deepl.com/translator#{}/{}/{}'.format(
-                self.fr_lang, self.to_lang, script))
-        try:
-            page.waitForSelector(
-                '#dl_translator > div.lmt__text', timeout=15000)
-        except TimeoutError:
-            raise DeepLCLIPageLoadError
-
-        try:
-            await page.waitForFunction('''
-                () => document.querySelector(
-                'textarea[dl-test=translator-target-input]').value !== ""
-            ''')
-            await page.waitForFunction('''
-                () => !document.querySelector(
-                'textarea[dl-test=translator-target-input]').value.includes("[...]")
-            ''')
-        except TimeoutError:
-            raise DeepLCLIPageLoadError
-
-        output_area = await page.J(
-            'textarea[dl-test="translator-target-input"]')
-        res = await page.evaluate('elm => elm.value', output_area)
-        await browser.close()
-        return res.rstrip('\n')
+        t = Translator().deepl_translate
+        res = t.translate(script, self.to_lang, self.fr_lang)
+        if res == (None, None):
+            raise DeepLCLITranslationFailure
+        else:
+            return res[1]

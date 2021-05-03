@@ -1,41 +1,40 @@
 import pytest
 
 from deepl import deepl
+import json
 
+T = deepl.DeepLCLI()
 
 def test1():
-    t = deepl.DeepLCLI(langs=('en', 'ja'))
-    assert t.translate('hello') == 'こんにちわ'
+    T = deepl.DeepLCLI()
+    assert T.translate('hello', 'en', 'ja') == 'こんにちわ'
 
 
 def test2():
-    t = deepl.DeepLCLI(langs=('en', 'ja'))
+    T = deepl.DeepLCLI()
     with pytest.raises(deepl.DeepLCLIArgCheckingError):
-        t.translate('\n')
+        T.translate('\n', 'en', 'ja')
 
 
 def test3():
-    t = deepl.DeepLCLI(langs=('en', 'ja'))
-    with pytest.raises(deepl.DeepLCLIArgCheckingError):
-        t.chk_cmdargs()
+    T = deepl.DeepLCLI()
+    with pytest.raises(TypeError):
+        T.translate('test')
 
 
 def test4():
-    t = deepl.DeepLCLI()
-    with pytest.raises(AttributeError):
-        t.translate('test')
+    T = deepl.DeepLCLI()
+    with pytest.raises(deepl.DeepLCLIArgCheckingError):
+        T.translate('test', 'en', 'jaa')
 
 
 def test5():
+    T = deepl.DeepLCLI()
     with pytest.raises(deepl.DeepLCLIArgCheckingError):
-        deepl.DeepLCLI(langs=('en', 'jaa'))
+        T.translate('test', 'enn', 'ja')
 
 
 def test6():
+    T = deepl.DeepLCLI()
     with pytest.raises(deepl.DeepLCLIArgCheckingError):
-        deepl.DeepLCLI(langs=('enn', 'ja'))
-
-
-def test7():
-    t = deepl.DeepLCLI(langs=('', 'ja'))
-    assert t.translate('test') == 'テスト'
+        assert T.translate('test', '', 'ja') == 'test'
