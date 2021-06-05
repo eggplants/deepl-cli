@@ -14,19 +14,10 @@
 
 ```bash
 # python>=3.5
-pip install deepl-cli
+pip install "git+https://github.com/eggplants/deepl-cli.git@translatepy"
 ```
 
 ![demo](https://i.imgur.com/mGbwqO7.png)
-
-## Docker Image
-
-- DockerHub: <https://hub.docker.com/r/eggplanter/deepl-cli>
-
-```bash
-# TRY
-docker run -it --rm eggplanter/deepl-cli:0.1
-```
 
 ## Requirements
 
