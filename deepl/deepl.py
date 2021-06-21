@@ -1,7 +1,8 @@
 import asyncio
 import sys
 from textwrap import dedent
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
+from urllib.parse import quote
 from urllib.request import urlopen
 
 from pyppeteer.browser import Browser  # type: ignore
@@ -75,7 +76,7 @@ class DeepLCLI:
     #     """Check if login is required."""
     #     self.max_length = 5000
 
-    def _chk_argnum(self, args) -> None:
+    def _chk_argnum(self, args: List[str]) -> None:
         """Check if num of args are valid."""
         num_opt = len(args)
         if num_opt != 1:
@@ -83,7 +84,7 @@ class DeepLCLI:
             raise DeepLCLIArgCheckingError(
                 'num of option is wrong(given %d, expected 1 or 2).' % num_opt)
 
-    def _chk_lang(self, in_lang) -> Tuple[str, str]:
+    def _chk_lang(self, in_lang: Tuple[str, str]) -> Tuple[str, str]:
         """Check if language options are valid."""
         fr_langs = {'auto', 'it', 'et', 'nl', 'el',
                     'sv', 'es', 'sk', 'sl', 'cs',
@@ -130,17 +131,17 @@ class DeepLCLI:
         return script
 
     def translate(self, script: str) -> str:
+        if not self.internet_on():
+            raise DeepLCLIPageLoadError('Your network seem to be offline.')
         self.fr_lang, self.to_lang = self._chk_lang(
-            [self.fr_lang, self.to_lang])
+            (self.fr_lang, self.to_lang))
         self._chk_script(script)
+        script = quote(script)
         return asyncio.get_event_loop().run_until_complete(
             self._translate(script))
 
     async def _translate(self, script: str) -> str:
         """Throw a request."""
-        if not self.internet_on():
-            raise DeepLCLIPageLoadError('Your network seem to be offline.')
-
         browser: Browser = await launch(
             headless=True,
             args=[
