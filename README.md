@@ -31,14 +31,14 @@ pip install "git+https://github.com/eggplants/deepl-cli.git@translatepy"
 $ deepl
 SYNTAX:
     $ ... | deepl <from:lang>:<to:lang>
-    $ deepl <from:lang>:<to:lang> <<'EOS'
+    $ deepl <from:lang>:<to:lang> << 'EOS'
       ...
       EOS
     $ deepl <from:lang>:<to:lang> <<< "..."
     $ deepl <from:lang>:<to:lang> < <filepath>
 USAGE:
     $ echo Hello | deepl en:ja
-    $ deepl :ru <<'EOS' # :ru is equivalent of auto:ru
+    $ deepl :ru << 'EOS' # :ru is equivalent of auto:ru
       good morning!
       good night.
       EOS

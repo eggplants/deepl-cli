@@ -10,8 +10,6 @@ on:
 
 jobs:
   test:
-    env:
-      CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -32,23 +30,3 @@ jobs:
       run: |
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 . --count --exit-zero --statistics
-    # https://docs.codeclimate.com/docs/configuring-test-coverage#quick-guide
-    - name: 1. Set Git env
-      run: |
-        echo "GIT_BRANCH=$GITHUB_REF" >> $GITHUB_ENV
-        echo "GIT_COMMIT_SHA=$GITHUB_SHA" >> $GITHUB_ENV
-        echo "GIT_COMMITTED_AT=$(date +%s)" >> $GITHUB_ENV
-    - name: 2. Setup Code Climate Reporter
-      run: |
-        wget https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 -O cc-test-reporter
-        chmod +x ./cc-test-reporter
-    - name: 3. Run before-build
-      run: ./cc-test-reporter before-build
-    - name: 4. run coverage
-      run: |
-        coverage run -m pytest
-        coverage xml -i      
-        coverage report -m
-        ./cc-test-reporter format-coverage --debug -o codeclimate.json -t coverage.py ./coverage.xml
-    - name: 5. Upload coverage
-      run: ./cc-test-reporter upload-coverage -d -i ./codeclimate.json

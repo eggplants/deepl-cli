@@ -10,5 +10,5 @@ curl -s https://www.w3.org/DesignIssues/LinkedData.html |
 
 # translate the Announce on Codeforces
 curl -s 'https://codeforces.com/blog/entry/84257?locale=ru' |
-    grep -m5 ttypography | grep -oP '(?<=>)[^<]+' >codeforces_681
+    grep -m5 ttypography|sed '$!d' | grep -oP '(?<=>)[^<]+' >codeforces_681
 deepl ru:en <codeforces_681
