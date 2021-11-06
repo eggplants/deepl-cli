@@ -56,7 +56,7 @@ class DeepLCLI:
     def internet_on(self) -> bool:
         """Check an internet connection."""
         try:
-            urlopen('https://www.google.com/', timeout=10)
+            urlopen('http://www.google.com/', timeout=10)
             return True
         except IOError:
             return False
