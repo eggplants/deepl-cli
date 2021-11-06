@@ -13,7 +13,7 @@
 ## Install
 
 ```bash
-# python>=3.5
+# python >=3.5,<3.10
 pip install deepl-cli
 ```
 
