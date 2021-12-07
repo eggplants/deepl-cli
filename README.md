@@ -13,8 +13,8 @@
 ## Install
 
 ```bash
-# python>=3.5
-pip install "git+https://github.com/eggplants/deepl-cli.git@translatepy"
+# python >=3.5,<3.10
+pip install deepl-cli
 ```
 
 ![demo](https://i.imgur.com/mGbwqO7.png)
