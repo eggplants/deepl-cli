@@ -3,7 +3,7 @@ import urllib.request
 from textwrap import dedent
 from typing import Tuple
 
-from translatepy import Translator  # type: ignore
+from translatepy.translators.deepl import (DeeplTranslate, DeeplTranslateException)  # type: ignore
 
 
 class DeepLCLIArgCheckingError(Exception):
@@ -112,9 +112,9 @@ class DeepLCLI:
     def translate(self, script: str, fr_lang: str, to_lang: str) -> str:
         self.fr_lang, self.to_lang = self._chk_lang((fr_lang, to_lang))
         self._chk_script(script)
-        t = Translator().deepl_translate
+        t = DeeplTranslate()
         res = t.translate(script, self.to_lang, self.fr_lang)
         if res == (None, None):
             raise DeepLCLITranslationFailure
         else:
-            return res[1]
+            return res.result
