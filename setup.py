@@ -15,7 +15,7 @@ setup(
     python_requires='>=3.5, <3.10',
     include_package_data=True,
     license='MIT',
-    install_requires=['translatepy'],
+    install_requires=['translatepy>=2.2'],
     entry_points={
         'console_scripts': [
             'deepl=deepl.main:main'
