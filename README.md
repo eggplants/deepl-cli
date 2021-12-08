@@ -10,6 +10,8 @@
 - [DeepL Translator](https://www.deepl.com/translator) CLI using [Pyppeteer](https://github.com/pyppeteer/pyppeteer)
 - Translate standard input into a specified language
 
+Note: *This project works without DeepL API key. With DeepL API, use [DeepLcom/deepl-python](https://github.com/DeepLcom/deepl-python)*
+
 ## Install
 
 ```bash
