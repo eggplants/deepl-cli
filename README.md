@@ -39,7 +39,7 @@ docker run -it --rm eggplanter/deepl-cli:0.1
 
 ## from CLI
 
-```bash
+```shellsession
 $ deepl
 SYNTAX:
     $ ... | deepl <from:lang>:<to:lang>
