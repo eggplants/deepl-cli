@@ -136,7 +136,7 @@ class DeepLCLI:
         self.fr_lang, self.to_lang = self._chk_lang(
             (self.fr_lang, self.to_lang))
         self._chk_script(script)
-        script = quote(script)
+        script = quote(script, safe='')
         return asyncio.get_event_loop().run_until_complete(
             self._translate(script))
 
