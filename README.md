@@ -10,6 +10,8 @@
 - [DeepL Translator](https://www.deepl.com/translator) CLI using [translatepy](https://github.com/Animenosekai/translate)
 - Translate standard input into a specified language
 
+Note: *This project works without DeepL API key. With DeepL API, use [DeepLcom/deepl-python](https://github.com/DeepLcom/deepl-python)*
+
 ## Install
 
 ```bash
@@ -27,7 +29,7 @@ pip install deepl-cli
 
 ## from CLI
 
-```bash
+```shellsession
 $ deepl
 SYNTAX:
     $ ... | deepl <from:lang>:<to:lang>
