@@ -21,6 +21,8 @@ class DeepLCLIPageLoadError(Exception):
 
 class DeepLCLI:
     def __init__(self, langs: Optional[Tuple[str, str]] = None) -> None:
+        self.translated_fr_lang: Optional[str] = None
+        self.translated_to_lang: Optional[str] = None
         if langs:
             self.fr_lang, self.to_lang = self._chk_lang(langs)
         self.max_length = 5000
@@ -74,10 +76,6 @@ class DeepLCLI:
         elif sys.stdin.isatty():
             # raise err if stdin is empty
             raise DeepLCLIArgCheckingError("stdin seems to be empty.")
-
-    # def _chk_auth(self) -> None:
-    #     """Check if login is required."""
-    #     self.max_length = 5000
 
     def _chk_argnum(self, args: List[str]) -> None:
         """Check if num of args are valid."""
@@ -141,7 +139,6 @@ class DeepLCLI:
         """Check cmdargs and configurate languages.(for using as a command)"""
         self._chk_stdin()
         self._chk_argnum(sys.argv[1::])
-        # self._chk_auth()
 
     def _chk_script(self, script: str) -> str:
         """Check cmdarg and stdin."""
@@ -188,11 +185,8 @@ class DeepLCLI:
             "Chrome/77.0.3864.0 Safari/537.36"
         )
         await page.setUserAgent(userAgent)
-        await page.goto(
-            "https://www.deepl.com/translator#{}/{}/{}".format(
-                self.fr_lang, self.to_lang, script
-            )
-        )
+        hash = f"#{self.fr_lang}/{self.to_lang}/{script}"
+        await page.goto("https://www.deepl.com/translator" + hash)
         try:
             page.waitForSelector("#dl_translator > div.lmt__text", timeout=15000)
         except TimeoutError:
@@ -211,11 +205,36 @@ class DeepLCLI:
                 'textarea[dl-test=translator-target-input]').value.includes("[...]")
             """
             )
+            await page.waitForFunction(
+                """
+                () => document.querySelector("[dl-test='translator-source-input']") !== null
+            """
+            )
+            await page.waitForFunction(
+                """
+                () => document.querySelector("[dl-test='translator-source-input']") !== null
+            """
+            )
         except TimeoutError:
             raise DeepLCLIPageLoadError
 
         output_area = await page.J('textarea[dl-test="translator-target-input"]')
         res = await page.evaluate("elm => elm.value", output_area)
+        self.translated_fr_lang = str(
+            await page.evaluate(
+                """() => {
+            return document.querySelector("[dl-test='translator-source-input']").lang
+            }"""
+            )
+        ).split("-")[0]
+
+        self.translated_to_lang = str(
+            await page.evaluate(
+                """() => {
+            return document.querySelector("[dl-test='translator-target-lang']").getAttribute("dl-selected-lang")
+            }"""
+            )
+        ).split("-")[0]
         await browser.close()
         if type(res) is str:
             return res.rstrip("\n")

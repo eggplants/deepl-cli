@@ -39,3 +39,10 @@ def test6() -> None:
 def test7() -> None:
     t = deepl.DeepLCLI(langs=("", "ja"))
     assert t.translate("test") == "テスト"
+
+
+def test8() -> None:
+    t = deepl.DeepLCLI(langs=("auto", "ja"))
+    assert t.translate("test") == "テスト"
+    assert t.translated_fr_lang == "en"
+    assert t.translated_to_lang == "ja"
