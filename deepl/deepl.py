@@ -166,7 +166,7 @@ class DeepLCLI:
             raise DeepLCLIPageLoadError("Your network seem to be offline.")
         self.fr_lang, self.to_lang = self._chk_lang((self.fr_lang, self.to_lang))
         self._chk_script(script)
-        script = quote(script, safe="")
+        script = quote(script.replace("/","\/"), safe="")
         return asyncio.get_event_loop().run_until_complete(self._translate(script))
 
     async def _translate(self, script: str) -> str:

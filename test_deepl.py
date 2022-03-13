@@ -39,3 +39,8 @@ def test6() -> None:
 def test7() -> None:
     t = deepl.DeepLCLI(langs=("", "ja"))
     assert t.translate("test") == "テスト"
+
+
+def test8() -> None:
+    t = deepl.DeepLCLI(langs=("ja", "de"))
+    assert t.translate("今日は2022/2/22です。") == "Heute ist der 22.2.2022."
