@@ -1,12 +1,15 @@
 import argparse
 import os
 import sys
+import warnings
 from shutil import get_terminal_size
 from typing import Optional, cast
 
 from deepl import __version__
 
 from .deepl import DeepLCLI
+
+warnings.filterwarnings("ignore")
 
 
 class DeepLCLIFormatter(

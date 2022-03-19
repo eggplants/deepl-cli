@@ -1,5 +1,4 @@
 import asyncio
-import warnings
 from typing import Optional
 from urllib.parse import quote
 from urllib.request import urlopen
@@ -8,8 +7,6 @@ from pyppeteer.browser import Browser  # type: ignore[import]
 from pyppeteer.errors import TimeoutError  # type: ignore[import]
 from pyppeteer.launcher import launch  # type: ignore[import]
 from pyppeteer.page import Page  # type: ignore[import]
-
-warnings.filterwarnings("ignore")
 
 
 class DeepLCLIError(Exception):
