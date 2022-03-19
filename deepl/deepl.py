@@ -1,4 +1,5 @@
 import asyncio
+import warnings
 from typing import Optional
 from urllib.parse import quote
 from urllib.request import urlopen
@@ -8,8 +9,10 @@ from pyppeteer.errors import TimeoutError  # type: ignore[import]
 from pyppeteer.launcher import launch  # type: ignore[import]
 from pyppeteer.page import Page  # type: ignore[import]
 
+warnings.filterwarnings("ignore")
 
-class DeepLCLIArgCheckingError(Exception):
+
+class DeepLCLIError(Exception):
     pass
 
 
@@ -44,11 +47,20 @@ class DeepLCLI:
         "en",
         "zh",
         "ja",
-        "",
     }
-    to_langs = fr_langs - {"", "auto"}
+    to_langs = fr_langs - {"auto"}
 
     def __init__(self, fr_lang: str, to_lang: str) -> None:
+        if fr_lang not in self.fr_langs:
+            raise DeepLCLIError(
+                f"{repr(fr_lang)} is not valid language. Valid language:\n"
+                + repr(self.fr_langs)
+            )
+        elif to_lang not in self.to_langs:
+            raise DeepLCLIError(
+                f"{repr(to_lang)} is not valid language. Valid language:\n"
+                + repr(self.to_langs)
+            )
         self.fr_lang = fr_lang
         self.to_lang = to_lang
         self.translated_fr_lang: Optional[str] = None
@@ -68,14 +80,14 @@ class DeepLCLI:
         script = script.rstrip("\n")
         if self.max_length is not None and len(script) > self.max_length:
             # raise err if stdin > self.max_length chr
-            raise DeepLCLIArgCheckingError(
+            raise DeepLCLIError(
                 "Limit of script is less than {} chars(Now: {} chars).".format(
                     self.max_length, len(script)
                 )
             )
         elif len(script) <= 0:
             # raise err if stdin <= 0 chr
-            raise DeepLCLIArgCheckingError("Script seems to be empty.")
+            raise DeepLCLIError("Script seems to be empty.")
         else:
             return script
 
