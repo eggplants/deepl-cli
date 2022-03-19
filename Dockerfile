@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:experimental
 FROM ubuntu:20.04 AS apt-cache
 
-# DOCKER_BUILDKIT=1 docker build -t eggplanter/deepl-cli:tag . 
+# DOCKER_BUILDKIT=1 docker build -t eggplanter/deepl-cli:tag .
 # docker run -it eggplanter/deepl-cli
 # docker push eggplanter/deepl-cli:tag
 

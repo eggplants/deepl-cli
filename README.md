@@ -15,7 +15,6 @@ Note: *This project works without DeepL API key. With DeepL API, use [DeepLcom/d
 ## Install
 
 ```bash
-# python >=3.5,<3.10
 pip install deepl-cli
 ```
 
@@ -26,7 +25,6 @@ pip install deepl-cli
 - DockerHub: <https://hub.docker.com/r/eggplanter/deepl-cli>
 
 ```bash
-# TRY
 docker run -it --rm eggplanter/deepl-cli:0.1
 ```
 
@@ -40,27 +38,24 @@ docker run -it --rm eggplanter/deepl-cli:0.1
 ## from CLI
 
 ```shellsession
-$ deepl
-SYNTAX:
-    $ ... | deepl <from:lang>:<to:lang>
-    $ deepl <from:lang>:<to:lang> << 'EOS'
-      ...
-      EOS
-    $ deepl <from:lang>:<to:lang> <<< "..."
-    $ deepl <from:lang>:<to:lang> < <filepath>
-USAGE:
-    $ echo Hello | deepl en:ja
-    $ deepl :ru << 'EOS' # :ru is equivalent of auto:ru
-      good morning!
-      good night.
-      EOS
-    $ deepl fr:zh <<< "Mademoiselle"
-    $ deepl de:pl < README_de.md
-LANGUAGE CODES:
-    <from:lang>: {auto it et nl el sv es sk sl cs da
-                  de hu fi fr bg pl pt lv lt ro ru en zh ja}
-    <to:lang>:   {it et nl el sv es sk sl cs da
-                  de hu fi fr bg pl pt lv lt ro ru en zh ja}
+$ deepl -h
+usage: deepl [-h] (-f PATH | -s) [--fr FR] --to TO [-v]
+
+DeepL Translator CLI without API Key
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f PATH, --file PATH  source text file to translate (default: None)
+  -s, --stdin           read source text from stdin (default: False)
+  --fr FR               input language (default: auto)
+  --to TO               output language (default: None)
+  -v, --version         show program's version number and exit
+
+valid languages of `--fr`:
+{'ja', 'el', '', 'lv', 'es', 'ru', 'it', 'cs', 'lt', 'sk', 'bg', 'da', 'et', 'pl', 'sl', 'ro', 'pt', 'zh', 'hu', 'auto', 'sv', 'de', 'nl', 'en', 'fi', 'fr'}
+
+valid languages of `--to`:
+{'ja', 'el', 'lv', 'es', 'ru', 'it', 'cs', 'lt', 'sk', 'bg', 'da', 'et', 'pl', 'sl', 'ro', 'pt', 'zh', 'hu', 'sv', 'de', 'nl', 'en', 'fi', 'fr'}
 ```
 
 ## from Package
@@ -68,8 +63,8 @@ LANGUAGE CODES:
 ```python
 from deepl import deepl
 
-t = deepl.DeepLCLI(langs=('en', 'ja'))
-t.translate('hello') #=> 'こんにちわ'
+t = deepl.DeepLCLI("en", "ja")
+t.translate("hello") #=> "こんにちわ"
 ```
 
 ## Lisence
