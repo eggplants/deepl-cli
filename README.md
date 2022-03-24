@@ -48,10 +48,10 @@ optional arguments:
   -v, --version         show program's version number and exit
 
 valid languages of `--fr`:
-{'lv', 'sv', 'et', 'es', 'pt', 'hu', 'nl', 'bg', 'pl', 'el', 'fi', 'da', 'fr', 'cs', 'it', 'lt', 'ja', 'zh', 'en', 'sk', 'sl', 'de', 'ro', 'auto', 'ru'}
+{'hu', 'zh', 'ja', 'nl', 'pl', 'fr', 'ro', 'fi', 'el', 'lv', 'cs', 'et', 'sv', 'de', 'it', 'sk', 'ru', 'auto', 'es', 'sl', 'bg', 'lt', 'en', 'pt', 'da'}
 
 valid languages of `--to`:
-{'lv', 'sv', 'et', 'es', 'pt', 'hu', 'nl', 'bg', 'pl', 'el', 'fi', 'da', 'fr', 'cs', 'it', 'lt', 'ja', 'zh', 'en', 'sk', 'sl', 'de', 'ro', 'ru'}
+{'hu', 'zh', 'ja', 'nl', 'pl', 'fr', 'ro', 'fi', 'el', 'lv', 'cs', 'et', 'sv', 'de', 'it', 'sk', 'ru', 'es', 'sl', 'bg', 'lt', 'en', 'pt', 'da'}
 ```
 
 ## from Package
