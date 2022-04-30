@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import argparse
 import os
 import sys
 import warnings
 from shutil import get_terminal_size
-from typing import Optional, cast
+from typing import cast
 
 from deepl import __version__
 
@@ -51,7 +53,7 @@ def check_output_lang(lang: str) -> str:
         return lang
 
 
-def parse_args(test: Optional[str] = None) -> argparse.Namespace:
+def parse_args(test: str | None = None) -> argparse.Namespace:
     """Parse arguments."""
     parser = argparse.ArgumentParser(
         prog="deepl",
@@ -102,7 +104,7 @@ def parse_args(test: Optional[str] = None) -> argparse.Namespace:
         return parser.parse_args(test)
 
 
-def main(test: Optional[str] = None) -> None:
+def main(test: str | None = None) -> None:
     args = parse_args(test)
     t = DeepLCLI(args.fr, args.to)
     script = ""

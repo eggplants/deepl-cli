@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import asyncio
-from typing import Optional
 from urllib.parse import quote
 from urllib.request import urlopen
 
@@ -60,8 +61,8 @@ class DeepLCLI:
             )
         self.fr_lang = fr_lang
         self.to_lang = to_lang
-        self.translated_fr_lang: Optional[str] = None
-        self.translated_to_lang: Optional[str] = None
+        self.translated_fr_lang: str | None = None
+        self.translated_to_lang: str | None = None
         self.max_length = 5000
 
     def internet_on(self) -> bool:
