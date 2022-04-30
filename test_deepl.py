@@ -44,7 +44,7 @@ def test8() -> None:
     t = DeepLCLI("ja", "de")
     assert t.translate("今日は2022/2/22です。") == "Heute ist der 22.2.2022."
 
-
+@pytest.mark.xfail
 def test9() -> None:
     t = DeepLCLI("auto", "ja")
     assert t.translate("test") == "テスト"

@@ -140,11 +140,11 @@ class DeepLCLI:
                 () => document.querySelector("[dl-test='translator-source-input']") !== null
             """
             )
-            await page.waitForFunction(
-                """
-                () => document.querySelector("[dl-test='translator-target-lang']") !== null
-            """
-            )
+            # await page.waitForFunction(
+            #     """
+            #     () => document.querySelector("[dl-test='translator-target-lang']") !== null
+            # """
+            # )
         except TimeoutError:
             raise DeepLCLIPageLoadError("Time limit exceeded. (30000ms)")
 
@@ -161,7 +161,8 @@ class DeepLCLI:
         self.translated_to_lang = str(
             await page.evaluate(
                 """() => {
-            return document.querySelector("[dl-test='translator-target-lang']").getAttribute("dl-selected-lang")
+            const l = document.querySelector("[dl-test='translator-target-lang']");
+            return l === null ? "" : l.getAttribute("dl-selected-lang")
             }"""
             )
         ).split("-")[0]
