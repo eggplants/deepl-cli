@@ -1,12 +1,10 @@
-name: Test and Report CC
+name: Test
 
 on:
   push:
     branches:
       - master
   pull_request:
-    branches:
-      - master
 
 jobs:
   test:
@@ -26,9 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install -U pip
-        pip install pytest pytest-cov flake8
-        pip install -e .
-    - name: Lint with flake8
+        pip install -e .[dev]
+    - name: pytest
       run: |
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --statistics
+        pytest -vv
