@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:experimental
-FROM ubuntu:20.04 AS apt-cache
+FROM ubuntu:22.04 AS apt-cache
 
 # DOCKER_BUILDKIT=1 docker build -t eggplanter/deepl-cli:tag .
 # docker run -it eggplanter/deepl-cli
 # docker push eggplanter/deepl-cli:tag
 
-FROM ubuntu:20.04 AS base
+FROM ubuntu:22.04 AS base
 RUN apt update
 ENV DEBIAN_FRONTEND noninteractive
 RUN rm -f /etc/apt/apt.conf.d/docker-clean; \
