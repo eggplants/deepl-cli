@@ -16,3 +16,4 @@ RUN apt install -y -qq python3-dev python3-pip \
     libnss3 libxss1 libasound2 libxtst6 xauth xvfb libgbm-dev
 RUN pip3 install -U --progress-bar=off --no-use-pep517 deepl-cli
 RUN ln -s /usr/bin/python3 /usr/bin/python
+ENTRYPOINT ["deepl"]

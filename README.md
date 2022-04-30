@@ -63,7 +63,7 @@ t = deepl.DeepLCLI("en", "ja")
 t.translate("hello") #=> "こんにちわ"
 ```
 
-## Lisence
+## License
 
 MIT
 
