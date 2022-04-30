@@ -141,7 +141,7 @@ class DeepLCLI:
             )
             await page.waitForFunction(
                 """
-                () => document.querySelector("[dl-test='translator-source-input']") !== null
+                () => document.querySelector("[dl-test='translator-target-lang']") !== null
             """
             )
         except TimeoutError:
