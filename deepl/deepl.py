@@ -70,7 +70,7 @@ class DeepLCLI:
         try:
             urlopen("http://www.google.com/", timeout=10)
             return True
-        except IOError:
+        except OSError:
             return False
 
     def _chk_script(self, script: str) -> str:

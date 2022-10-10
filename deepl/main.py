@@ -114,7 +114,7 @@ def main(test: str | None = None) -> None:
         else:
             script = "\n".join(sys.stdin.readlines()).rstrip("\n")
     else:
-        script = open(args.file, "r").read().rstrip("\n")
+        script = open(args.file).read().rstrip("\n")
 
     print("Translating...", end="", file=sys.stderr, flush=True)
     res = t.translate(script)
