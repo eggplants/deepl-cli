@@ -5,7 +5,6 @@ import os
 import sys
 import warnings
 from shutil import get_terminal_size
-from typing import cast
 
 from deepl import __version__
 
@@ -22,12 +21,14 @@ class DeepLCLIFormatter(
 
 def check_file(v: str) -> str:
     def is_binary_string(b: bytes) -> bool:
+        textchars = bytearray(
+            {7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F}
+        )
         return bool(b.translate(None, textchars))
 
-    textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
     if not os.path.isfile(v):
         raise argparse.ArgumentTypeError(f"{repr(v)} is not file.")
-    elif not is_binary_string(cast(bytes, open(v, "rb"))):
+    elif is_binary_string(open(v, "rb").read(1024)):
         raise argparse.ArgumentTypeError(f"{repr(v)} is not text file.")
     else:
         return v
