@@ -106,6 +106,7 @@ class DeepLCLI:
                 "--disable-dev-shm-usage",
                 "--disable-gpu",
                 "--no-zygote",
+                "--window-size=1920,1080"
             ],
         )
         page: Page = await browser.newPage()
@@ -120,7 +121,7 @@ class DeepLCLI:
         try:
             page.waitForSelector("#dl_translator > div.lmt__text", timeout=15000)
         except TimeoutError:
-            raise DeepLCLIPageLoadError("Time limit exceeded. (30000ms)")
+            raise DeepLCLIPageLoadError("Time limit exceeded. (15000ms)")
 
         try:
             await page.waitForFunction(
