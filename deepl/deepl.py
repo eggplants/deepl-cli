@@ -106,7 +106,7 @@ class DeepLCLI:
                 "--disable-dev-shm-usage",
                 "--disable-gpu",
                 "--no-zygote",
-                "--window-size=1920,1080"
+                "--window-size=1920,1080",
             ],
         )
         page: Page = await browser.newPage()
