@@ -1,6 +1,6 @@
-from typing import Any
 import asyncio
 from functools import wraps
+from typing import Any
 
 
 def serializable(func: Any) -> Any:
