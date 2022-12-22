@@ -1,10 +1,11 @@
+from typing import Any
 import asyncio
 from functools import wraps
 
 
-def serializable(func):
+def serializable(func: Any) -> Any:
     @wraps(func)
-    def wrapper(*args, asynchronous=False, **kwargs):
+    def wrapper(*args: Any, asynchronous: bool = False, **kwargs: Any) -> Any:
         if asynchronous:
             return func(*args, **kwargs)
         else:
