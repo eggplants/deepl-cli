@@ -10,6 +10,7 @@ from pyppeteer.page import Page  # type: ignore[import]
 
 from .serializable import serializable
 
+
 class DeepLCLIError(Exception):
     pass
 
