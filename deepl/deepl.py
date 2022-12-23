@@ -130,12 +130,12 @@ class DeepLCLI:
             input_textbox = page.get_by_role("textbox", name="Source text")
             output_textbox = page.get_by_role("textbox", name="Translation results")
 
-            self.translated_fr_lang = str(input_textbox.get_attribute("lang")).split(
-                "-"
-            )[0]
-            self.translated_to_lang = str(output_textbox.get_attribute("lang")).split(
-                "-"
-            )[0]
+            self.translated_fr_lang = str(
+                await input_textbox.get_attribute("lang")
+            ).split("-")[0]
+            self.translated_to_lang = str(
+                await output_textbox.get_attribute("lang")
+            ).split("-")[0]
 
             res = str(await output_textbox.input_value())
 
