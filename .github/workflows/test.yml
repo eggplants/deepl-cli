@@ -8,23 +8,41 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 1
       fail-fast: false
       matrix:
-        python-version: [3.7, '3.10']
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        python-version:
+          - '3.8'
+          - '3.11'
+
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
+        cache: 'pip'
+        cache-dependency-path: setup.cfg
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         python -m pip install -U pip
         pip install -e .[dev]
-    - name: pytest
-      run: |
-        pytest -vv
+    - name: Test
+      if: runner.os == 'Windows'
+      run: pytest tests/ --cov-report=term
+    - name: Test & publish code coverage
+      if: runner.os != 'Windows'
+      uses: paambaati/codeclimate-action@v3.2.0
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      with:
+        coverageCommand: pytest --cov=./ tests/ --cov-report xml:cov.xml --cov-report=term
+        coverageLocations: ${{github.workspace}}/cov.xml:coverage.py
+        debug: true
