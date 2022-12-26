@@ -169,5 +169,3 @@ class DeepLCLI:
                 "--window-size=1920,1080",
             ],
         )
-
-
