@@ -21,17 +21,23 @@ class DeepLCLIFormatter(
 
 def check_file(v: str) -> str:
     def is_binary_string(b: bytes) -> bool:
-        textchars = bytearray(
-            {7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F}
-        )
-        return bool(b.translate(None, textchars))
+        chars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
+        return bool(b.translate(None, chars))
 
     if not os.path.isfile(v):
         raise argparse.ArgumentTypeError(f"{repr(v)} is not file.")
     elif is_binary_string(open(v, "rb").read(1024)):
         raise argparse.ArgumentTypeError(f"{repr(v)} is not text file.")
-    else:
-        return v
+
+    return v
+
+
+def check_natural(v: str) -> int:
+    n = int(v)
+    if n < 0:
+        raise argparse.ArgumentTypeError(f"{v} must not be negative.")
+
+    return n
 
 
 def check_input_lang(lang: str) -> str:
@@ -40,8 +46,8 @@ def check_input_lang(lang: str) -> str:
             f"{repr(lang)} is not valid language. Valid language:\n"
             + repr(DeepLCLI.fr_langs)
         )
-    else:
-        return lang
+
+    return lang
 
 
 def check_output_lang(lang: str) -> str:
@@ -96,7 +102,21 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
         "--to", type=check_output_lang, help="output language", required=True
     )
     parser.add_argument(
-        "-v", "--version", action="version", version=f"%(prog)s {__version__}"
+        "-t",
+        "--timeout",
+        type=check_natural,
+        help="timeout interval",
+        metavar="MS",
+        default=5000,
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="make output verbose",
+    )
+    parser.add_argument(
+        "-V", "--version", action="version", version=f"%(prog)s {__version__}"
     )
 
     if test is None:
@@ -107,24 +127,27 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
 
 def main(test: str | None = None) -> None:
     args = parse_args(test)
-    t = DeepLCLI(args.fr, args.to)
+    t = DeepLCLI(args.fr, args.to, timeout=args.timeout)
     script = ""
     if args.stdin:
         if sys.stdin is None:
             raise OSError("stdin is empty.")
-        else:
-            script = "\n".join(sys.stdin.readlines()).rstrip("\n")
+
+        script = "\n".join(sys.stdin.readlines()).rstrip("\n")
+
     else:
         script = open(args.file).read().rstrip("\n")
 
-    print("Translating...", end="", file=sys.stderr, flush=True)
+    if args.verbose:
+        print("Translating...", end="", file=sys.stderr, flush=True)
+
     res = t.translate(script)
-    print("\033[1K\033[G", end="", file=sys.stderr, flush=True)
+
+    if args.verbose:
+        print("\033[1K\033[G", end="", file=sys.stderr, flush=True)
+
     print(res)
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
+    main()

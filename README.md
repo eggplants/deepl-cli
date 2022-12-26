@@ -22,8 +22,7 @@
 
 ![image](https://user-images.githubusercontent.com/42153744/159145088-752decf7-8736-44c3-86aa-37fd0cee83df.png)
 
-- [DeepL Translator](https://www.deepl.com/translator) CLI using [Pyppeteer](https://github.com/pyppeteer/pyppeteer)
-- Translate standard input into a specified language
+- [DeepL Translator](https://www.deepl.com/translator) CLI using [playwright-python](https://github.com/microsoft/playwright-python)
 
 Note: *This project works without DeepL API key. With DeepL API, use [DeepLcom/deepl-python](https://github.com/DeepLcom/deepl-python)*
 
@@ -33,42 +32,31 @@ Note: *This project works without DeepL API key. With DeepL API, use [DeepLcom/d
 pip install deepl-cli
 ```
 
-## Docker Image
-
-- DockerHub: <https://hub.docker.com/r/eggplanter/deepl-cli>
-
-```bash
-docker run -it --rm ghcr.io/eggplants/deepl-cli <deepl-cli args>
-```
-
-## Requirements
-
-- [Python>=3.5](https://www.python.org/ftp/python/)
-- [pyppeteer](https://github.com/pyppeteer/pyppeteer)
-
 ## Usage
 
 ## from CLI
 
 ```shellsession
 $ deepl -h
-usage: deepl [-h] (-f PATH | -s) [--fr FR] --to TO [-v]
+usage: deepl [-h] (-f PATH | -s) [--fr FR] --to TO [-t MS] [-v] [-V]
 
 DeepL Translator CLI without API Key
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -f PATH, --file PATH  source text file to translate (default: None)
   -s, --stdin           read source text from stdin (default: False)
   --fr FR               input language (default: auto)
   --to TO               output language (default: None)
-  -v, --version         show program's version number and exit
+  -t MS, --timeout MS   timeout interval (default: 5000)
+  -v, --verbose         make output verbose (default: False)
+  -V, --version         show program's version number and exit
 
 valid languages of `--fr`:
-{'hu', 'zh', 'ja', 'nl', 'pl', 'fr', 'ro', 'fi', 'el', 'lv', 'cs', 'et', 'sv', 'de', 'it', 'sk', 'ru', 'auto', 'es', 'sl', 'bg', 'lt', 'en', 'pt', 'da'}
+{'fi', 'de', 'lv', 'sl', 'ru', 'fr', 'id', 'lt', 'ro', 'ukzh', 'hu', 'el', 'et', 'en', 'pl', 'auto', 'es', 'bg', 'it', 'tr', 'cs', 'sv', 'da', 'ja', 'nl', 'pt', 'sk'}
 
 valid languages of `--to`:
-{'hu', 'zh', 'ja', 'nl', 'pl', 'fr', 'ro', 'fi', 'el', 'lv', 'cs', 'et', 'sv', 'de', 'it', 'sk', 'ru', 'es', 'sl', 'bg', 'lt', 'en', 'pt', 'da'}
+{'fi', 'de', 'lv', 'sl', 'ru', 'fr', 'id', 'lt', 'ro', 'ukzh', 'hu', 'el', 'et', 'en', 'pl', 'es', 'bg', 'it', 'tr', 'cs', 'sv', 'da', 'ja', 'nl', 'pt', 'sk'}
 ```
 
 ## from Package
@@ -83,7 +71,3 @@ t.translate("hello") #=> "こんにちわ"
 ## License
 
 MIT
-
-## Author
-
-Haruna(eggplants)

@@ -46,6 +46,7 @@ repos:
       - id: mypy
         additional_dependencies:
           - types-setuptools
-          # - ...
+          - playwright
+          - install-playwright
         files: ^deepl/
         args: []

@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 from urllib.parse import quote
-from urllib.request import urlopen
 
-from pyppeteer.browser import Browser  # type: ignore[import]
-from pyppeteer.errors import TimeoutError  # type: ignore[import]
-from pyppeteer.launcher import launch  # type: ignore[import]
-from pyppeteer.page import Page  # type: ignore[import]
+from install_playwright import install
+from playwright._impl._api_types import Error as PlaywrightError
+from playwright.async_api import async_playwright
 
 from .serializable import serializable
 
@@ -33,6 +31,7 @@ class DeepLCLI:
         "fi",
         "fr",
         "hu",
+        "id",
         "it",
         "ja",
         "lt",
@@ -45,11 +44,13 @@ class DeepLCLI:
         "sk",
         "sl",
         "sv",
+        "tr",
+        "uk",
         "zh",
     }
     to_langs = fr_langs - {"auto"}
 
-    def __init__(self, fr_lang: str, to_lang: str) -> None:
+    def __init__(self, fr_lang: str, to_lang: str, timeout: int = 15000) -> None:
         if fr_lang not in self.fr_langs:
             raise DeepLCLIError(
                 f"{repr(fr_lang)} is not valid language. Valid language:\n"
@@ -60,119 +61,102 @@ class DeepLCLI:
                 f"{repr(to_lang)} is not valid language. Valid language:\n"
                 + repr(self.to_langs)
             )
+
         self.fr_lang = fr_lang
         self.to_lang = to_lang
         self.translated_fr_lang: str | None = None
         self.translated_to_lang: str | None = None
         self.max_length = 5000
-
-    def internet_on(self) -> bool:
-        """Check an internet connection."""
-        try:
-            urlopen("http://www.google.com/", timeout=10)
-            return True
-        except OSError:
-            return False
-
-    def _chk_script(self, script: str) -> str:
-        """Check cmdarg and stdin."""
-        script = script.rstrip("\n")
-        if self.max_length is not None and len(script) > self.max_length:
-            # raise err if stdin > self.max_length chr
-            raise DeepLCLIError(
-                "Limit of script is less than {} chars(Now: {} chars).".format(
-                    self.max_length, len(script)
-                )
-            )
-        elif len(script) <= 0:
-            # raise err if stdin <= 0 chr
-            raise DeepLCLIError("Script seems to be empty.")
-        else:
-            return script
+        self.timeout = timeout
 
     @serializable
     async def translate(self, script: str) -> str:
-        if not self.internet_on():
-            raise DeepLCLIPageLoadError("Your network seem to be offline.")
-        self._chk_script(script)
-        script = quote(script.replace("/", r"\/").replace("|", r"\|"), safe="")
-        return await self._translate(script)
+        script = self.__sanitize_script(script)
+        return await self.__translate(script)
 
-    async def _translate(self, script: str) -> str:
+    async def __translate(self, script: str) -> str:
         """Throw a request."""
-        browser: Browser = await launch(
-            headless=True,
-            args=[
-                "--no-sandbox",
-                "--single-process",
-                "--disable-dev-shm-usage",
-                "--disable-gpu",
-                "--no-zygote",
-                "--window-size=1920,1080",
-            ],
-        )
-        page: Page = await browser.newPage()
-        userAgent = (
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6)"
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/77.0.3864.0 Safari/537.36"
-        )
-        await page.setUserAgent(userAgent)
-        hash = f"#{self.fr_lang}/{self.to_lang}/{script}"
-        await page.goto("https://www.deepl.com/translator" + hash)
-        try:
-            page.waitForSelector("#dl_translator > div.lmt__text", timeout=15000)
-        except TimeoutError:
-            raise DeepLCLIPageLoadError("Time limit exceeded. (15000ms)")
+        async with async_playwright() as p:
+            install(p.chromium)
+            browser = await p.chromium.launch(
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--single-process",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--no-zygote",
+                    "--window-size=1920,1080",
+                ],
+            )
 
-        try:
-            await page.waitForFunction(
-                """
-                () => document.querySelector(
-                'textarea[dl-test=translator-target-input]').value !== ""
-            """
-            )
-            await page.waitForFunction(
-                """
-                () => !document.querySelector(
-                'textarea[dl-test=translator-target-input]').value.includes("[...]")
-            """
-            )
-            await page.waitForFunction(
-                """
-                () => document.querySelector("[dl-test='translator-source-input']") !== null
-            """
-            )
-            # await page.waitForFunction(
-            #     """
-            #     () => document.querySelector("[dl-test='translator-target-lang']") !== null
-            # """
-            # )
-        except TimeoutError:
-            raise DeepLCLIPageLoadError("Time limit exceeded. (30000ms)")
+            page = await browser.new_page()
+            page.set_default_timeout(self.timeout)
 
-        output_area = await page.J('textarea[dl-test="translator-target-input"]')
-        res = await page.evaluate("elm => elm.value", output_area)
-        self.translated_fr_lang = str(
-            await page.evaluate(
-                """() => {
-            return document.querySelector("[dl-test='translator-source-input']").lang
-            }"""
+            await page.goto(
+                f"https://www.deepl.com/en/translator#{self.fr_lang}/{self.to_lang}/{script}"
             )
-        ).split("-")[0]
 
-        self.translated_to_lang = str(
-            await page.evaluate(
-                """() => {
-            const l = document.querySelector("[dl-test='translator-target-lang']");
-            return l === null ? "" : l.getAttribute("dl-selected-lang")
-            }"""
-            )
-        ).split("-")[0]
-        await browser.close()
-        if type(res) is str:
+            # Wait for loading to complete
+            try:
+                page.get_by_role("main")
+            except PlaywrightError as e:
+                raise DeepLCLIPageLoadError(
+                    f"Maybe Time limit exceeded. ({self.timeout} ms, {e})"
+                )
+
+            # Wait for translation to complete
+            try:
+                await page.wait_for_function(
+                    """
+                    () => document.querySelector(
+                    'textarea[dl-test=translator-target-input]').value !== ""
+                """
+                )
+                await page.wait_for_function(
+                    """
+                    () => !document.querySelector(
+                    'textarea[dl-test=translator-target-input]').value.includes("[...]")
+                """
+                )
+                await page.wait_for_function(
+                    """
+                    () => document.querySelector("[dl-test='translator-source-input']") !== null
+                """
+                )
+            except PlaywrightError as e:
+                raise DeepLCLIPageLoadError(
+                    f"Time limit exceeded. ({self.timeout} ms, {e})"
+                )
+
+            # Get information
+            input_textbox = page.get_by_role("textbox", name="Source text")
+            output_textbox = page.get_by_role("textbox", name="Translation results")
+
+            self.translated_fr_lang = str(
+                await input_textbox.get_attribute("lang")
+            ).split("-")[0]
+            self.translated_to_lang = str(
+                await output_textbox.get_attribute("lang")
+            ).split("-")[0]
+
+            res = str(await output_textbox.input_value())
+
+            await browser.close()
+
             return res.rstrip("\n")
-        else:
-            raise ValueError(
-                f"Invalid response. Type of response must be str, got {type(res)})"
+
+    def __sanitize_script(self, script: str) -> str:
+        """Check command line args and stdin."""
+        script = script.rstrip("\n")
+
+        if self.max_length is not None and len(script) > self.max_length:
+            raise DeepLCLIError(
+                f"Limit of script is less than {self.max_length} chars"
+                f"(Now: {len(script)} chars)"
             )
+
+        if len(script) <= 0:
+            raise DeepLCLIError("Script seems to be empty.")
+
+        return quote(script.replace("/", r"\/").replace("|", r"\|"), safe="")
