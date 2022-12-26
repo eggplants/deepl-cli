@@ -93,9 +93,11 @@ class DeepLCLI:
 
             # skip loading page resources for improving performance
             RESOURCE_EXCLUSTIONS = ["image", "stylesheet", "media", "font", "other"]
-            await page.route("**/*", lambda route: route.abort() 
+            await page.route(
+                "**/*",
+                lambda route: route.abort()
                 if route.request.resource_type in RESOURCE_EXCLUSTIONS
-                else route.continue_()
+                else route.continue_(),
             )
 
             await page.goto(
