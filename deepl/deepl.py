@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from typing import Any
 from urllib.parse import quote
 
 from install_playwright import install
@@ -75,18 +76,14 @@ class DeepLCLI:
     async def __translate(self, script: str) -> str:
         """Throw a request."""
         async with async_playwright() as p:
-            install(p.chromium)
-            browser = await p.chromium.launch(
-                headless=True,
-                args=[
-                    "--no-sandbox",
-                    "--single-process",
-                    "--disable-dev-shm-usage",
-                    "--disable-gpu",
-                    "--no-zygote",
-                    "--window-size=1920,1080",
-                ],
-            )
+            # Dry run
+            try:
+                browser = await self.__get_browser(p)
+            except PlaywrightError as e:
+                if "Executable doesn't exist at" in e.message:
+                    print("Installing browser executable. This may take some time.")
+                    install(p.chromium)
+                    browser = await self.__get_browser(p)
 
             page = await browser.new_page()
             page.set_default_timeout(self.timeout)
@@ -158,3 +155,19 @@ class DeepLCLI:
             raise DeepLCLIError("Script seems to be empty.")
 
         return quote(script.replace("/", r"\/").replace("|", r"\|"), safe="")
+
+    async def __get_browser(self, p: Any) -> Any:
+        """Launch browser executable and get playwright browser object."""
+        return await p.chromium.launch(
+            headless=True,
+            args=[
+                "--no-sandbox",
+                "--single-process",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--no-zygote",
+                "--window-size=1920,1080",
+            ],
+        )
+
+
