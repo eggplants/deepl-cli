@@ -2,6 +2,7 @@ import pytest
 
 from deepl import DeepLCLI, DeepLCLIError
 
+
 @pytest.mark.xfail(reason="timeout")
 def test1() -> None:
     t = DeepLCLI("en", "ja", 100000)
