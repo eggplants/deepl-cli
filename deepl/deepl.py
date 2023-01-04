@@ -93,6 +93,15 @@ class DeepLCLI:
             page = await browser.new_page()
             page.set_default_timeout(self.timeout)
 
+            # skip loading page resources for improving performance
+            RESOURCE_EXCLUSTIONS = ["image", "stylesheet", "media", "font", "other"]
+            await page.route(
+                "**/*",
+                lambda route: route.abort()
+                if route.request.resource_type in RESOURCE_EXCLUSTIONS
+                else route.continue_(),
+            )
+
             await page.goto(
                 f"https://www.deepl.com/en/translator#{self.fr_lang}/{self.to_lang}/{script}"
             )
