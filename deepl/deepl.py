@@ -94,7 +94,7 @@ class DeepLCLI:
             page.set_default_timeout(self.timeout)
 
             # skip loading page resources for improving performance
-            RESOURCE_EXCLUSTIONS = ["image", "stylesheet", "media", "font", "other"]
+            RESOURCE_EXCLUSTIONS = ["image", "media", "font", "other"]
             await page.route(
                 "**/*",
                 lambda route: route.abort()
