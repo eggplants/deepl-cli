@@ -142,7 +142,7 @@ class DeepLCLI:
                 await output_textbox.get_attribute("lang")
             ).split("-")[0]
 
-            res = str((await output_textbox.all_text_contents())[0])
+            res = str((await output_textbox.all_inner_texts())[0])
 
             await browser.close()
 
