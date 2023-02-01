@@ -119,28 +119,16 @@ class DeepLCLI:
                 await page.wait_for_function(
                     """
                     () => document.querySelector(
-                    'textarea[dl-test=translator-target-input]').value !== ""
-                """
-                )
-                await page.wait_for_function(
-                    """
-                    () => !document.querySelector(
-                    'textarea[dl-test=translator-target-input]').value.includes("[...]")
-                """
-                )
-                await page.wait_for_function(
-                    """
-                    () => document.querySelector("[dl-test='translator-source-input']") !== null
-                """
-                )
+                    'd-textarea[dl-test=translator-target-input]').value.length > 0
+                """)
             except PlaywrightError as e:
                 raise DeepLCLIPageLoadError(
                     f"Time limit exceeded. ({self.timeout} ms, {e})"
                 )
 
             # Get information
-            input_textbox = page.get_by_role("textbox", name="Source text")
-            output_textbox = page.get_by_role("textbox", name="Translation results")
+            input_textbox = page.get_by_role("region", name="Source text").locator("d-textarea")
+            output_textbox = page.get_by_role("region", name="Translation results").locator("d-textarea")
 
             self.translated_fr_lang = str(
                 await input_textbox.get_attribute("lang")
@@ -149,7 +137,7 @@ class DeepLCLI:
                 await output_textbox.get_attribute("lang")
             ).split("-")[0]
 
-            res = str(await output_textbox.input_value())
+            res = str((await output_textbox.all_text_contents())[0])
 
             await browser.close()
 
