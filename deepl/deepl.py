@@ -120,15 +120,20 @@ class DeepLCLI:
                     """
                     () => document.querySelector(
                     'd-textarea[dl-test=translator-target-input]').value.length > 0
-                """)
+                """
+                )
             except PlaywrightError as e:
                 raise DeepLCLIPageLoadError(
                     f"Time limit exceeded. ({self.timeout} ms, {e})"
                 )
 
             # Get information
-            input_textbox = page.get_by_role("region", name="Source text").locator("d-textarea")
-            output_textbox = page.get_by_role("region", name="Translation results").locator("d-textarea")
+            input_textbox = page.get_by_role("region", name="Source text").locator(
+                "d-textarea"
+            )
+            output_textbox = page.get_by_role(
+                "region", name="Translation results"
+            ).locator("d-textarea")
 
             self.translated_fr_lang = str(
                 await input_textbox.get_attribute("lang")
