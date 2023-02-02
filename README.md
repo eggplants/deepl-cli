@@ -61,11 +61,60 @@ valid languages of `--to`:
 
 ## from Package
 
+synchronous API:
 ```python
 from deepl import deepl
 
 t = deepl.DeepLCLI("en", "ja")
 t.translate("hello") #=> "こんにちわ"
+```
+
+asynchronous API:
+```python
+from deepl import deepl
+import asyncio
+
+def textTranslated(future):
+    result = None
+    try:
+        result = future.result()
+    # task canceled via task.cancel()
+    except asyncio.exceptions.CancelledError:
+        return
+    except Exception as e:
+        print("Failed to translate: {}".format(e))
+        return
+
+    print(result)
+
+async def anotherTask():
+    await asyncio.sleep(2)
+    print("Another task done!")
+
+
+t = deepl.DeepLCLI("en", "ja")
+
+# create event loop
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+
+# translate text
+translation_task = loop.create_task(t.translate("hello", asynchronous=True))
+translation_task.add_done_callback(textTranslated)
+
+# assign tasks to event loop
+tasks = [
+    translation_task,
+    loop.create_task(anotherTask())
+]
+
+wait_tasks = asyncio.wait(tasks)
+
+# run event loop
+loop.run_until_complete(wait_tasks)
+#=> Another task done!
+#=> こんにちわ
+loop.close()
 ```
 
 ## License
