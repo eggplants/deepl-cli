@@ -70,8 +70,11 @@ t.translate("hello") #=> "こんにちわ"
 ```
 
 asynchronous API:
+
 <details>
+
 <summary>Show code</summary>
+
 ```python
 from deepl import deepl
 import asyncio
@@ -118,6 +121,7 @@ loop.run_until_complete(wait_tasks)
 #=> こんにちわ
 loop.close()
 ```
+
 </details>
 
 ## License
