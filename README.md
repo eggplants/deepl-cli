@@ -75,7 +75,6 @@ from deepl import deepl
 import asyncio
 
 def textTranslated(future):
-    result = None
     try:
         result = future.result()
     # task canceled via task.cancel()
@@ -87,19 +86,20 @@ def textTranslated(future):
 
     print(result)
 
+async def translationTask():
+    t = deepl.DeepLCLI("en", "ja")
+    return await t.translate("hello", asynchronous=True)
+
 async def anotherTask():
-    await asyncio.sleep(2)
+    await asyncio.sleep(10)
     print("Another task done!")
-
-
-t = deepl.DeepLCLI("en", "ja")
 
 # create event loop
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
 # translate text
-translation_task = loop.create_task(t.translate("hello", asynchronous=True))
+translation_task = loop.create_task(translationTask())
 translation_task.add_done_callback(textTranslated)
 
 # assign tasks to event loop
