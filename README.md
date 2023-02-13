@@ -42,7 +42,7 @@ usage: deepl [-h] (-f PATH | -s) [--fr FR] --to TO [-t MS] [-v] [-V]
 
 DeepL Translator CLI without API Key
 
-options:
+optional arguments:
   -h, --help            show this help message and exit
   -f PATH, --file PATH  source text file to translate (default: None)
   -s, --stdin           read source text from stdin (default: False)
@@ -53,10 +53,10 @@ options:
   -V, --version         show program's version number and exit
 
 valid languages of `--fr`:
-{'fi', 'de', 'lv', 'sl', 'ru', 'fr', 'id', 'lt', 'ro', 'ukzh', 'hu', 'el', 'et', 'en', 'pl', 'auto', 'es', 'bg', 'it', 'tr', 'cs', 'sv', 'da', 'ja', 'nl', 'pt', 'sk'}
+{'fi', 'cs', 'lv', 'nl', 'el', 'auto', 'ru', 'da', 'sv', 'it', 'uk', 'zh', 'ko', 'et', 'de', 'en', 'es', 'bg', 'lt', 'ja', 'pl', 'tr', 'id', 'sk', 'sl', 'hu', 'fr', 'ro', 'pt'}
 
 valid languages of `--to`:
-{'fi', 'de', 'lv', 'sl', 'ru', 'fr', 'id', 'lt', 'ro', 'ukzh', 'hu', 'el', 'et', 'en', 'pl', 'es', 'bg', 'it', 'tr', 'cs', 'sv', 'da', 'ja', 'nl', 'pt', 'sk'}
+{'fi', 'cs', 'lv', 'nl', 'lt', 'ja', 'el', 'pl', 'ru', 'tr', 'da', 'sv', 'pt', 'id', 'it', 'sk', 'sl', 'hu', 'fr', 'uk', 'zh', 'ko', 'et', 'de', 'en', 'ro', 'es', 'bg'}
 ```
 
 ## from Package
