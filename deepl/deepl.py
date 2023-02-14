@@ -36,6 +36,7 @@ class DeepLCLI:
         "id",
         "it",
         "ja",
+        "ko",
         "lt",
         "lv",
         "nl",
