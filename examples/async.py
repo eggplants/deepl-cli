@@ -12,7 +12,7 @@ def print_translated_text(future: asyncio.Future[str]) -> None:
     except asyncio.exceptions.CancelledError:
         # catch if task has been canceled via task.cancel()
         pass
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"Failed to translate: {e}")
 
 

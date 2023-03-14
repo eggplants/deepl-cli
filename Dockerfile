@@ -1,5 +1,8 @@
 FROM mcr.microsoft.com/playwright/python:v1.31.1-focal
 
-RUN pip3 install -U --progress-bar=off --no-use-pep517 deepl-cli
+ARG VERSION
+ENV VERSION ${VERSION:-master}
+
+RUN python -m pip install git+https://github.com/eggplants/deepl-cli@${VERSION}
 
 ENTRYPOINT ["deepl"]
