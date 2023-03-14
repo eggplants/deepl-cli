@@ -34,7 +34,7 @@ pip install deepl-cli
 
 ## Usage
 
-## from CLI
+## CLI
 
 ```shellsession
 $ deepl -h
@@ -59,7 +59,7 @@ valid languages of `--to`:
 {'fi', 'cs', 'lv', 'nl', 'lt', 'ja', 'el', 'pl', 'ru', 'tr', 'da', 'sv', 'pt', 'id', 'it', 'sk', 'sl', 'hu', 'fr', 'uk', 'zh', 'ko', 'et', 'de', 'en', 'ro', 'es', 'bg'}
 ```
 
-## from Package
+## Package
 
 ```python
 from deepl import deepl
@@ -67,6 +67,8 @@ from deepl import deepl
 t = deepl.DeepLCLI("en", "ja")
 t.translate("hello") #=> "こんにちわ"
 ```
+
+If you use with asyncio, see [examples/async.py].
 
 ## License
 
