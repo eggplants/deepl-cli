@@ -34,7 +34,7 @@ pip install deepl-cli
 
 ## Usage
 
-## from CLI
+## CLI
 
 ```shellsession
 $ deepl -h
@@ -59,9 +59,8 @@ valid languages of `--to`:
 {'fi', 'de', 'lv', 'sl', 'ru', 'fr', 'id', 'lt', 'ro', 'ukzh', 'hu', 'el', 'et', 'en', 'pl', 'es', 'bg', 'it', 'tr', 'cs', 'sv', 'da', 'ja', 'nl', 'pt', 'sk'}
 ```
 
-## from Package
+## Package
 
-synchronous API:
 ```python
 from deepl import deepl
 
@@ -69,60 +68,7 @@ t = deepl.DeepLCLI("en", "ja")
 t.translate("hello") #=> "こんにちわ"
 ```
 
-asynchronous API:
-
-<details>
-
-<summary>Show code</summary>
-
-```python
-from deepl import deepl
-import asyncio
-
-def textTranslated(future):
-    try:
-        result = future.result()
-    # task canceled via task.cancel()
-    except asyncio.exceptions.CancelledError:
-        return
-    except Exception as e:
-        print("Failed to translate: {}".format(e))
-        return
-
-    print(result)
-
-async def translationTask():
-    t = deepl.DeepLCLI("en", "ja")
-    return await t.translate("hello", asynchronous=True)
-
-async def anotherTask():
-    await asyncio.sleep(10)
-    print("Another task done!")
-
-# create event loop
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
-
-# translate text
-translation_task = loop.create_task(translationTask())
-translation_task.add_done_callback(textTranslated)
-
-# assign tasks to event loop
-tasks = [
-    translation_task,
-    loop.create_task(anotherTask())
-]
-
-wait_tasks = asyncio.wait(tasks)
-
-# run event loop
-loop.run_until_complete(wait_tasks)
-#=> Another task done!
-#=> こんにちわ
-loop.close()
-```
-
-</details>
+If you use with asyncio, see [examples/async.py].
 
 ## License
 
