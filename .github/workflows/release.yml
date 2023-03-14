@@ -1,7 +1,7 @@
 name: Release Package
 
 # need to setup:
-# secrets.PYPI_PASSWORD (See: https://pypi.org/help/#apitoken)
+# secrets.PYPI_TOKEN (See: https://pypi.org/help/#apitoken)
 
 on:
   push:
