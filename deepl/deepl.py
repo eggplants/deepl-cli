@@ -110,7 +110,7 @@ class DeepLCLI:
                     """
                     () => document.querySelector(
                     'd-textarea[aria-labelledby=translation-results-heading]')?.value?.length > 0
-                """
+                """,
                 )
             except PlaywrightError as e:
                 msg = f"Time limit exceeded. ({self.timeout} ms)"
