@@ -119,7 +119,7 @@ class DeepLCLI:
                 await page.wait_for_function(
                     """
                     () => document.querySelector(
-                    'd-textarea[dl-test=translator-target-input]')?.value?.length > 0
+                    'd-textarea[aria-labelledby=translation-results-heading]')?.value?.length > 0
                 """
                 )
             except PlaywrightError as e:
