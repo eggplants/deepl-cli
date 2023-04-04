@@ -1,0 +1,83 @@
+# poetry self add poetry-bumpversion
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = [
+  "poetry-core",
+]
+
+[tool]
+[tool.black]
+line-length = 120
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+pretty = true
+python_version = "3.9"
+show_error_codes = true
+strict = true
+
+[tool.ruff]
+select = ["ALL"]
+ignore = ["D", "ANN101"]
+line-length = 120
+
+[tool.ruff.mccabe]
+max-complexity = 18
+
+[tool.ruff.per-file-ignores]
+"main.py" = [
+  "T201", # `print` found
+]
+"tests/test_*.py" = [
+  "INP001",  # File tests/test_*.py is part of an implicit namespace package. Add an __init__.py.
+  "S101", # Use of assert detected
+]
+"examples/*.py" = [
+  "INP001",  # File tests/test_*.py is part of an implicit namespace package. Add an __init__.py.
+  "T201", # `print` found
+]
+
+[tool.poetry]
+authors = ["eggplants <w10776e8w@yahoo.co.jp>"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: Implementation :: CPython",
+]
+description = "DeepL Translator CLI without API Key"
+keywords = ["deepl", "translate", "cli"]
+name = "deepl_cli"
+packages = [{include = "deepl"}]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/eggplants/deepl-cli"
+version = "0.4.0"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4"
+install-playwright = "^0.0.0"
+playwright = "^1.31.1"
+
+[tool.poetry.group.dev.dependencies]
+mypy = ">=0.991,<1.2"
+pre-commit = ">=2.20,<4.0"
+taskipy = "^1.10.3"
+pytest = "^7.2.2"
+pytest-cov = "^4.0.0"
+
+[tool.poetry.scripts]
+deepl = "deepl.main:main"
+
+[tool.poetry_bumpversion.file."deepl/__init__.py"]
+
+[tool.taskipy.tasks]
+test = "pytest --cov=deepl --cov-report=term"
+"test:ci" = "task test --cov-report=xml:cov.xml"
+lint = "pre-commit run -a"
+profile = "python -m cProfile"
