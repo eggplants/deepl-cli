@@ -18,7 +18,6 @@ class DeepLCLIError(Exception):
 class DeepLCLIPageLoadError(Exception):
     pass
 
-
 class DeepLCLI:
     fr_langs = {
         "auto",
@@ -52,7 +51,7 @@ class DeepLCLI:
     }
     to_langs = fr_langs - {"auto"}
 
-    def __init__(self, fr_lang: str, to_lang: str, timeout: int = 15000) -> None:
+    def __init__(self, fr_lang: str, to_lang: str, timeout: int = 15000, use_dom_submit: bool = False) -> None:
         if fr_lang not in self.fr_langs:
             raise DeepLCLIError(
                 f"{repr(fr_lang)} is not valid language. Valid language:\n"
@@ -70,6 +69,7 @@ class DeepLCLI:
         self.translated_to_lang: str | None = None
         self.max_length = 5000
         self.timeout = timeout
+        self.use_dom_submit = use_dom_submit
 
     @serializable
     async def translate(self, script: str) -> str:
@@ -102,9 +102,12 @@ class DeepLCLI:
                 else route.continue_(),
             )
 
-            await page.goto(
-                f"https://www.deepl.com/en/translator#{self.fr_lang}/{self.to_lang}/{script}"
-            )
+            url = "https://www.deepl.com/en/translator"
+            if self.use_dom_submit:
+                await page.goto(url)
+            else:
+                script = quote(script, safe="")
+                await page.goto(f"{url}#{self.fr_lang}/{self.to_lang}/{script}")
 
             # Wait for loading to complete
             try:
@@ -113,6 +116,14 @@ class DeepLCLI:
                 raise DeepLCLIPageLoadError(
                     f"Maybe Time limit exceeded. ({self.timeout} ms, {e})"
                 )
+
+            if self.use_dom_submit:
+                await page.click("button[data-testid=translator-source-lang-btn]")
+                await page.click(f"button[data-testid=translator-lang-option-{self.fr_lang}]")
+                await page.click("button[data-testid=translator-target-lang-btn]")
+                await page.click(f"button[data-testid=translator-lang-option-{self.to_lang}]")
+
+                await page.fill("div[aria-labelledby=translation-source-heading]", script)
 
             # Wait for translation to complete
             try:
@@ -163,7 +174,7 @@ class DeepLCLI:
         if len(script) <= 0:
             raise DeepLCLIError("Script seems to be empty.")
 
-        return quote(script.replace("/", r"\/").replace("|", r"\|"), safe="")
+        return script.replace("/", r"\/").replace("|", r"\|")
 
     async def __get_browser(self, p: Any) -> Any:
         """Launch browser executable and get playwright browser object."""
