@@ -53,7 +53,7 @@ class DeepLCLI:
     }
     to_langs = fr_langs - {"auto"}
 
-    def __init__(self, fr_lang: str, to_lang: str, timeout: int = 15000) -> None:
+    def __init__(self, fr_lang: str, to_lang: str, timeout: int = 15000, *, use_dom_submit: bool = False) -> None:
         if fr_lang not in self.fr_langs:
             raise DeepLCLIError(f"{repr(fr_lang)} is not valid language. Valid language:\n" + repr(self.fr_langs))
         if to_lang not in self.to_langs:
@@ -65,6 +65,7 @@ class DeepLCLI:
         self.translated_to_lang: str | None = None
         self.max_length = 3000
         self.timeout = timeout
+        self.use_dom_submit = use_dom_submit
 
     @serializable
     async def translate(self, script: str) -> str:
@@ -95,7 +96,12 @@ class DeepLCLI:
                 lambda route: route.abort() if route.request.resource_type in excluded_resources else route.continue_(),
             )
 
-            await page.goto(f"https://www.deepl.com/en/translator#{self.fr_lang}/{self.to_lang}/{script}")
+            url = "https://www.deepl.com/en/translator"
+            if self.use_dom_submit:
+                await page.goto(url)
+            else:
+                script = quote(script, safe="")
+                await page.goto(f"{url}#{self.fr_lang}/{self.to_lang}/{script}")
 
             # Wait for loading to complete
             try:
@@ -104,13 +110,22 @@ class DeepLCLI:
                 msg = f"Maybe Time limit exceeded. ({self.timeout} ms)"
                 raise DeepLCLIPageLoadError(msg) from e
 
+            if self.use_dom_submit:
+                # select input / output language
+                await page.click("button[data-testid=translator-source-lang-btn]")
+                await page.click(f"button[data-testid=translator-lang-option-{self.fr_lang}]")
+                await page.click("button[data-testid=translator-target-lang-btn]")
+                await page.click(f"button[data-testid=translator-lang-option-{self.to_lang}]")
+                # fill in the form of translating script
+                await page.fill("div[aria-labelledby=translation-source-heading]", script)
+
             # Wait for translation to complete
             try:
                 await page.wait_for_function(
                     """
                     () => document.querySelector(
                     'd-textarea[aria-labelledby=translation-results-heading]')?.value?.length > 0
-                """,
+                    """,
                 )
             except PlaywrightError as e:
                 msg = f"Time limit exceeded. ({self.timeout} ms)"
@@ -143,7 +158,7 @@ class DeepLCLI:
             msg = "Script seems to be empty."
             raise DeepLCLIError(msg)
 
-        return quote(script.replace("/", r"\/").replace("|", r"\|"), safe="")
+        return script.replace("/", r"\/").replace("|", r"\|")
 
     async def __get_browser(self, p: Any) -> Any:  # noqa: ANN401
         """Launch browser executable and get playwright browser object."""
