@@ -68,7 +68,7 @@ deepl = DeepLCLI("en", "ja")
 deepl.translate("hello") #=> "こんにちわ"
 ```
 
-If you use with asyncio, see [examples/async.py].
+If you use with asyncio, Use `DeepLCLI.translate_async`. See [examples/async.py].
 
 ## License
 
