@@ -34,14 +34,14 @@ def test_invalid_input_and_output_lang() -> None:
         DeepLCLI("enn", "jaa", 100000)
 
 
-def test_input_language_auto() -> None:
+def test_input_too_long() -> None:
     t = DeepLCLI("auto", "ja", 100000)
     with pytest.raises(DeepLCLIError):
         t.translate("test" * 10000)
 
 
-def test_ja_to_de() -> None:
-    t = DeepLCLI("ja", "de", 100000)
+def test_auto_to_de() -> None:
+    t = DeepLCLI("auto", "de", 100000)
     assert t.translate("今日は2022/2/22です。") == "Heute ist der 22.2.2022."
 
 
@@ -52,6 +52,13 @@ def test_lang_attrs() -> None:
     assert t.translated_to_lang == "ja"
 
 
-def test10() -> None:
+@pytest.mark.asyncio()
+async def test_translate_async() -> None:
+    t = DeepLCLI("en", "ja", 100000)
+    res = await t.translate_async("hello.")
+    assert res == "こんにちは"
+
+
+def test_use_dom_submit() -> None:
     t = DeepLCLI("en", "ja", 100000, use_dom_submit=True)
     assert t.translate("hello.") == "こんにちは"
