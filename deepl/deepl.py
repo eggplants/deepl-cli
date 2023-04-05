@@ -18,6 +18,7 @@ class DeepLCLIError(Exception):
 class DeepLCLIPageLoadError(Exception):
     pass
 
+
 class DeepLCLI:
     fr_langs = {
         "auto",
@@ -115,7 +116,7 @@ class DeepLCLI:
                 await page.click(f"button[data-testid=translator-lang-option-{self.fr_lang}]")
                 await page.click("button[data-testid=translator-target-lang-btn]")
                 await page.click(f"button[data-testid=translator-lang-option-{self.to_lang}]")
-                # fill in the form of translating script 
+                # fill in the form of translating script
                 await page.fill("div[aria-labelledby=translation-source-heading]", script)
 
             # Wait for translation to complete
