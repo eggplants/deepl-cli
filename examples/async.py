@@ -1,7 +1,7 @@
 import asyncio
 from typing import Any
 
-from deepl import deepl
+from deepl import DeepLCLI
 
 
 def print_translated_text(future: asyncio.Future[str]) -> None:
@@ -18,8 +18,8 @@ def print_translated_text(future: asyncio.Future[str]) -> None:
 
 async def translate(text: str) -> str:
     """translate asynchronously."""
-    t = deepl.DeepLCLI("en", "ja")
-    return await t.translate(text, asynchronous=True)
+    t = DeepLCLI("en", "ja")
+    return await t.translate_async(text)
 
 
 async def do_something() -> None:

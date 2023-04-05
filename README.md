@@ -62,10 +62,10 @@ valid languages of `--to`:
 ## Package
 
 ```python
-from deepl import deepl
+from deepl import DeepLCLI
 
-t = deepl.DeepLCLI("en", "ja")
-t.translate("hello") #=> "こんにちわ"
+deepl = DeepLCLI("en", "ja")
+deepl.translate("hello") #=> "こんにちわ"
 ```
 
 If you use with asyncio, see [examples/async.py].
