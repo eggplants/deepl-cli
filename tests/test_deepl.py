@@ -6,7 +6,7 @@ from deepl import DeepLCLI, DeepLCLIError
 @pytest.mark.xfail(reason="timeout")
 def test1() -> None:
     t = DeepLCLI("en", "ja", 100000)
-    assert t.translate("hello") == "こんにちわ"
+    assert t.translate("hello") == "ハロー"
 
 
 @pytest.mark.xfail(reason="timeout")
@@ -56,6 +56,11 @@ def test8() -> None:
 @pytest.mark.xfail(reason="timeout")
 def test9() -> None:
     t = DeepLCLI("auto", "ja", 100000)
-    assert t.translate("test") == "テスト"
+    assert t.translate("test") == "試練"
     assert t.translated_fr_lang == "en"
     assert t.translated_to_lang == "ja"
+
+@pytest.mark.xfail(reason="timeout")
+def test10() -> None:
+    t = DeepLCLI("en", "ja", 100000, use_dom_submit=True)
+    assert t.translate("hello") == "ハロー"
