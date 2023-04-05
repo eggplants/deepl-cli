@@ -35,6 +35,7 @@ class DeepLCLI:
         "id",
         "it",
         "ja",
+        "ko",
         "lt",
         "lv",
         "nl",
@@ -51,23 +52,17 @@ class DeepLCLI:
     }
     to_langs = fr_langs - {"auto"}
 
-    def __init__(self, fr_lang: str, to_lang: str, timeout: int = 15000, use_dom_submit: bool = False) -> None:
+    def __init__(self, fr_lang: str, to_lang: str, timeout: int = 15000, *, use_dom_submit: bool = False) -> None:
         if fr_lang not in self.fr_langs:
-            raise DeepLCLIError(
-                f"{repr(fr_lang)} is not valid language. Valid language:\n"
-                + repr(self.fr_langs)
-            )
-        elif to_lang not in self.to_langs:
-            raise DeepLCLIError(
-                f"{repr(to_lang)} is not valid language. Valid language:\n"
-                + repr(self.to_langs)
-            )
+            raise DeepLCLIError(f"{repr(fr_lang)} is not valid language. Valid language:\n" + repr(self.fr_langs))
+        if to_lang not in self.to_langs:
+            raise DeepLCLIError(f"{repr(to_lang)} is not valid language. Valid language:\n" + repr(self.to_langs))
 
         self.fr_lang = fr_lang
         self.to_lang = to_lang
         self.translated_fr_lang: str | None = None
         self.translated_to_lang: str | None = None
-        self.max_length = 5000
+        self.max_length = 3000
         self.timeout = timeout
         self.use_dom_submit = use_dom_submit
 
@@ -84,22 +79,20 @@ class DeepLCLI:
                 browser = await self.__get_browser(p)
             except PlaywrightError as e:
                 if "Executable doesn't exist at" in e.message:
-                    print("Installing browser executable. This may take some time.")
-                    await asyncio.get_event_loop().run_in_executor(
-                        None, install, p.chromium
-                    )
+                    print("Installing browser executable. This may take some time.")  # noqa: T201
+                    await asyncio.get_event_loop().run_in_executor(None, install, p.chromium)
                     browser = await self.__get_browser(p)
+                else:
+                    raise
 
             page = await browser.new_page()
             page.set_default_timeout(self.timeout)
 
             # skip loading page resources for improving performance
-            RESOURCE_EXCLUSTIONS = ["image", "media", "font", "other"]
+            excluded_resources = ["image", "media", "font", "other"]
             await page.route(
                 "**/*",
-                lambda route: route.abort()
-                if route.request.resource_type in RESOURCE_EXCLUSTIONS
-                else route.continue_(),
+                lambda route: route.abort() if route.request.resource_type in excluded_resources else route.continue_(),
             )
 
             url = "https://www.deepl.com/en/translator"
@@ -113,16 +106,16 @@ class DeepLCLI:
             try:
                 page.get_by_role("main")
             except PlaywrightError as e:
-                raise DeepLCLIPageLoadError(
-                    f"Maybe Time limit exceeded. ({self.timeout} ms, {e})"
-                )
+                msg = f"Maybe Time limit exceeded. ({self.timeout} ms)"
+                raise DeepLCLIPageLoadError(msg) from e
 
             if self.use_dom_submit:
+                # select input / output language
                 await page.click("button[data-testid=translator-source-lang-btn]")
                 await page.click(f"button[data-testid=translator-lang-option-{self.fr_lang}]")
                 await page.click("button[data-testid=translator-target-lang-btn]")
                 await page.click(f"button[data-testid=translator-lang-option-{self.to_lang}]")
-
+                # fill in the form of translating script 
                 await page.fill("div[aria-labelledby=translation-source-heading]", script)
 
             # Wait for translation to complete
@@ -131,27 +124,18 @@ class DeepLCLI:
                     """
                     () => document.querySelector(
                     'd-textarea[aria-labelledby=translation-results-heading]')?.value?.length > 0
-                """
+                    """,
                 )
             except PlaywrightError as e:
-                raise DeepLCLIPageLoadError(
-                    f"Time limit exceeded. ({self.timeout} ms, {e})"
-                )
+                msg = f"Time limit exceeded. ({self.timeout} ms)"
+                raise DeepLCLIPageLoadError(msg) from e
 
             # Get information
-            input_textbox = page.get_by_role("region", name="Source text").locator(
-                "d-textarea"
-            )
-            output_textbox = page.get_by_role(
-                "region", name="Translation results"
-            ).locator("d-textarea")
+            input_textbox = page.get_by_role("region", name="Source text").locator("d-textarea")
+            output_textbox = page.get_by_role("region", name="Translation results").locator("d-textarea")
 
-            self.translated_fr_lang = str(
-                await input_textbox.get_attribute("lang")
-            ).split("-")[0]
-            self.translated_to_lang = str(
-                await output_textbox.get_attribute("lang")
-            ).split("-")[0]
+            self.translated_fr_lang = str(await input_textbox.get_attribute("lang")).split("-")[0]
+            self.translated_to_lang = str(await output_textbox.get_attribute("lang")).split("-")[0]
 
             res = str((await output_textbox.all_inner_texts())[0])
             # the extra \n is generated by <p> tag because every line is covered by it
@@ -166,17 +150,16 @@ class DeepLCLI:
         script = script.rstrip("\n")
 
         if self.max_length is not None and len(script) > self.max_length:
-            raise DeepLCLIError(
-                f"Limit of script is less than {self.max_length} chars"
-                f"(Now: {len(script)} chars)"
-            )
+            msg = f"Limit of script is less than {self.max_length} chars (Now: {len(script)} chars)"
+            raise DeepLCLIError(msg)
 
         if len(script) <= 0:
-            raise DeepLCLIError("Script seems to be empty.")
+            msg = "Script seems to be empty."
+            raise DeepLCLIError(msg)
 
         return script.replace("/", r"\/").replace("|", r"\|")
 
-    async def __get_browser(self, p: Any) -> Any:
+    async def __get_browser(self, p: Any) -> Any:  # noqa: ANN401
         """Launch browser executable and get playwright browser object."""
         return await p.chromium.launch(
             headless=True,
