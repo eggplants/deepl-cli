@@ -63,7 +63,7 @@ class DeepLCLI:
         self.to_lang = to_lang
         self.translated_fr_lang: str | None = None
         self.translated_to_lang: str | None = None
-        self.max_length = 5000
+        self.max_length = 3000
         self.timeout = timeout
 
     @serializable
