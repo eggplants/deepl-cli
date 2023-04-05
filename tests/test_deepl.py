@@ -60,6 +60,7 @@ def test9() -> None:
     assert t.translated_fr_lang == "en"
     assert t.translated_to_lang == "ja"
 
+
 @pytest.mark.xfail(reason="timeout")
 def test10() -> None:
     t = DeepLCLI("en", "ja", 100000, use_dom_submit=True)
