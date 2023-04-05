@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib.parse import quote
 
 from install_playwright import install
 from playwright._impl._api_types import Error as PlaywrightError
 from playwright.async_api import async_playwright
 
-from .serializable import serializable
+if TYPE_CHECKING:
+    from collections.abc import Coroutine
+
+    from playwright.async_api._generated import Browser, Playwright
 
 
 class DeepLCLIError(Exception):
@@ -53,7 +56,14 @@ class DeepLCLI:
     }
     to_langs = fr_langs - {"auto"}
 
-    def __init__(self, fr_lang: str, to_lang: str, timeout: int = 15000, *, use_dom_submit: bool = False) -> None:
+    def __init__(
+        self,
+        fr_lang: str,
+        to_lang: str,
+        timeout: int = 15000,
+        *,
+        use_dom_submit: bool = False,
+    ) -> None:
         if fr_lang not in self.fr_langs:
             raise DeepLCLIError(f"{repr(fr_lang)} is not valid language. Valid language:\n" + repr(self.fr_langs))
         if to_lang not in self.to_langs:
@@ -67,10 +77,17 @@ class DeepLCLI:
         self.timeout = timeout
         self.use_dom_submit = use_dom_submit
 
-    @serializable
-    async def translate(self, script: str) -> str:
+    def translate(self, script: str) -> str:
         script = self.__sanitize_script(script)
-        return await self.__translate(script)
+
+        # run in the current thread
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.__translate(script))
+
+    def translate_async(self, script: str) -> Coroutine[Any, Any, str]:
+        script = self.__sanitize_script(script)
+
+        return self.__translate(script)
 
     async def __translate(self, script: str) -> str:
         """Throw a request."""
@@ -160,7 +177,7 @@ class DeepLCLI:
 
         return script.replace("/", r"\/").replace("|", r"\|")
 
-    async def __get_browser(self, p: Any) -> Any:  # noqa: ANN401
+    async def __get_browser(self, p: Playwright) -> Browser:
         """Launch browser executable and get playwright browser object."""
         return await p.chromium.launch(
             headless=True,
