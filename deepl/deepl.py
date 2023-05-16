@@ -65,9 +65,9 @@ class DeepLCLI:
         use_dom_submit: bool = False,
     ) -> None:
         if fr_lang not in self.fr_langs:
-            raise DeepLCLIError(f"{repr(fr_lang)} is not valid language. Valid language:\n" + repr(self.fr_langs))
+            raise DeepLCLIError(f"{fr_lang!r} is not valid language. Valid language:\n" + repr(self.fr_langs))
         if to_lang not in self.to_langs:
-            raise DeepLCLIError(f"{repr(to_lang)} is not valid language. Valid language:\n" + repr(self.to_langs))
+            raise DeepLCLIError(f"{to_lang!r} is not valid language. Valid language:\n" + repr(self.to_langs))
 
         self.fr_lang = fr_lang
         self.to_lang = to_lang

@@ -25,10 +25,10 @@ def check_file(v: str) -> str:
     path = Path(v)
 
     if not path.is_file():
-        msg = f"{repr(v)} is not file."
+        msg = f"{v!r} is not file."
         raise argparse.ArgumentTypeError(msg)
     if is_binary_string(path.open(mode="rb").read(1024)):
-        msg = f"{repr(v)} is not text file."
+        msg = f"{v!r} is not text file."
         raise argparse.ArgumentTypeError(msg)
 
     return v
@@ -46,7 +46,7 @@ def check_natural(v: str) -> int:
 def check_input_lang(lang: str) -> str:
     if lang not in DeepLCLI.fr_langs:
         raise argparse.ArgumentTypeError(
-            f"{repr(lang)} is not valid language. Valid language:\n" + repr(DeepLCLI.fr_langs),
+            f"{lang!r} is not valid language. Valid language:\n" + repr(DeepLCLI.fr_langs),
         )
 
     return lang
@@ -55,7 +55,7 @@ def check_input_lang(lang: str) -> str:
 def check_output_lang(lang: str) -> str:
     if lang not in DeepLCLI.to_langs:
         raise argparse.ArgumentTypeError(
-            f"{repr(lang)} is not valid language. Valid language:\n" + repr(DeepLCLI.to_langs),
+            f"{lang!r} is not valid language. Valid language:\n" + repr(DeepLCLI.to_langs),
         )
     return lang
 
