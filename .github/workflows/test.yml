@@ -36,7 +36,7 @@ jobs:
       run: poetry run task test
     - name: Test & publish code coverage
       if: ${{ runner.os != 'Windows' && env.CC_TEST_REPORTER_ID != '' }}
-      uses: paambaati/codeclimate-action@v4.0.0
+      uses: paambaati/codeclimate-action@v5.0.0
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       with:
