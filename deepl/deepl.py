@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 from urllib.parse import quote
 
 from install_playwright import install
@@ -23,7 +23,7 @@ class DeepLCLIPageLoadError(Exception):
 
 
 class DeepLCLI:
-    fr_langs = {
+    fr_langs: ClassVar[set[str]] = {
         "auto",
         "bg",
         "cs",
