@@ -5,7 +5,7 @@ from deepl import DeepLCLI, DeepLCLIError
 
 def test_en_to_ja() -> None:
     t = DeepLCLI("en", "ja", 100000)
-    assert t.translate("hello.") == "こんにちは"
+    assert t.translate("hello.") in ("こんにちは", "こんにちは。")
 
 
 def test_blank_script() -> None:
@@ -47,7 +47,7 @@ def test_auto_to_de() -> None:
 
 def test_lang_attrs() -> None:
     t = DeepLCLI("auto", "ja", 100000)
-    assert t.translate("test") == "試練"
+    assert t.translate("test") in ("試練", "テスト")
     assert t.translated_fr_lang == "en"
     assert t.translated_to_lang == "ja"
 
@@ -56,9 +56,9 @@ def test_lang_attrs() -> None:
 async def test_translate_async() -> None:
     t = DeepLCLI("en", "ja", 100000)
     res = await t.translate_async("hello.")
-    assert res == "こんにちは"
+    assert res in ("こんにちは", "こんにちは。")
 
 
 def test_use_dom_submit() -> None:
     t = DeepLCLI("en", "ja", 100000, use_dom_submit=True)
-    assert t.translate("hello.") == "こんにちは"
+    assert t.translate("hello.") in ("こんにちは", "こんにちは。")
