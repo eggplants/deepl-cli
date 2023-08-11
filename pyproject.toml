@@ -31,7 +31,7 @@ install-playwright = "^0.0.0"
 playwright = "^1.31.1"
 
 [tool.poetry.group.dev.dependencies]
-mypy = ">=0.991,<1.5"
+mypy = ">=0.991,<1.6"
 pre-commit = ">=2.20,<4.0"
 taskipy = "^1.10.3"
 pytest = "^7.2.2"
