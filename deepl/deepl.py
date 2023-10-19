@@ -128,7 +128,7 @@ class DeepLCLI:
                 raise DeepLCLIPageLoadError(msg) from e
 
             if self.use_dom_submit:
-                # banner button prevents clicking on language buttons, click it to close the banner
+                # banner prevents clicking on language buttons, close the banner first
                 await page.click("button[data-testid=cookie-banner-lax-close-button]")
                 # select input / output language
                 await page.click("button[data-testid=translator-source-lang-btn]")
