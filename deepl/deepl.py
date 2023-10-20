@@ -128,6 +128,8 @@ class DeepLCLI:
                 raise DeepLCLIPageLoadError(msg) from e
 
             if self.use_dom_submit:
+                # banner prevents clicking on language buttons, close the banner first
+                await page.click("button[data-testid=cookie-banner-lax-close-button]")
                 # select input / output language
                 await page.click("button[data-testid=translator-source-lang-btn]")
                 await page.click(f"button[data-testid=translator-lang-option-{self.fr_lang}]")
@@ -141,7 +143,7 @@ class DeepLCLI:
                 await page.wait_for_function(
                     """
                     () => document.querySelector(
-                    'd-textarea[aria-labelledby=translation-results-heading]')?.value?.length > 0
+                    'd-textarea[aria-labelledby=translation-target-heading]')?.value?.length > 0
                     """,
                 )
             except PlaywrightError as e:
