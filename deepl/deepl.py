@@ -54,7 +54,12 @@ class DeepLCLI:
         "uk",
         "zh",
     }
-    to_langs = fr_langs - {"auto"}
+    to_langs = fr_langs | {
+        "en-US",
+        "en-GB",
+        "nb",
+        "pt-BR"
+    } - {"auto"}
 
     def __init__(
         self,
