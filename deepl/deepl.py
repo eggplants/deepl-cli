@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 from urllib.parse import quote
 
 from install_playwright import install
-from playwright._impl._api_types import Error as PlaywrightError
+from playwright._impl._errors import Error as PlaywrightError
 from playwright.async_api import async_playwright
 
 if TYPE_CHECKING:
