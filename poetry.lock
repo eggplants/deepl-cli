@@ -352,18 +352,18 @@ test = ["appdirs (==1.4.4)", "covdefaults (>=2.2.2)", "pytest (>=7.2.1)", "pytes
 
 [[package]]
 name = "playwright"
-version = "1.41.0"
+version = "1.41.2"
 description = "A high-level API to automate web browsers"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "playwright-1.41.0-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:ad3ff4805fd21b91c9acbc5b27e62bf0ac6a235e93f91d9dd6d311d5e988b069"},
-    {file = "playwright-1.41.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:9d34f472d174e55d8f12265e10d11ba21be99bf0661ccbf1f9b048312696d5e8"},
-    {file = "playwright-1.41.0-py3-none-macosx_11_0_universal2.whl", hash = "sha256:f3f0841360652ddd77f6e059074d5079dd37b487168a2972efbf13cd23fbacb0"},
-    {file = "playwright-1.41.0-py3-none-manylinux1_x86_64.whl", hash = "sha256:b56c1d564df9a2b2ab393f8161b71bcc16df38ade60115e1162ad6d9f116c89b"},
-    {file = "playwright-1.41.0-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9ccf3214b0cdd932bcdc04794ecafe50bd386e8523ce4681969aac86d3326f87"},
-    {file = "playwright-1.41.0-py3-none-win32.whl", hash = "sha256:46d4aaed0071db67361900a2027bb14dba74f9eb102cf2baf1876c0ff0c15da6"},
-    {file = "playwright-1.41.0-py3-none-win_amd64.whl", hash = "sha256:925045824dc3d505c8f197c94a083e4619d7c268d7c3465d73a5a09040dc8b85"},
+    {file = "playwright-1.41.2-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:cf68335a5dfa4038fa797a4ba0105faee0094ebbb372547d7a27feec5b23c672"},
+    {file = "playwright-1.41.2-py3-none-macosx_11_0_arm64.whl", hash = "sha256:431e3a05f8c99147995e2b3e8475d07818745294fd99f1510b61756e73bdcf68"},
+    {file = "playwright-1.41.2-py3-none-macosx_11_0_universal2.whl", hash = "sha256:0608717cbf291a625ba6f751061af0fc0cc9bdace217e69d87b1eb1383b03406"},
+    {file = "playwright-1.41.2-py3-none-manylinux1_x86_64.whl", hash = "sha256:4bf214d812092cf5b9b9648ba84611aa35e28685519911342a7da3a3031f9ed6"},
+    {file = "playwright-1.41.2-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:eaa17ab44622c447de26ed8f7d99912719568d8dbc3a9db0e07f0ae1487709d9"},
+    {file = "playwright-1.41.2-py3-none-win32.whl", hash = "sha256:edb210a015e70bb0d328bf1c9b65fa3a08361f33e4d7c4ddd1ad2adb6d9b4479"},
+    {file = "playwright-1.41.2-py3-none-win_amd64.whl", hash = "sha256:71ead0f33e00f5a8533c037c647938b99f219436a1b27d4ba4de4e6bf0567278"},
 ]
 
 [package.dependencies]
@@ -449,13 +449,13 @@ dev = ["black", "flake8", "flake8-black", "isort", "jupyter-console", "mkdocs", 
 
 [[package]]
 name = "pytest"
-version = "8.0.0"
+version = "7.4.4"
 description = "pytest: simple powerful testing with Python"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.7"
 files = [
-    {file = "pytest-8.0.0-py3-none-any.whl", hash = "sha256:50fb9cbe836c3f20f0dfa99c565201fb75dc54c8d76373cd1bde06b06657bdb6"},
-    {file = "pytest-8.0.0.tar.gz", hash = "sha256:249b1b0864530ba251b7438274c4d251c58d868edaaec8762893ad4a0d71c36c"},
+    {file = "pytest-7.4.4-py3-none-any.whl", hash = "sha256:b090cdf5ed60bf4c45261be03239c2c1c22df034fbffe691abe93cd80cea01d8"},
+    {file = "pytest-7.4.4.tar.gz", hash = "sha256:2cf0005922c6ace4a3e2ec8b4080eb0d9753fdc93107415332f50ce9e7994280"},
 ]
 
 [package.dependencies]
@@ -463,7 +463,7 @@ colorama = {version = "*", markers = "sys_platform == \"win32\""}
 exceptiongroup = {version = ">=1.0.0rc8", markers = "python_version < \"3.11\""}
 iniconfig = "*"
 packaging = "*"
-pluggy = ">=1.3.0,<2.0"
+pluggy = ">=0.12,<2.0"
 tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 
 [package.extras]
