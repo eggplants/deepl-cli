@@ -133,10 +133,10 @@ class DeepLCLI:
                 # banner prevents clicking on language buttons, close the banner first
                 await page.click("button[data-testid=cookie-banner-lax-close-button]")
                 # select input / output language
-                await page.click("button[data-testid=translator-source-lang-btn]")
-                await page.click(f"button[data-testid=translator-lang-option-{self.fr_lang}]")
-                await page.click("button[data-testid=translator-target-lang-btn]")
-                await page.click(f"button[data-testid=translator-lang-option-{self.to_lang}]")
+                await page.locator("button[data-testid=translator-source-lang-btn]").dispatch_event("click")
+                await page.locator(f"button[data-testid=translator-lang-option-{self.fr_lang}]").dispatch_event("click")
+                await page.locator("button[data-testid=translator-target-lang-btn]").dispatch_event("click")
+                await page.locator(f"button[data-testid=translator-lang-option-{self.to_lang}]").dispatch_event("click")
                 # fill in the form of translating script
                 await page.fill("div[aria-labelledby=translation-source-heading]", script)
 
