@@ -15,7 +15,7 @@ jobs:
       matrix:
         os:
         - ubuntu-latest
-        # - windows-latest
+        - windows-latest
         - macos-latest
         python-version:
         # - '3.8'
@@ -32,10 +32,10 @@ jobs:
     - uses: abatilo/actions-poetry@v3
     - run: poetry install --no-interaction
     - name: Test
-      if: ${{ runner.os == 'Windows' }}
+      if: ${{ runner.os != 'Linux' }}
       run: poetry run task test
     - name: Test & publish code coverage
-      if: ${{ runner.os != 'Windows' && env.CC_TEST_REPORTER_ID != '' }}
+      if: ${{ runner.os = 'Linux' && env.CC_TEST_REPORTER_ID != '' }}
       uses: paambaati/codeclimate-action@v6.0.0
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
