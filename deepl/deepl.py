@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from functools import partial
 from typing import TYPE_CHECKING, Any, ClassVar
 from urllib.parse import quote
 
@@ -98,6 +99,7 @@ class DeepLCLI:
             except PlaywrightError as e:
                 if "playwright install" in e.message:
                     print("Installing browser executable. This may take some time.")  # noqa: T201
+                    await asyncio.get_event_loop().run_in_executor(None, partial(install, p.chromium, with_deps=True))
                     await asyncio.get_event_loop().run_in_executor(None, install, p.chromium)
                     browser = await self.__get_browser(p)
                 else:
