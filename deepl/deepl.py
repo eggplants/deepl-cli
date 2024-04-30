@@ -96,7 +96,7 @@ class DeepLCLI:
             try:
                 browser = await self.__get_browser(p)
             except PlaywrightError as e:
-                if "Executable doesn't exist at" in e.message:
+                if "playwright install" in e.message:
                     print("Installing browser executable. This may take some time.")  # noqa: T201
                     await asyncio.get_event_loop().run_in_executor(None, install, p.chromium)
                     browser = await self.__get_browser(p)
