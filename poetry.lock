@@ -228,20 +228,17 @@ files = [
 
 [[package]]
 name = "install-playwright"
-version = "0.0.0"
+version = "0.1.0"
 description = "Execute `playwright install` from Python"
 optional = false
-python-versions = ">=3.8"
+python-versions = "<4,>=3.8"
 files = [
-    {file = "install_playwright-0.0.0-py3-none-any.whl", hash = "sha256:78b87a24e122b507995594fc0a18ab19078e3aae99c640f029203b0a46904b19"},
-    {file = "install_playwright-0.0.0.tar.gz", hash = "sha256:ece6bf90ef620c324287f199947f75c69972ebd371f342d74b72fdab690bd56f"},
+    {file = "install_playwright-0.1.0-py3-none-any.whl", hash = "sha256:37850e49bdae09b72c0922b64bb623f4c44fd9ea09ba9ad5e113735399d8f8d2"},
+    {file = "install_playwright-0.1.0.tar.gz", hash = "sha256:bd9eb0ee05cfb2734b21d3a42ae3cf253840d858c3a7d867f015b54000f955c8"},
 ]
 
 [package.dependencies]
-playwright = "*"
-
-[package.extras]
-dev = ["pre-commit", "pytest", "pytest-asyncio", "pytest-cov", "setuptools (>=46.4.0)", "types-setuptools"]
+playwright = ">=1.9,<2.0"
 
 [[package]]
 name = "mslex"
@@ -647,4 +644,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4"
-content-hash = "ddbeabdd4b9ba3fe46707dcc29e3b940c9a9685b83826527a818a6f9967a9633"
+content-hash = "49a52d835e9648b2bfca6d9adaa3f8455ba3fed6413d0dd92a1edafd4b502639"
