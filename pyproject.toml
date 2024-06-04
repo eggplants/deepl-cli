@@ -4,9 +4,10 @@ requires = [
   "poetry-core",
 ]
 
-[tool]
 [tool.poetry]
-authors = ["eggplants <w10776e8w@yahoo.co.jp>"]
+authors = [
+  "eggplants <w10776e8w@yahoo.co.jp>",
+]
 classifiers = [
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
@@ -15,9 +16,15 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
 ]
 description = "DeepL Translator CLI without API Key"
-keywords = ["deepl", "translate", "cli"]
+keywords = [
+  "deepl",
+  "translate",
+  "cli",
+]
 name = "deepl_cli"
-packages = [{include = "deepl"}]
+packages = [
+  { include = "deepl" },
+]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/eggplants/deepl-cli"
@@ -41,23 +48,23 @@ deepl = "deepl.main:main"
 
 [tool.black]
 line-length = 120
-target-version = ['py39']
+target-version = [
+  'py39',
+]
 
-[tool.ruff.lint.mccabe]
-max-complexity = 18
-
-[tool.ruff.lint.per-file-ignores]
-"main.py" = [
+[tool.ruff]
+lint.per-file-ignores."examples/*.py" = [
+  "INP001", # File tests/test_*.py is part of an implicit namespace package. Add an __init__.py.
+  "T201",   # `print` found
+]
+lint.per-file-ignores."main.py" = [
   "T201", # `print` found
 ]
-"tests/test_*.py" = [
-  "INP001",  # File tests/test_*.py is part of an implicit namespace package. Add an __init__.py.
-  "S101", # Use of assert detected
+lint.per-file-ignores."tests/test_*.py" = [
+  "INP001", # File tests/test_*.py is part of an implicit namespace package. Add an __init__.py.
+  "S101",   # Use of assert detected
 ]
-"examples/*.py" = [
-  "INP001",  # File tests/test_*.py is part of an implicit namespace package. Add an __init__.py.
-  "T201", # `print` found
-]
+lint.mccabe.max-complexity = 18
 
 [tool.mypy]
 pretty = true
@@ -65,9 +72,16 @@ python_version = "3.9"
 show_error_codes = true
 strict = true
 
+[tool]
+
 [tool.lint.ruff]
-select = ["ALL"]
-ignore = ["D", "ANN101"]
+select = [
+  "ALL",
+]
+ignore = [
+  "D",
+  "ANN101",
+]
 line-length = 120
 
 [tool.taskipy.tasks]
