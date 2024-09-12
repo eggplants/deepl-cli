@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import asyncio
 from functools import partial
 from typing import TYPE_CHECKING, Any, ClassVar
@@ -187,7 +188,7 @@ class DeepLCLI:
             headless=True,
             args=[
                 "--no-sandbox",
-                "--single-process",
+                "--single-process" if os.name != "nt" else "",
                 "--disable-dev-shm-usage",
                 "--disable-gpu",
                 "--no-zygote",
