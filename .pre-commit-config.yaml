@@ -2,7 +2,7 @@ ci:
   autoupdate_schedule: monthly
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.6.0
+  rev: v5.0.0
   hooks:
   - id: check-added-large-files
     args: [--maxkb=2000]
@@ -26,7 +26,7 @@ repos:
   - id: pretty-format-yaml
     args: [--autofix, --indent, '2']
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: 2.2.1
+  rev: 2.2.4
   hooks:
   - id: pyproject-fmt
 - repo: https://github.com/psf/black
@@ -34,7 +34,7 @@ repos:
   hooks:
   - id: black
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.6.3
+  rev: v0.6.9
   hooks:
   - id: ruff
     args: [--fix]
@@ -48,7 +48,7 @@ repos:
     - playwright
     - install-playwright
 - repo: https://github.com/igorshubovych/markdownlint-cli
-  rev: v0.41.0
+  rev: v0.42.0
   hooks:
   - id: markdownlint
     exclude: ^.github/PULL_REQUEST_TEMPLATE.md
