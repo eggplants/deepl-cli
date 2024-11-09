@@ -20,6 +20,8 @@ jobs:
         python-version:
         # - '3.8'
         - '3.11'
+    env:
+      CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
 
     steps:
     - name: Checkout Repository
@@ -37,8 +39,6 @@ jobs:
     - name: Test & publish code coverage
       if: ${{ runner.os == 'Linux' && env.CC_TEST_REPORTER_ID != '' }}
       uses: paambaati/codeclimate-action@v9.0.0
-      env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       with:
         coverageCommand: poetry run task test:ci
         coverageLocations: ${{github.workspace}}/cov.xml:coverage.py
