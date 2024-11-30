@@ -3,7 +3,11 @@
 [![Release Package](
   <https://github.com/eggplants/deepl-cli/workflows/Release%20Package/badge.svg>
   )](
-  <https://github.com/eggplants/deepl-cli/actions/runs/345738487>
+  <https://github.com/eggplants/deepl-cli/actions/workflows/release.yml>
+) [![Test](
+  <https://github.com/eggplants/deepl-cli/actions/workflows/test.yml/badge.svg>
+  )](
+  <https://github.com/eggplants/deepl-cli/actions/workflows/test.yml>
 ) [![PyPI version](
   <https://badge.fury.io/py/deepl-cli.svg>
   )](

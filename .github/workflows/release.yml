@@ -34,7 +34,7 @@ jobs:
       with:
         persist-credentials: false
     - name: Build and publish to pypi
-      uses: JRubics/poetry-publish@v1.17
+      uses: JRubics/poetry-publish@v2.0
       with:
         pypi_token: ${{ secrets.PYPI_PASSWORD }}
   ghcr:
@@ -54,7 +54,7 @@ jobs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    - uses: docker/build-push-action@v5
+    - uses: docker/build-push-action@v6
       with:
         context: .
         push: true

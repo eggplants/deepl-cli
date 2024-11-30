@@ -20,25 +20,25 @@ jobs:
         python-version:
         # - '3.8'
         - '3.11'
+    env:
+      CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         cache: pip
         cache-dependency-path: poetry.lock
         python-version: ${{ matrix.python-version }}
-    - uses: abatilo/actions-poetry@v2
+    - uses: abatilo/actions-poetry@v3
     - run: poetry install --no-interaction
     - name: Test
-      if: ${{ runner.os == 'Windows' }}
+      if: ${{ runner.os != 'Linux' }}
       run: poetry run task test
     - name: Test & publish code coverage
-      if: ${{ runner.os != 'Windows' && env.CC_TEST_REPORTER_ID != '' }}
-      uses: paambaati/codeclimate-action@v5.0.0
-      env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      if: ${{ runner.os == 'Linux' && env.CC_TEST_REPORTER_ID != '' }}
+      uses: paambaati/codeclimate-action@v9.0.0
       with:
         coverageCommand: poetry run task test:ci
         coverageLocations: ${{github.workspace}}/cov.xml:coverage.py

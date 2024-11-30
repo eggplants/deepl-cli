@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import os
 import asyncio
+from functools import partial
 from typing import TYPE_CHECKING, Any, ClassVar
 from urllib.parse import quote
 
 from install_playwright import install
-from playwright._impl._api_types import Error as PlaywrightError
+from playwright._impl._errors import Error as PlaywrightError
 from playwright.async_api import async_playwright
 
 if TYPE_CHECKING:
@@ -96,8 +98,9 @@ class DeepLCLI:
             try:
                 browser = await self.__get_browser(p)
             except PlaywrightError as e:
-                if "Executable doesn't exist at" in e.message:
+                if "playwright install" in e.message:
                     print("Installing browser executable. This may take some time.")  # noqa: T201
+                    await asyncio.get_event_loop().run_in_executor(None, partial(install, p.chromium, with_deps=True))
                     await asyncio.get_event_loop().run_in_executor(None, install, p.chromium)
                     browser = await self.__get_browser(p)
                 else:
@@ -243,7 +246,7 @@ class DeepLCLI:
             headless=False,
             args=[
                 "--no-sandbox",
-                "--single-process",
+                "--single-process" if os.name != "nt" else "",
                 "--disable-dev-shm-usage",
                 "--disable-gpu",
                 "--no-zygote",
