@@ -38,7 +38,7 @@ pip install deepl-cli
 
 ## Usage
 
-## CLI
+### CLI
 
 ```bash
 deepl -F en -T ja -s <<<'This tool is useful for me.'
@@ -74,7 +74,7 @@ valid languages of `-T` / `--to`:
 {'cs', 'fr', 'ru', 'hu', 'zh', 'da', 'nl', 'en-gb', 'es', 'lv', 'nb', 'de', 'ko', 'it', 'pt', 'zh-hans', 'pl', 'et', 'pt-br', 'ar', 'el', 'en', 'id', 'sv', 'ro', 'ja', 'uk', 'bg', 'en-us', 'sk', 'zh-hant', 'pt-pt', 'fi', 'tr', 'sl', 'lt'}
 ```
 
-## Package
+### Package
 
 ```python
 from deepl import DeepLCLI
