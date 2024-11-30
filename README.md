@@ -40,27 +40,38 @@ pip install deepl-cli
 
 ## CLI
 
+```bash
+deepl -F en -T ja -s <<<'This tool is useful for me.'
+# このツールは私にとって便利だ。
+deepl -F ja -T en -s <<<'このツールは私にとって便利だ。'
+# This tool is useful for me.
+
+curl https://example.com | sed -nr '/^<body>/,/<\/body>/s/<[^>]+>//gp' | tr -d \\n > txt
+deepl -f txt -F en -T ja
+# 例文ドメイン このドメインは、文書の例文に使用するためのものです。事前の調整や許可を得ることなく、このドメインを文献で使用することができます。   詳細はこちら
+```
+
 ```shellsession
 $ deepl -h
-usage: deepl [-h] (-f PATH | -s) [--fr FR] --to TO [-t MS] [-v] [-V]
+usage: deepl [-h] (-f PATH | -s) -F FR -T TO [-t MS] [-v] [-V]
 
 DeepL Translator CLI without API Key
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -f PATH, --file PATH  source text file to translate (default: None)
-  -s, --stdin           read source text from stdin (default: False)
-  --fr FR               input language (default: auto)
-  --to TO               output language (default: None)
-  -t MS, --timeout MS   timeout interval (default: 5000)
-  -v, --verbose         make output verbose (default: False)
-  -V, --version         show program's version number and exit
+options:
+  -h, --help        show this help message and exit
+  -f, --file PATH   source text file to translate (default: None)
+  -s, --stdin       read source text from stdin (default: False)
+  -F, --fr FR       input language (default: None)
+  -T, --to TO       output language (default: None)
+  -t, --timeout MS  timeout interval (default: 5000)
+  -v, --verbose     make output verbose (default: False)
+  -V, --version     show program's version number and exit
 
-valid languages of `--fr`:
-{'fi', 'cs', 'lv', 'nl', 'el', 'auto', 'ru', 'da', 'sv', 'it', 'uk', 'zh', 'ko', 'et', 'de', 'en', 'es', 'bg', 'lt', 'ja', 'pl', 'tr', 'id', 'sk', 'sl', 'hu', 'fr', 'ro', 'pt'}
+valid languages of `-F` / --fr`:
+{'cs', 'fr', 'ru', 'hu', 'zh', 'da', 'nl', 'es', 'lv', 'nb', 'de', 'ko', 'it', 'pt', 'pl', 'et', 'ar', 'el', 'en', 'id', 'sv', 'ro', 'ja', 'uk', 'bg', 'sk', 'fi', 'tr', 'sl', 'lt'}
 
-valid languages of `--to`:
-{'fi', 'cs', 'lv', 'nl', 'lt', 'ja', 'el', 'pl', 'ru', 'tr', 'da', 'sv', 'pt', 'id', 'it', 'sk', 'sl', 'hu', 'fr', 'uk', 'zh', 'ko', 'et', 'de', 'en', 'ro', 'es', 'bg'}
+valid languages of `-T` / `--to`:
+{'cs', 'fr', 'ru', 'hu', 'zh', 'da', 'nl', 'en-gb', 'es', 'lv', 'nb', 'de', 'ko', 'it', 'pt', 'zh-hans', 'pl', 'et', 'pt-br', 'ar', 'el', 'en', 'id', 'sv', 'ro', 'ja', 'uk', 'bg', 'en-us', 'sk', 'zh-hant', 'pt-pt', 'fi', 'tr', 'sl', 'lt'}
 ```
 
 ## Package
