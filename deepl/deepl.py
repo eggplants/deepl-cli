@@ -195,30 +195,32 @@ class DeepLCLI:
             # Since the site may not output all lines at once, we wait until each line is finished
             # and then add it to the list of translated lines
             translated_lines = []
-            for line in range(line_count):
+            for line_index in range(line_count):
                 try:
                     await page.wait_for_function(
                         f"""
-                        () => document.querySelector('d-textarea[aria-labelledby=translation-target-heading]')
-                            ?.children[0]?.children[{line}]?.innerText?.length > 0
-                        && !document.querySelector('d-textarea[aria-labelledby=translation-target-heading]')
-                            ?.children[0]?.children[{line}]?.innerText?.startsWith('[...]')
+                        () => {
+                            const t = document.querySelector(
+                                'd-textarea[aria-labelledby=translation-target-heading]',
+                            )?.children[0]?.children[{line_index}]?.innerText ?? '';
+                            t.length > 0 && !t.startsWith('[...]')
                         """,
                     )
                 except PlaywrightError as e:
-                    msg = f"Time limit exceeded for line {line}. ({self.timeout} ms)"
+                    msg = f"Time limit exceeded for line {line_index}. ({self.timeout} ms)"
                     raise DeepLCLIPageLoadError(msg) from e
 
                 try:
                     translated_text = await page.evaluate(
                         f"""
-                         document.querySelector(
-                            'd-textarea[aria-labelledby=translation-target-heading]').children[0].children[{line}].innerText
-                    """
+                        document.querySelector(
+                            'd-textarea[aria-labelledby=translation-target-heading]'
+                        ).children[0].children[{line_index}].innerText
+                        """,
                     )
                     translated_lines.append(translated_text)
                 except PlaywrightError as e:
-                    msg = f"Unable get translated text for line {line}"
+                    msg = f"Unable get translated text for line {line_index}"
                     raise DeepLCLIPageLoadError(msg) from e
 
             # Get information
