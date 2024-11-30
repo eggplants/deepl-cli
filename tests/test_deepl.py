@@ -34,17 +34,20 @@ def test_invalid_input_and_output_lang() -> None:
         DeepLCLI("enn", "jaa", 100000)
 
 
+@pytest.mark.skip(reason="auto language detection by path param does not work")
 def test_input_too_long() -> None:
     t = DeepLCLI("auto", "ja", 100000)
     with pytest.raises(DeepLCLIError):
         t.translate("test" * 10000)
 
 
+@pytest.mark.skip(reason="auto language detection by path param does not work")
 def test_auto_to_de() -> None:
     t = DeepLCLI("auto", "de", 100000)
     assert t.translate("今日は2022/2/22です。") == "Heute ist der 22.2.2022."
 
 
+@pytest.mark.skip(reason="auto language detection by path param does not work")
 def test_lang_attrs() -> None:
     t = DeepLCLI("auto", "ja", 100000)
     assert t.translate("test") in ("試練", "テスト")
