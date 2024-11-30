@@ -25,38 +25,56 @@ class DeepLCLIPageLoadError(Exception):
 
 
 class DeepLCLI:
+    """
+    How to get language list:
+    1. open language dropdown
+    2. run on console:
+
+    ```
+    // const fr =
+    // cost to =
+    Array.from(
+      document.querySelectorAll(`button[data-testid^='translator-lang-option']`)
+    ).map(e=>e.getAttribute('data-testid').split('translator-lang-option-')[1].toLowerCase())
+    // new Set(fr).difference(new Set(to))
+    // new Set(to).difference(new Set(fr))
+    ```
+    """
+
     fr_langs: ClassVar[set[str]] = {
-        "auto",
+        # "auto",
+        "ar",
         "bg",
+        "zh",
         "cs",
         "da",
-        "de",
-        "el",
+        "nl",
         "en",
-        "es",
         "et",
         "fi",
         "fr",
+        "de",
+        "el",
         "hu",
         "id",
         "it",
         "ja",
         "ko",
-        "lt",
         "lv",
-        "nl",
+        "lt",
+        "nb",
         "pl",
         "pt",
         "ro",
         "ru",
         "sk",
         "sl",
+        "es",
         "sv",
         "tr",
         "uk",
-        "zh",
     }
-    to_langs = fr_langs | {"en-US", "en-GB", "nb", "pt-BR"} - {"auto"}
+    to_langs = fr_langs | {"zh-hans", "zh-hant", "en-us", "en-gb", "pt-pt", "pt-br"} - {"auto", "zh", "en", "pt"}
 
     def __init__(
         self,
@@ -199,11 +217,12 @@ class DeepLCLI:
                 try:
                     await page.wait_for_function(
                         f"""
-                        () => {
-                            const t = document.querySelector(
+                        () => {{
+                            t = document.querySelector(
                                 'd-textarea[aria-labelledby=translation-target-heading]',
                             )?.children[0]?.children[{line_index}]?.innerText ?? '';
-                            t.length > 0 && !t.startsWith('[...]')
+                            return t.length > 0 && !t.startsWith('[...]');
+                        }}
                         """,
                     )
                 except PlaywrightError as e:
@@ -253,7 +272,7 @@ class DeepLCLI:
     async def __get_browser(self, p: Playwright) -> Browser:
         """Launch browser executable and get playwright browser object."""
         return await p.chromium.launch(
-            headless=True,
+            headless=True,  # for debug, change into `False`
             args=[
                 "--no-sandbox",
                 "--single-process" if os.name != "nt" else "",

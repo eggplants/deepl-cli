@@ -73,9 +73,9 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
         ),
         description="DeepL Translator CLI without API Key",
         epilog=(
-            "valid languages of `--fr`:\n"
+            "valid languages of `-F` / --fr`:\n"
             + repr(DeepLCLI.fr_langs)
-            + "\n\nvalid languages of `--to`:\n"
+            + "\n\nvalid languages of `-T` / `--to`:\n"
             + repr(DeepLCLI.to_langs)
         ),
     )
@@ -93,8 +93,8 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
         action="store_true",
         help="read source text from stdin",
     )
-    parser.add_argument("--fr", type=check_input_lang, help="input language", default="auto")
-    parser.add_argument("--to", type=check_output_lang, help="output language", required=True)
+    parser.add_argument("-F", "--fr", type=check_input_lang, help="input language", required=True)
+    parser.add_argument("-T", "--to", type=check_output_lang, help="output language", required=True)
     parser.add_argument(
         "-t",
         "--timeout",
