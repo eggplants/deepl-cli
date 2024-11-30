@@ -147,8 +147,10 @@ class DeepLCLI:
                 try:
                     await page.evaluate(
                         """
-                         document.querySelector('div[data-testid="chrome-extension-toast"]').querySelector('button').click()
-                    """
+                        document.querySelector(
+                            'div[data-testid="chrome-extension-toast"]',
+                        ).querySelector('button').click()
+                        """,
                     )
                 except PlaywrightError:
                     pass
