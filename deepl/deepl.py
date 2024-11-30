@@ -213,7 +213,6 @@ class DeepLCLI:
                             'd-textarea[aria-labelledby=translation-target-heading]').children[0].children[{line}].innerText
                     """
                     )
-                    print(translated_text)
                     translated_lines.append(translated_text)
                 except PlaywrightError as e:
                     msg = f"Unable get translated text for line {line}"
