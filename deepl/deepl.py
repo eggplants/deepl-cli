@@ -199,11 +199,12 @@ class DeepLCLI:
                 try:
                     await page.wait_for_function(
                         f"""
-                        () => {
+                        () => {{
                             const t = document.querySelector(
                                 'd-textarea[aria-labelledby=translation-target-heading]',
                             )?.children[0]?.children[{line_index}]?.innerText ?? '';
-                            t.length > 0 && !t.startsWith('[...]')
+                            return t.length > 0 && !t.startsWith('[...]');
+                            }}
                         """,
                     )
                 except PlaywrightError as e:
