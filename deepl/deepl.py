@@ -183,9 +183,10 @@ class DeepLCLI:
             try:
                 line_count = await page.evaluate(
                     """
-                     document.querySelector(
-                        'd-textarea[aria-labelledby=translation-target-heading]').children[0].children.length
-                """
+                    document.querySelector(
+                        'd-textarea[aria-labelledby=translation-target-heading]',
+                    ).children[0].children.length
+                    """,
                 )
             except PlaywrightError as e:
                 msg = "Unable to evaluate line count of the translation"
