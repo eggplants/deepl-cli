@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright/python:v1.46.0-focal
+FROM mcr.microsoft.com/playwright/python:v1.48.0-focal
 
 ARG VERSION
 ENV VERSION ${VERSION:-master}
