@@ -140,15 +140,17 @@ class DeepLCLI:
                         () => document.querySelector('div[data-testid="chrome-extension-toast"]')
                         """,
                     )
-                except PlaywrightError as e:
+                except PlaywrightError:
                     pass
 
                 # try to close the extension banner
                 try:
-                    await page.evaluate("""
+                    await page.evaluate(
+                        """
                          document.querySelector('div[data-testid="chrome-extension-toast"]').querySelector('button').click()
-                    """)
-                except PlaywrightError as e:
+                    """
+                    )
+                except PlaywrightError:
                     pass
 
                 # select input / output language
@@ -177,10 +179,12 @@ class DeepLCLI:
 
             # Get the number of lines in the translated text field
             try:
-                line_count = await page.evaluate("""
+                line_count = await page.evaluate(
+                    """
                      document.querySelector(
                         'd-textarea[aria-labelledby=translation-target-heading]').children[0].children.length
-                """)
+                """
+                )
             except PlaywrightError as e:
                 msg = "Unable to evaluate line count of the translation"
                 raise DeepLCLIPageLoadError(msg) from e
@@ -193,7 +197,7 @@ class DeepLCLI:
                     await page.wait_for_function(
                         f"""
                         () => document.querySelector('d-textarea[aria-labelledby=translation-target-heading]')
-                            ?.children[0]?.children[{line}]?.innerText?.length > 0 
+                            ?.children[0]?.children[{line}]?.innerText?.length > 0
                         && !document.querySelector('d-textarea[aria-labelledby=translation-target-heading]')
                             ?.children[0]?.children[{line}]?.innerText?.startsWith('[...]')
                         """,
@@ -203,10 +207,12 @@ class DeepLCLI:
                     raise DeepLCLIPageLoadError(msg) from e
 
                 try:
-                    translated_text = await page.evaluate(f"""
+                    translated_text = await page.evaluate(
+                        f"""
                          document.querySelector(
                             'd-textarea[aria-labelledby=translation-target-heading]').children[0].children[{line}].innerText
-                    """)
+                    """
+                    )
                     print(translated_text)
                     translated_lines.append(translated_text)
                 except PlaywrightError as e:
