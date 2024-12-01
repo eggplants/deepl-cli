@@ -221,7 +221,7 @@ class DeepLCLI:
                             t = document.querySelector(
                                 'd-textarea[aria-labelledby=translation-target-heading]',
                             )?.children[0]?.children[{line_index}]?.innerText ?? '';
-                            return t.length > 0 && !t.startsWith('[...]');
+                            return t.length > 0 && !t.includes('[...]');
                         }}
                         """,
                     )
