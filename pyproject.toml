@@ -1,39 +1,47 @@
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = [
-  "poetry-core",
+  "poetry-core>=2",
 ]
 
-[tool.poetry]
-authors = [
-  "eggplants <w10776e8w@yahoo.co.jp>",
-]
-classifiers = [
-  "License :: OSI Approved :: MIT License",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: Implementation :: CPython",
-]
+[project]
+name = "deepl-cli"
+version = "1.0.0"
 description = "DeepL Translator CLI without API Key"
+readme = "README.md"
 keywords = [
+  "cli",
   "deepl",
   "translate",
-  "cli",
 ]
-name = "deepl_cli"
+license = { text = "MIT" }
+authors = [
+  { name = "eggplants", email = "w10776e8w@yahoo.co.jp" },
+]
+requires-python = ">=3.9,<4"
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Text Processing :: Linguistic",
+  "Typing :: Typed",
+]
+dependencies = [
+  "install-playwright>=0.1,<0.2",
+  "playwright>=1.49.1,<2",
+]
+urls.Repository = "https://github.com/eggplants/deepl-cli"
+scripts.deepl = "deepl.main:main"
+
+[tool.poetry]
+requires-poetry = ">=2.0"
 packages = [
   { include = "deepl" },
 ]
-license = "MIT"
-readme = "README.md"
-repository = "https://github.com/eggplants/deepl-cli"
-version = "1.0.0"
-
-[tool.poetry.dependencies]
-python = ">=3.8,<4"
-install-playwright = "^0.1.0"
-playwright = "^1.43.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = ">=0.991,<1.15"
@@ -43,8 +51,8 @@ pytest = ">=7.2.2,<9.0.0"
 pytest-cov = ">=4,<6"
 pytest-asyncio = ">=0.21,<0.25"
 
-[tool.poetry.scripts]
-deepl = "deepl.main:main"
+[tool.poetry.requires-plugins]
+poetry-plugin-shell = ">=1.0"
 
 [tool.black]
 line-length = 120
@@ -80,7 +88,6 @@ select = [
 ]
 ignore = [
   "D",
-  "ANN101",
 ]
 line-length = 120
 
