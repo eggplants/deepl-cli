@@ -31,7 +31,7 @@ jobs:
         cache: pip
         cache-dependency-path: poetry.lock
         python-version: ${{ matrix.python-version }}
-    - uses: abatilo/actions-poetry@v3
+    - uses: abatilo/actions-poetry@v4
     - run: poetry install --no-interaction
     - name: Test
       if: ${{ runner.os != 'Linux' }}
