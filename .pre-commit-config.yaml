@@ -30,15 +30,15 @@ repos:
   hooks:
   - id: pyproject-fmt
 - repo: https://github.com/python-poetry/poetry
-  rev: 2.0.0
+  rev: 2.0.1
   hooks:
   - id: poetry-check
 - repo: https://github.com/psf/black
-  rev: 24.10.0
+  rev: 25.1.0
   hooks:
   - id: black
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.8.6
+  rev: v0.9.4
   hooks:
   - id: ruff
     args: [--fix]
@@ -52,7 +52,7 @@ repos:
     - playwright
     - install-playwright
 - repo: https://github.com/igorshubovych/markdownlint-cli
-  rev: v0.43.0
+  rev: v0.44.0
   hooks:
   - id: markdownlint
     exclude: ^.github/PULL_REQUEST_TEMPLATE.md
