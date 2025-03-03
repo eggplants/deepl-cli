@@ -26,11 +26,11 @@ repos:
   - id: pretty-format-yaml
     args: [--autofix, --indent, '2']
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: v2.5.0
+  rev: v2.5.1
   hooks:
   - id: pyproject-fmt
 - repo: https://github.com/python-poetry/poetry
-  rev: 2.0.1
+  rev: 2.1.1
   hooks:
   - id: poetry-check
 - repo: https://github.com/psf/black
@@ -38,12 +38,12 @@ repos:
   hooks:
   - id: black
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.9.4
+  rev: v0.9.9
   hooks:
   - id: ruff
     args: [--fix]
 - repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v1.14.1
+  rev: v1.15.0
   hooks:
   - id: mypy
     files: ^deepl/
