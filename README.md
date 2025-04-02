@@ -21,7 +21,7 @@
 )
 
 [![Maintainability](
-  <https://qlty.sh/badges/bafc68a7-d3c7-4f3f-b09b-b86739801231/maintainability.svg
+  <https://qlty.sh/badges/bafc68a7-d3c7-4f3f-b09b-b86739801231/maintainability.svg>
   )](
   <https://qlty.sh/gh/eggplants/projects/deepl-cli>
 ) [![pre-commit.ci status](
