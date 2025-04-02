@@ -1,4 +1,4 @@
-""".. include:: ../README.md"""
+""".. include:: ../README.md"""  # noqa: D415
 
 import importlib.metadata
 

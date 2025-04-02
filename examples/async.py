@@ -7,7 +7,7 @@ from deepl import DeepLCLI
 
 
 def print_translated_text(future: asyncio.Future[str]) -> None:
-    """receive the result of async func and print."""
+    """Receive the result of async func and print."""
     try:
         translated_text = future.result()
         print(translated_text)
@@ -19,13 +19,13 @@ def print_translated_text(future: asyncio.Future[str]) -> None:
 
 
 async def translate(text: str) -> str:
-    """translate asynchronously."""
+    """Translate asynchronously."""
     t = DeepLCLI("en", "ja")
     return await t.translate_async(text)
 
 
 async def do_something() -> None:
-    """do something asynchronously."""
+    """Do something asynchronously."""
     await asyncio.sleep(10)
     print("Another task done!")
 

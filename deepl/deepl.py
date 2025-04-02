@@ -1,33 +1,32 @@
-from __future__ import annotations
+"""Translate text using DeepL with Playwright."""
 
 import asyncio
 import contextlib
 import os
+from collections.abc import Coroutine
 from functools import partial
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import Any, ClassVar
 from urllib.parse import quote
 
 from install_playwright import install
 from playwright._impl._errors import Error as PlaywrightError
 from playwright.async_api import async_playwright
-
-if TYPE_CHECKING:
-    from collections.abc import Coroutine
-
-    from playwright.async_api._generated import Browser, Playwright
+from playwright.async_api._generated import Browser, Playwright
 
 
 class DeepLCLIError(Exception):
-    pass
+    """Generic error for DeepLCLI."""
 
 
 class DeepLCLIPageLoadError(Exception):
-    pass
+    """Page load error for DeepLCLI."""
 
 
 class DeepLCLI:
-    """
+    """Translate text using DeepL with Playwright.
+
     How to get language list:
+
     1. open language dropdown
     2. run on console:
 
@@ -35,7 +34,7 @@ class DeepLCLI:
     // const fr =
     // cost to =
     Array.from(
-      document.querySelectorAll(`button[data-testid^='translator-lang-option']`)
+        document.querySelectorAll(`button[data-testid^='translator-lang-option']`)
     ).map(e=>e.getAttribute('data-testid').split('translator-lang-option-')[1].toLowerCase())
     // new Set(fr).difference(new Set(to))
     // new Set(to).difference(new Set(fr))
@@ -90,6 +89,17 @@ class DeepLCLI:
         *,
         use_dom_submit: bool = False,
     ) -> None:
+        """Initialize DeepLCLI.
+
+        Args:
+            fr_lang (str): Source language.
+            to_lang (str): Target language.
+            timeout (int): Timeout in milliseconds. Default is 15000ms.
+            use_dom_submit (bool): Use DOM submit instead of URL. Default is False.
+
+        Raises:
+            DeepLCLIError: If the language is not valid.
+        """
         if fr_lang not in self.fr_langs:
             raise DeepLCLIError(
                 f"{fr_lang!r} is not valid language. Valid language:\n" + repr(self.fr_langs),
@@ -108,6 +118,18 @@ class DeepLCLI:
         self.use_dom_submit = use_dom_submit
 
     def translate(self, script: str) -> str:
+        """Translate script.
+
+        Args:
+            script (str): Script to translate.
+
+        Returns:
+            str: Translated script.
+
+        Raises:
+            DeepLCLIError: If the script is empty or too long.
+            DeepLCLIPageLoadError: If the page load fails.
+        """
         script = self.__sanitize_script(script)
 
         # run in the current thread
@@ -115,6 +137,18 @@ class DeepLCLI:
         return loop.run_until_complete(self.__translate(script))
 
     def translate_async(self, script: str) -> Coroutine[Any, Any, str]:
+        """Translate script asynchronously.
+
+        Args:
+            script (str): Script to translate.
+
+        Returns:
+            Coroutine[Any, Any, str]: Translated script.
+
+        Raises:
+            DeepLCLIError: If the script is empty or too long.
+            DeepLCLIPageLoadError: If the page load fails.
+        """
         script = self.__sanitize_script(script)
 
         return self.__translate(script)

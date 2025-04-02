@@ -1,4 +1,4 @@
-from __future__ import annotations
+"""Main module of deepl CLI."""
 
 import argparse
 import sys
@@ -14,12 +14,23 @@ warnings.filterwarnings("ignore")
 
 
 class DeepLCLIFormatter(
-    argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter,
+    argparse.ArgumentDefaultsHelpFormatter,
+    argparse.RawDescriptionHelpFormatter,
 ):
-    pass
+    """Custom help formatter for argparse."""
 
 
 def check_file(v: str) -> str:
+    """Check if the file is a text file.
+
+    Args:
+        v (str): file path
+    Returns:
+        str: file path
+    Raises:
+        argparse.ArgumentTypeError: if the file is not a text file
+    """
+
     def is_binary_string(b: bytes) -> bool:
         chars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
         return bool(b.translate(None, chars))
@@ -37,6 +48,15 @@ def check_file(v: str) -> str:
 
 
 def check_natural(v: str) -> int:
+    """Check if the value is a natural number.
+
+    Args:
+        v (str): value to check
+    Returns:
+        int: value
+    Raises:
+        argparse.ArgumentTypeError: if the value is not a natural number
+    """
     n = int(v)
     if n < 0:
         msg = f"{v} must not be negative."
@@ -46,26 +66,50 @@ def check_natural(v: str) -> int:
 
 
 def check_input_lang(lang: str) -> str:
+    """Check if the input language is valid.
+
+    Args:
+        lang (str): input language
+    Returns:
+        str: input language
+    Raises:
+        argparse.ArgumentTypeError: if the input language is not valid
+    """
     if lang not in DeepLCLI.fr_langs:
         raise argparse.ArgumentTypeError(
-            f"{lang!r} is not valid language. Valid language:\n"
-            + repr(DeepLCLI.fr_langs),
+            f"{lang!r} is not valid language. Valid language:\n" + repr(DeepLCLI.fr_langs),
         )
 
     return lang
 
 
 def check_output_lang(lang: str) -> str:
+    """Check if the output language is valid.
+
+    Args:
+        lang (str): output language
+    Returns:
+        str: output language
+    Raises:
+        argparse.ArgumentTypeError: if the output language is not valid
+    """
     if lang not in DeepLCLI.to_langs:
         raise argparse.ArgumentTypeError(
-            f"{lang!r} is not valid language. Valid language:\n"
-            + repr(DeepLCLI.to_langs),
+            f"{lang!r} is not valid language. Valid language:\n" + repr(DeepLCLI.to_langs),
         )
     return lang
 
 
 def parse_args(test: str | None = None) -> argparse.Namespace:
-    """Parse arguments."""
+    """Parse arguments.
+
+    Args:
+        test (str | None): test string
+    Returns:
+        argparse.Namespace: parsed arguments
+    Raises:
+        argparse.ArgumentTypeError: if the arguments are not valid
+    """
     parser = argparse.ArgumentParser(
         prog="deepl",
         formatter_class=(
@@ -98,10 +142,18 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
         help="read source text from stdin",
     )
     parser.add_argument(
-        "-F", "--fr", type=check_input_lang, help="input language", required=True,
+        "-F",
+        "--fr",
+        type=check_input_lang,
+        help="input language",
+        required=True,
     )
     parser.add_argument(
-        "-T", "--to", type=check_output_lang, help="output language", required=True,
+        "-T",
+        "--to",
+        type=check_output_lang,
+        help="output language",
+        required=True,
     )
     parser.add_argument(
         "-t",
@@ -118,7 +170,10 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
         help="make output verbose",
     )
     parser.add_argument(
-        "-V", "--version", action="version", version=f"%(prog)s {__version__}",
+        "-V",
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
 
     if test is None:
@@ -127,6 +182,11 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
 
 
 def main(test: str | None = None) -> None:
+    """Main function.
+
+    Args:
+        test (str | None): test string
+    """
     args = parse_args(test)
     t = DeepLCLI(args.fr, args.to, timeout=args.timeout)
     script = ""

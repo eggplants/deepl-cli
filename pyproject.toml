@@ -13,11 +13,10 @@ keywords = [
 ]
 license = { text = "MIT" }
 authors = [ { name = "eggplants", email = "w10776e8w@yahoo.co.jp" } ]
-requires-python = ">=3.9,<4"
+requires-python = ">=3.10,<4"
 classifiers = [
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -36,7 +35,7 @@ scripts.deepl = "deepl.main:main"
 
 [dependency-groups]
 dev = [
-  "mypy>=0.991,<1.15",
+  "mypy>=1,<1.15",
   "pre-commit>=2.20,<4",
   "pytest>=7.2.2,<9",
   "pytest-asyncio>=0.21,<0.25",
@@ -63,24 +62,23 @@ format.quote-style = "double"
 lint.select = [
   "ALL",
 ]
-lint.ignore = [
-  "D",
-]
 lint.per-file-ignores."examples/*.py" = [
+  "D",
   "INP001", # Add an __init__.py.
   "T201",   # `print` found
 ]
 lint.per-file-ignores."main.py" = [
   "T201", # `print` found
 ]
-lint.per-file-ignores."tests/test_*.py" = [
+lint.per-file-ignores."tests/*.py" = [
+  "D",
   "S101", # Use of assert detected
 ]
 lint.pydocstyle.convention = "google"
 
 [tool.mypy]
 pretty = true
-python_version = "3.9"
+python_version = "3.10"
 show_error_codes = true
 strict = true
 
