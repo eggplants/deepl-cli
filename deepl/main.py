@@ -13,7 +13,9 @@ from .deepl import DeepLCLI
 warnings.filterwarnings("ignore")
 
 
-class DeepLCLIFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
+class DeepLCLIFormatter(
+    argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter,
+):
     pass
 
 
@@ -46,7 +48,8 @@ def check_natural(v: str) -> int:
 def check_input_lang(lang: str) -> str:
     if lang not in DeepLCLI.fr_langs:
         raise argparse.ArgumentTypeError(
-            f"{lang!r} is not valid language. Valid language:\n" + repr(DeepLCLI.fr_langs),
+            f"{lang!r} is not valid language. Valid language:\n"
+            + repr(DeepLCLI.fr_langs),
         )
 
     return lang
@@ -55,7 +58,8 @@ def check_input_lang(lang: str) -> str:
 def check_output_lang(lang: str) -> str:
     if lang not in DeepLCLI.to_langs:
         raise argparse.ArgumentTypeError(
-            f"{lang!r} is not valid language. Valid language:\n" + repr(DeepLCLI.to_langs),
+            f"{lang!r} is not valid language. Valid language:\n"
+            + repr(DeepLCLI.to_langs),
         )
     return lang
 
@@ -93,8 +97,12 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
         action="store_true",
         help="read source text from stdin",
     )
-    parser.add_argument("-F", "--fr", type=check_input_lang, help="input language", required=True)
-    parser.add_argument("-T", "--to", type=check_output_lang, help="output language", required=True)
+    parser.add_argument(
+        "-F", "--fr", type=check_input_lang, help="input language", required=True,
+    )
+    parser.add_argument(
+        "-T", "--to", type=check_output_lang, help="output language", required=True,
+    )
     parser.add_argument(
         "-t",
         "--timeout",
@@ -109,7 +117,9 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
         action="store_true",
         help="make output verbose",
     )
-    parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {__version__}")
+    parser.add_argument(
+        "-V", "--version", action="version", version=f"%(prog)s {__version__}",
+    )
 
     if test is None:
         return parser.parse_args()

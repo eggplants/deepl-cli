@@ -1,12 +1,9 @@
 [build-system]
-build-backend = "poetry.core.masonry.api"
-requires = [
-  "poetry-core>=2",
-]
+build-backend = "hatchling.build"
+requires = [ "hatchling", "uv-dynamic-versioning" ]
 
 [project]
 name = "deepl-cli"
-version = "1.1.0"
 description = "DeepL Translator CLI without API Key"
 readme = "README.md"
 keywords = [
@@ -15,9 +12,7 @@ keywords = [
   "translate",
 ]
 license = { text = "MIT" }
-authors = [
-  { name = "eggplants", email = "w10776e8w@yahoo.co.jp" },
-]
+authors = [ { name = "eggplants", email = "w10776e8w@yahoo.co.jp" } ]
 requires-python = ">=3.9,<4"
 classifiers = [
   "License :: OSI Approved :: MIT License",
@@ -30,6 +25,8 @@ classifiers = [
   "Topic :: Text Processing :: Linguistic",
   "Typing :: Typed",
 ]
+dynamic = [ "version" ]
+
 dependencies = [
   "install-playwright>=0.1,<0.2",
   "playwright>=1.49.1,<2",
@@ -37,42 +34,49 @@ dependencies = [
 urls.Repository = "https://github.com/eggplants/deepl-cli"
 scripts.deepl = "deepl.main:main"
 
-[tool.poetry]
-requires-poetry = ">=2.0"
-packages = [
-  { include = "deepl" },
+[dependency-groups]
+dev = [
+  "mypy>=0.991,<1.15",
+  "pre-commit>=2.20,<4",
+  "pytest>=7.2.2,<9",
+  "pytest-asyncio>=0.21,<0.25",
+  "pytest-cov>=4,<6",
+  "taskipy>=1.10.3,<2",
 ]
+docs = [ "pdoc" ]
 
-[tool.poetry.group.dev.dependencies]
-mypy = ">=0.991,<1.15"
-pre-commit = ">=2.20,<4.0"
-taskipy = "^1.10.3"
-pytest = ">=7.2.2,<9.0.0"
-pytest-cov = ">=4,<6"
-pytest-asyncio = ">=0.21,<0.25"
+[tool.hatch.version]
+# tool.hatch.version.source is not listed in official schema.
+# https://github.com/ninoseki/uv-dynamic-versioning/issues/21
+source = "uv-dynamic-versioning"
 
-[tool.poetry.requires-plugins]
-poetry-plugin-shell = ">=1.0"
+[tool.hatch.build.targets.sdist]
+include = [ "deepl" ]
 
-[tool.black]
-line-length = 120
-target-version = [
-  'py39',
-]
+[tool.hatch.build.targets.wheel]
+include = [ "deepl" ]
 
 [tool.ruff]
+line-length = 120
+format.indent-style = "space"
+format.quote-style = "double"
+lint.select = [
+  "ALL",
+]
+lint.ignore = [
+  "D",
+]
 lint.per-file-ignores."examples/*.py" = [
-  "INP001", # File tests/test_*.py is part of an implicit namespace package. Add an __init__.py.
+  "INP001", # Add an __init__.py.
   "T201",   # `print` found
 ]
 lint.per-file-ignores."main.py" = [
   "T201", # `print` found
 ]
 lint.per-file-ignores."tests/test_*.py" = [
-  "INP001", # File tests/test_*.py is part of an implicit namespace package. Add an __init__.py.
-  "S101",   # Use of assert detected
+  "S101", # Use of assert detected
 ]
-lint.mccabe.max-complexity = 18
+lint.pydocstyle.convention = "google"
 
 [tool.mypy]
 pretty = true
@@ -80,19 +84,19 @@ python_version = "3.9"
 show_error_codes = true
 strict = true
 
-[tool]
+[tool.uv]
+default-groups = [
+  "dev",
+  "docs",
+]
 
-[tool.lint.ruff]
-select = [
-  "ALL",
-]
-ignore = [
-  "D",
-]
-line-length = 120
+[tool.uv-dynamic-versioning]
+vcs = "git"
+style = "semver"
 
 [tool.taskipy.tasks]
 test = "pytest --cov=deepl --cov-report=term"
 "test:ci" = "task test --cov-report=xml:cov.xml"
 lint = "pre-commit run -a"
 profile = "python -m cProfile"
+gendoc = "pdoc deepl -o ./docs --docformat google"

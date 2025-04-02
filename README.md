@@ -4,20 +4,26 @@
   <https://github.com/eggplants/deepl-cli/workflows/Release%20Package/badge.svg>
   )](
   <https://github.com/eggplants/deepl-cli/actions/workflows/release.yml>
-) [![Test](
-  <https://github.com/eggplants/deepl-cli/actions/workflows/test.yml/badge.svg>
-  )](
-  <https://github.com/eggplants/deepl-cli/actions/workflows/test.yml>
 ) [![PyPI version](
   <https://badge.fury.io/py/deepl-cli.svg>
   )](
   <https://badge.fury.io/py/deepl-cli>
 )
 
-[![Maintainability](
-  <https://api.codeclimate.com/v1/badges/a56630914df8538ca93b/maintainability>
+[![Code Coverage](
+  <https://qlty.sh/badges/bafc68a7-d3c7-4f3f-b09b-b86739801231/test_coverage.svg>
   )](
-  <https://codeclimate.com/github/eggplants/deepl-cli/maintainability>
+  <https://qlty.sh/gh/eggplants/projects/deepl-cli>
+) [![Test](
+  <https://github.com/eggplants/deepl-cli/actions/workflows/test.yml/badge.svg>
+  )](
+  <https://github.com/eggplants/deepl-cli/actions/workflows/test.yml>
+)
+
+[![Maintainability](
+  <https://qlty.sh/badges/bafc68a7-d3c7-4f3f-b09b-b86739801231/maintainability.svg
+  )](
+  <https://qlty.sh/gh/eggplants/projects/deepl-cli>
 ) [![pre-commit.ci status](
   <https://results.pre-commit.ci/badge/github/eggplants/deepl-cli/master.svg>
   )](

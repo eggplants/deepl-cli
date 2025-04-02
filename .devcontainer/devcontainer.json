@@ -1,0 +1,55 @@
+{
+  "name": "Python",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "latest",
+      "installTools": false,
+      "installJupyterlab": false,
+      "toolsToInstall": "mypy"
+    },
+    "ghcr.io/va-h/devcontainers-features/uv:1": {},
+    "ghcr.io/devcontainers-contrib/features/shfmt:1": {},
+    "ghcr.io/dhoeric/features/hadolint:1": {},
+    "ghcr.io/michidk/devcontainers-features/typos:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true
+    }
+  },
+  "postCreateCommand": ".devcontainer/postCreateCommand.sh",
+  "remoteUser": "vscode",
+  "containerUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "charliermarsh.ruff",
+        "exiasr.hadolint",
+        "foxundermoon.shell-format",
+        "GitHub.copilot",
+        "GitHub.vscode-github-actions",
+        "Gruntfuggly.todo-tree",
+        "ms-azuretools.vscode-docker",
+        "ms-python.black-formatter",
+        "ms-python.mypy-type-checker",
+        "njpwerner.autodocstring",
+        "oderwat.indent-rainbow",
+        "tamasfe.even-better-toml",
+        "tekumara.typos-vscode",
+        "timonwong.shellcheck",
+        "-ms-python.vscode-pylance"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "python.defaultInterpreterPath": "./.venv/bin/python",
+        "[python]": {
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
+          },
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        }
+      }
+    }
+  }
+}

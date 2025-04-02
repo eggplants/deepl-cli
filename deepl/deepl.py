@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import os
 import asyncio
+import contextlib
+import os
 from functools import partial
 from typing import TYPE_CHECKING, Any, ClassVar
 from urllib.parse import quote
@@ -74,7 +75,12 @@ class DeepLCLI:
         "tr",
         "uk",
     }
-    to_langs = fr_langs | {"zh-hans", "zh-hant", "en-us", "en-gb", "pt-pt", "pt-br"} - {"auto", "zh", "en", "pt"}
+    to_langs = fr_langs | {"zh-hans", "zh-hant", "en-us", "en-gb", "pt-pt", "pt-br"} - {
+        "auto",
+        "zh",
+        "en",
+        "pt",
+    }
 
     def __init__(
         self,
@@ -85,9 +91,13 @@ class DeepLCLI:
         use_dom_submit: bool = False,
     ) -> None:
         if fr_lang not in self.fr_langs:
-            raise DeepLCLIError(f"{fr_lang!r} is not valid language. Valid language:\n" + repr(self.fr_langs))
+            raise DeepLCLIError(
+                f"{fr_lang!r} is not valid language. Valid language:\n" + repr(self.fr_langs),
+            )
         if to_lang not in self.to_langs:
-            raise DeepLCLIError(f"{to_lang!r} is not valid language. Valid language:\n" + repr(self.to_langs))
+            raise DeepLCLIError(
+                f"{to_lang!r} is not valid language. Valid language:\n" + repr(self.to_langs),
+            )
 
         self.fr_lang = fr_lang
         self.to_lang = to_lang
@@ -109,7 +119,7 @@ class DeepLCLI:
 
         return self.__translate(script)
 
-    async def __translate(self, script: str) -> str:
+    async def __translate(self, script: str) -> str:  # noqa: C901, PLR0915
         """Throw a request."""
         async with async_playwright() as p:
             # Dry run
@@ -117,9 +127,15 @@ class DeepLCLI:
                 browser = await self.__get_browser(p)
             except PlaywrightError as e:
                 if "playwright install" in e.message:
-                    print("Installing browser executable. This may take some time.")  # noqa: T201
-                    await asyncio.get_event_loop().run_in_executor(None, partial(install, p.chromium, with_deps=True))
-                    await asyncio.get_event_loop().run_in_executor(None, install, p.chromium)
+                    await asyncio.get_event_loop().run_in_executor(
+                        None,
+                        partial(install, p.chromium, with_deps=True),
+                    )
+                    await asyncio.get_event_loop().run_in_executor(
+                        None,
+                        install,
+                        p.chromium,
+                    )
                     browser = await self.__get_browser(p)
                 else:
                     raise
@@ -131,7 +147,9 @@ class DeepLCLI:
             excluded_resources = ["image", "media", "font", "other"]
             await page.route(
                 "**/*",
-                lambda route: route.abort() if route.request.resource_type in excluded_resources else route.continue_(),
+                lambda route: (
+                    route.abort() if route.request.resource_type in excluded_resources else route.continue_()
+                ),
             )
 
             url = "https://www.deepl.com/en/translator"
@@ -152,17 +170,15 @@ class DeepLCLI:
                 # banner prevents clicking on language buttons, close the banner first
                 await page.click("button[data-testid=cookie-banner-lax-close-button]")
                 # we also expect the Chrome extension banner to show up
-                try:
+                with contextlib.suppress(PlaywrightError):
                     await page.wait_for_function(
                         """
                         () => document.querySelector('div[data-testid="chrome-extension-toast"]')
                         """,
                     )
-                except PlaywrightError:
-                    pass
 
                 # try to close the extension banner
-                try:
+                with contextlib.suppress(PlaywrightError):
                     await page.evaluate(
                         """
                         document.querySelector(
@@ -170,20 +186,33 @@ class DeepLCLI:
                         ).querySelector('button').click()
                         """,
                     )
-                except PlaywrightError:
-                    pass
 
                 # select input / output language
-                await page.locator("button[data-testid=translator-source-lang-btn]").dispatch_event("click")
-                await page.get_by_test_id("translator-source-lang-list").get_by_test_id(
-                    f"translator-lang-option-{self.fr_lang}"
+                await page.locator(
+                    "button[data-testid=translator-source-lang-btn]",
                 ).dispatch_event("click")
-                await page.locator("button[data-testid=translator-target-lang-btn]").dispatch_event("click")
-                await page.get_by_test_id("translator-target-lang-list").get_by_test_id(
-                    f"translator-lang-option-{self.to_lang}"
+                await (
+                    page.get_by_test_id("translator-source-lang-list")
+                    .get_by_test_id(
+                        f"translator-lang-option-{self.fr_lang}",
+                    )
+                    .dispatch_event("click")
+                )
+                await page.locator(
+                    "button[data-testid=translator-target-lang-btn]",
                 ).dispatch_event("click")
+                await (
+                    page.get_by_test_id("translator-target-lang-list")
+                    .get_by_test_id(
+                        f"translator-lang-option-{self.to_lang}",
+                    )
+                    .dispatch_event("click")
+                )
                 # fill in the form of translating script
-                await page.fill("div[aria-labelledby=translation-source-heading]", script)
+                await page.fill(
+                    "div[aria-labelledby=translation-source-heading]",
+                    script,
+                )
 
             # Wait for translation to complete (perhaps partially)
             try:
@@ -243,11 +272,20 @@ class DeepLCLI:
                     raise DeepLCLIPageLoadError(msg) from e
 
             # Get information
-            input_textbox = page.get_by_role("region", name="Source text").locator("d-textarea")
-            output_textbox = page.get_by_role("region", name="Translation results").locator("d-textarea")
+            input_textbox = page.get_by_role("region", name="Source text").locator(
+                "d-textarea",
+            )
+            output_textbox = page.get_by_role(
+                "region",
+                name="Translation results",
+            ).locator("d-textarea")
 
-            self.translated_fr_lang = str(await input_textbox.get_attribute("lang")).split("-")[0]
-            self.translated_to_lang = str(await output_textbox.get_attribute("lang")).split("-")[0]
+            self.translated_fr_lang = str(
+                await input_textbox.get_attribute("lang"),
+            ).split("-")[0]
+            self.translated_to_lang = str(
+                await output_textbox.get_attribute("lang"),
+            ).split("-")[0]
 
             res = "".join(translated_lines)
 

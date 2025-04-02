@@ -55,7 +55,7 @@ def test_lang_attrs() -> None:
     assert t.translated_to_lang == "ja"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_translate_async() -> None:
     t = DeepLCLI("en", "ja", 100000)
     res = await t.translate_async("hello.")
