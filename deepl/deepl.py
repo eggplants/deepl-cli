@@ -5,12 +5,12 @@ import contextlib
 import os
 from collections.abc import Coroutine
 from functools import partial
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Optional
 from urllib.parse import quote
 
 from install_playwright import install
 from playwright._impl._errors import Error as PlaywrightError
-from playwright.async_api import async_playwright
+from playwright.async_api import ProxySettings, async_playwright
 from playwright.async_api._generated import Browser, Playwright
 
 
@@ -88,6 +88,8 @@ class DeepLCLI:
         timeout: int = 15000,
         *,
         use_dom_submit: bool = False,
+        proxy: Optional[ProxySettings] = None,
+
     ) -> None:
         """Initialize DeepLCLI.
 
@@ -96,6 +98,7 @@ class DeepLCLI:
             to_lang (str): Target language.
             timeout (int): Timeout in milliseconds. Default is 15000ms.
             use_dom_submit (bool): Use DOM submit instead of URL. Default is False.
+            proxy (ProxySettings): Use a proxy to access deepl.
 
         Raises:
             DeepLCLIError: If the language is not valid.
@@ -116,6 +119,7 @@ class DeepLCLI:
         self.max_length = 1500
         self.timeout = timeout
         self.use_dom_submit = use_dom_submit
+        self.proxy = proxy
 
     def translate(self, script: str) -> str:
         """Translate script.
@@ -153,7 +157,7 @@ class DeepLCLI:
 
         return self.__translate(script)
 
-    async def __translate(self, script: str) -> str:  # noqa: C901, PLR0915
+    async def __translate(self, script: str) -> str:  # noqa: C901, PLR0915, PLR0912
         """Throw a request."""
         async with async_playwright() as p:
             # Dry run
@@ -187,11 +191,20 @@ class DeepLCLI:
             )
 
             url = "https://www.deepl.com/en/translator"
-            if self.use_dom_submit:
-                await page.goto(url)
-            else:
-                script = quote(script, safe="")
-                await page.goto(f"{url}#{self.fr_lang}/{self.to_lang}/{script}")
+            async with page.expect_response(lambda resp: resp.url == url and resp.request.method == "GET") as resp_info:
+                if self.use_dom_submit:
+                    await page.goto(url)
+                else:
+                    script = quote(script, safe="")
+                    await page.goto(f"{url}#{self.fr_lang}/{self.to_lang}/{script}")
+
+            response = await resp_info.value
+
+            if not response.ok:
+                error_text = await page.inner_text("div")
+
+                msg = f"Page loading failed with status code {response.status}: {error_text}"
+                raise DeepLCLIError(msg)
 
             # Wait for loading to complete
             try:
@@ -353,4 +366,5 @@ class DeepLCLI:
                 "--no-zygote",
                 "--window-size=1920,1080",
             ],
+            proxy=self.proxy,
         )
