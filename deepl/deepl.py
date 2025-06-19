@@ -5,7 +5,7 @@ import contextlib
 import os
 from collections.abc import Coroutine
 from functools import partial
-from typing import Any, ClassVar, Optional
+from typing import Any, ClassVar
 from urllib.parse import quote
 
 from install_playwright import install
@@ -88,7 +88,7 @@ class DeepLCLI:
         timeout: int = 15000,
         *,
         use_dom_submit: bool = False,
-        proxy: Optional[ProxySettings] = None,
+        proxy: ProxySettings | None = None,
 
     ) -> None:
         """Initialize DeepLCLI.
