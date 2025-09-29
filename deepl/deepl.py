@@ -202,7 +202,7 @@ class DeepLCLI:
 
             if self.use_dom_submit:
                 # banner prevents clicking on language buttons, close the banner first
-                await page.click("button[data-testid=cookie-banner-lax-close-button]")
+                await page.click("button[data-testid=cookie-banner-strict-accept-all]")
                 # we also expect the Chrome extension banner to show up
                 with contextlib.suppress(PlaywrightError):
                     await page.wait_for_function(
@@ -276,7 +276,7 @@ class DeepLCLI:
             # Since the site may not output all lines at once, we wait until each line is finished
             # and then add it to the list of translated lines
             translated_lines = []
-            for line_index in range(line_count):
+            for line_index in range(line_count - 1):
                 try:
                     await page.wait_for_function(
                         f"""
@@ -321,7 +321,7 @@ class DeepLCLI:
                 await output_textbox.get_attribute("lang"),
             ).split("-")[0]
 
-            res = "".join(translated_lines)
+            res = "\n".join(translated_lines)
 
             await browser.close()
 
