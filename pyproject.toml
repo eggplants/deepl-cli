@@ -21,6 +21,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Text Processing :: Linguistic",
   "Typing :: Typed",
 ]
@@ -55,6 +56,12 @@ include = [ "deepl" ]
 [tool.hatch.build.targets.wheel]
 include = [ "deepl" ]
 
+[tool.uv]
+default-groups = [
+  "dev",
+  "docs",
+]
+
 [tool.ruff]
 line-length = 120
 format.indent-style = "space"
@@ -81,12 +88,6 @@ pretty = true
 python_version = "3.10"
 show_error_codes = true
 strict = true
-
-[tool.uv]
-default-groups = [
-  "dev",
-  "docs",
-]
 
 [tool.uv-dynamic-versioning]
 vcs = "git"
