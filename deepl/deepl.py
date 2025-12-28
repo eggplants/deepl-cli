@@ -55,7 +55,6 @@ class DeepLCLI:
             fr_lang (str): Source language.
             to_lang (str): Target language.
             timeout (int): Timeout in milliseconds. Default is 15000ms.
-            use_dom_submit (bool): Use DOM submit instead of URL. Default is False.
             proxy (ProxySettings): Use a proxy to access deepl.
 
         Raises:
