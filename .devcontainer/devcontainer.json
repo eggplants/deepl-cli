@@ -2,18 +2,13 @@
   "name": "Python",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "features": {
-    "ghcr.io/devcontainers/features/python:1": {
-      "version": "latest",
-      "installTools": false,
-      "installJupyterlab": false,
-      "toolsToInstall": "mypy"
-    },
-    "ghcr.io/va-h/devcontainers-features/uv:1": {},
-    "ghcr.io/devcontainers-contrib/features/shfmt:1": {},
-    "ghcr.io/dhoeric/features/hadolint:1": {},
-    "ghcr.io/michidk/devcontainers-features/typos:1": {},
+    "ghcr.io/devcontainers-extra/features/mise:1": {},
     "ghcr.io/devcontainers/features/common-utils:2": {
-      "configureZshAsDefaultShell": true
+      "configureZshAsDefaultShell": true,
+      "installZsh": true,
+      "installOhMyZsh": true,
+      "installOhMyZshConfig": true,
+      "upgradePackages": true
     }
   },
   "postCreateCommand": ".devcontainer/postCreateCommand.sh",
@@ -22,24 +17,20 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "DavidAnson.vscode-markdownlint",
+        "hverlin.mise-vscode",
+        "github.copilot",
+        "gruntfuggly.todo-tree",
+        "streetsidesoftware.code-spell-checker",
+        "redhat.vscode-yaml",
         "charliermarsh.ruff",
-        "exiasr.hadolint",
-        "foxundermoon.shell-format",
-        "GitHub.copilot",
-        "GitHub.vscode-github-actions",
-        "Gruntfuggly.todo-tree",
-        "ms-azuretools.vscode-docker",
-        "ms-python.black-formatter",
-        "ms-python.mypy-type-checker",
-        "njpwerner.autodocstring",
-        "oderwat.indent-rainbow",
-        "tamasfe.even-better-toml",
-        "tekumara.typos-vscode",
-        "timonwong.shellcheck",
+        "astral-sh.ty@prerelease",
+        "tombi-toml.tombi",
         "-ms-python.vscode-pylance"
       ],
       "settings": {
-        "terminal.integrated.defaultProfile.linux": "zsh",
+        // Python
+        "python.testing.pytestEnabled": true,
         "python.defaultInterpreterPath": "./.venv/bin/python",
         "[python]": {
           "editor.formatOnSave": true,
@@ -48,8 +39,25 @@
             "source.organizeImports": "explicit"
           },
           "editor.defaultFormatter": "charliermarsh.ruff"
+        },
+        // Markdown
+        "[markdown]": {
+          "editor.formatOnSave": true,
+          "editor.formatOnPaste": true
+        },
+        // Terminal
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.scrollback": 100000,
+        // GitHub Copilot
+        "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+        "github.copilot.chat.localeOverride": "ja",
+        "chat.instructionsFilesLocations": {
+          ".github/instructions": true
         }
       }
     }
-  }
+  },
+  "mounts": [],
+  "containerEnv": {},
+  "remoteEnv": {}
 }
