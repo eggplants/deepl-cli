@@ -4,14 +4,15 @@ import asyncio
 import contextlib
 import os
 from collections.abc import Coroutine
-from functools import partial
-from typing import Any, ClassVar
+from typing import Any
 from urllib.parse import quote
 
 from install_playwright import install
 from playwright._impl._errors import Error as PlaywrightError
 from playwright.async_api import async_playwright
 from playwright.async_api._generated import Browser, Playwright
+
+from deepl.languages import FR_LANGS, TO_LANGS
 
 
 class DeepLCLIError(Exception):
@@ -41,129 +42,6 @@ class DeepLCLI:
     ```
     """
 
-    fr_langs: ClassVar[set[str]] = {
-        # "auto",
-        "ace",
-        "af",
-        "an",
-        "ar",
-        "as",
-        "ay",
-        "az",
-        "ba",
-        "be",
-        "bg",
-        "bho",
-        "bn",
-        "br",
-        "bs",
-        "ca",
-        "ceb",
-        "ckb",
-        "cs",
-        "cy",
-        "da",
-        "de",
-        "el",
-        "en",
-        "eo",
-        "es",
-        "et",
-        "eu",
-        "fa",
-        "fi",
-        "fr",
-        "ga",
-        "gl",
-        "gn",
-        "gom",
-        "gu",
-        "ha",
-        "he",
-        "hi",
-        "hr",
-        "ht",
-        "hu",
-        "hy",
-        "id",
-        "ig",
-        "is",
-        "it",
-        "ja",
-        "jv",
-        "ka",
-        "kk",
-        "kmr",
-        "ko",
-        "ky",
-        "la",
-        "lb",
-        "lmo",
-        "ln",
-        "lt",
-        "lv",
-        "mai",
-        "mg",
-        "mi",
-        "mk",
-        "ml",
-        "mn",
-        "mr",
-        "ms",
-        "mt",
-        "my",
-        "nb",
-        "ne",
-        "nl",
-        "oc",
-        "om",
-        "pa",
-        "pag",
-        "pam",
-        "pl",
-        "prs",
-        "ps",
-        "pt",
-        "qu",
-        "ro",
-        "ru",
-        "sa",
-        "scn",
-        "sk",
-        "sl",
-        "sq",
-        "sr",
-        "st",
-        "su",
-        "sv",
-        "sw",
-        "ta",
-        "te",
-        "tg",
-        "tk",
-        "tl",
-        "tn",
-        "tr",
-        "ts",
-        "tt",
-        "uk",
-        "ur",
-        "uz",
-        "vi",
-        "wo",
-        "xh",
-        "yi",
-        "yue",
-        "zh",
-        "zu",
-    }
-    to_langs = fr_langs | {"zh-hans", "zh-hant", "en-us", "en-gb", "pt-pt", "pt-br", "es-419"} - {
-        "auto",
-        "zh",
-        "en",
-        "pt",
-    }
-
     def __init__(
         self,
         fr_lang: str,
@@ -183,13 +61,13 @@ class DeepLCLI:
         Raises:
             DeepLCLIError: If the language is not valid.
         """
-        if fr_lang not in self.fr_langs:
+        if fr_lang not in FR_LANGS:
             raise DeepLCLIError(
-                f"{fr_lang!r} is not valid language. Valid language:\n" + repr(self.fr_langs),
+                f"{fr_lang!r} is not valid language. Valid language:\n" + repr(FR_LANGS),
             )
-        if to_lang not in self.to_langs:
+        if to_lang not in TO_LANGS:
             raise DeepLCLIError(
-                f"{to_lang!r} is not valid language. Valid language:\n" + repr(self.to_langs),
+                f"{to_lang!r} is not valid language. Valid language:\n" + repr(TO_LANGS),
             )
 
         self.fr_lang = fr_lang
@@ -215,7 +93,6 @@ class DeepLCLI:
         """
         script = self.__sanitize_script(script)
 
-        # run in the current thread
         return asyncio.run(self.__translate(script))
 
     def translate_async(self, script: str) -> Coroutine[Any, Any, str]:
@@ -235,26 +112,10 @@ class DeepLCLI:
 
         return self.__translate(script)
 
-    async def __translate(self, script: str) -> str:  # noqa: C901, PLR0915
+    async def __translate(self, script: str) -> str:  # noqa: PLR0915
         """Throw a request."""
         async with async_playwright() as p:
-            # Dry run
-            try:
-                browser = await self.__get_browser(p)
-            except PlaywrightError as e:
-                if "playwright install" in e.message:
-                    await asyncio.get_event_loop().run_in_executor(
-                        None,
-                        partial(install, p.chromium, with_deps=True),
-                    )
-                    await asyncio.get_event_loop().run_in_executor(
-                        None,
-                        install,
-                        p.chromium,
-                    )
-                    browser = await self.__get_browser(p)
-                else:
-                    raise
+            browser = await self.__get_browser(p)
 
             page = await browser.new_page()
             page.set_default_timeout(self.timeout)
@@ -293,7 +154,7 @@ class DeepLCLI:
                         """,
                     )
 
-                # try to close the extension banner
+                # close the extension banner
                 with contextlib.suppress(PlaywrightError):
                     await page.evaluate(
                         """
@@ -303,7 +164,6 @@ class DeepLCLI:
                         """,
                     )
 
-                # select input / output language
                 await page.locator(
                     "button[data-testid=translator-source-lang-btn]",
                 ).dispatch_event("click")
@@ -324,13 +184,11 @@ class DeepLCLI:
                     )
                     .first.dispatch_event("click")
                 )
-                # fill in the form of translating script
                 await page.fill(
                     "div[aria-labelledby=translation-source-heading]",
                     script,
                 )
 
-            # Wait for translation to complete (perhaps partially)
             try:
                 await page.wait_for_function(
                     """
@@ -343,7 +201,6 @@ class DeepLCLI:
                 msg = f"Time limit exceeded. ({self.timeout} ms)"
                 raise DeepLCLIPageLoadError(msg) from e
 
-            # Get the number of lines in the translated text field
             try:
                 line_count = await page.evaluate(
                     """
@@ -356,8 +213,6 @@ class DeepLCLI:
                 msg = "Unable to evaluate line count of the translation"
                 raise DeepLCLIPageLoadError(msg) from e
 
-            # Since the site may not output all lines at once, we wait until each line is finished
-            # and then add it to the list of translated lines
             translated_lines = []
             for line_index in range(line_count):
                 try:
@@ -388,7 +243,6 @@ class DeepLCLI:
                     msg = f"Unable get translated text for line {line_index}"
                     raise DeepLCLIPageLoadError(msg) from e
 
-            # Get information
             input_textbox = page.get_by_role("region", name="Source text").locator(
                 "d-textarea",
             )
@@ -426,8 +280,10 @@ class DeepLCLI:
 
     async def __get_browser(self, p: Playwright) -> Browser:
         """Launch browser executable and get playwright browser object."""
+        install(p.chromium, with_deps=True)
+
         return await p.chromium.launch(
-            headless=False,
+            headless=True,
             args=[
                 "--no-sandbox",
                 "--single-process" if os.name != "nt" else "",

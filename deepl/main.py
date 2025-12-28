@@ -7,6 +7,7 @@ from pathlib import Path
 from shutil import get_terminal_size
 
 from deepl import __version__
+from deepl.languages import FR_LANGS, TO_LANGS
 
 from .deepl import DeepLCLI
 
@@ -75,9 +76,9 @@ def check_input_lang(lang: str) -> str:
     Raises:
         argparse.ArgumentTypeError: if the input language is not valid
     """
-    if lang not in DeepLCLI.fr_langs:
+    if lang not in FR_LANGS:
         raise argparse.ArgumentTypeError(
-            f"{lang!r} is not valid language. Valid language:\n" + repr(DeepLCLI.fr_langs),
+            f"{lang!r} is not valid language. Valid language:\n" + repr(FR_LANGS),
         )
 
     return lang
@@ -93,9 +94,9 @@ def check_output_lang(lang: str) -> str:
     Raises:
         argparse.ArgumentTypeError: if the output language is not valid
     """
-    if lang not in DeepLCLI.to_langs:
+    if lang not in TO_LANGS:
         raise argparse.ArgumentTypeError(
-            f"{lang!r} is not valid language. Valid language:\n" + repr(DeepLCLI.to_langs),
+            f"{lang!r} is not valid language. Valid language:\n" + repr(TO_LANGS),
         )
     return lang
 
@@ -122,9 +123,9 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
         description="DeepL Translator CLI without API Key",
         epilog=(
             "valid languages of `-F` / --fr`:\n"
-            + repr(DeepLCLI.fr_langs)
+            + repr(FR_LANGS)
             + "\n\nvalid languages of `-T` / `--to`:\n"
-            + repr(DeepLCLI.to_langs)
+            + repr(TO_LANGS)
         ),
     )
     group = parser.add_mutually_exclusive_group(required=True)
