@@ -404,7 +404,7 @@ valid languages of `-T` / `--to`:
 </span><span id="DeepLCLI-203"><a href="#DeepLCLI-203"><span class="linenos">203</span></a>
 </span><span id="DeepLCLI-204"><a href="#DeepLCLI-204"><span class="linenos">204</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_dom_submit</span><span class="p">:</span>
 </span><span id="DeepLCLI-205"><a href="#DeepLCLI-205"><span class="linenos">205</span></a>                <span class="c1"># banner prevents clicking on language buttons, close the banner first</span>
-</span><span id="DeepLCLI-206"><a href="#DeepLCLI-206"><span class="linenos">206</span></a>                <span class="k">await</span> <span class="n">page</span><span class="o">.</span><span class="n">click</span><span class="p">(</span><span class="s2">&quot;button[data-testid=cookie-banner-lax-close-button]&quot;</span><span class="p">)</span>
+</span><span id="DeepLCLI-206"><a href="#DeepLCLI-206"><span class="linenos">206</span></a>                <span class="k">await</span> <span class="n">page</span><span class="o">.</span><span class="n">click</span><span class="p">(</span><span class="s2">&quot;button[data-testid=cookie-banner-strict-accept-all]&quot;</span><span class="p">)</span>
 </span><span id="DeepLCLI-207"><a href="#DeepLCLI-207"><span class="linenos">207</span></a>                <span class="c1"># we also expect the Chrome extension banner to show up</span>
 </span><span id="DeepLCLI-208"><a href="#DeepLCLI-208"><span class="linenos">208</span></a>                <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="n">PlaywrightError</span><span class="p">):</span>
 </span><span id="DeepLCLI-209"><a href="#DeepLCLI-209"><span class="linenos">209</span></a>                    <span class="k">await</span> <span class="n">page</span><span class="o">.</span><span class="n">wait_for_function</span><span class="p">(</span>
@@ -478,7 +478,7 @@ valid languages of `-T` / `--to`:
 </span><span id="DeepLCLI-277"><a href="#DeepLCLI-277"><span class="linenos">277</span></a>            <span class="c1"># Since the site may not output all lines at once, we wait until each line is finished</span>
 </span><span id="DeepLCLI-278"><a href="#DeepLCLI-278"><span class="linenos">278</span></a>            <span class="c1"># and then add it to the list of translated lines</span>
 </span><span id="DeepLCLI-279"><a href="#DeepLCLI-279"><span class="linenos">279</span></a>            <span class="n">translated_lines</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="DeepLCLI-280"><a href="#DeepLCLI-280"><span class="linenos">280</span></a>            <span class="k">for</span> <span class="n">line_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">line_count</span><span class="p">):</span>
+</span><span id="DeepLCLI-280"><a href="#DeepLCLI-280"><span class="linenos">280</span></a>            <span class="k">for</span> <span class="n">line_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">line_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
 </span><span id="DeepLCLI-281"><a href="#DeepLCLI-281"><span class="linenos">281</span></a>                <span class="k">try</span><span class="p">:</span>
 </span><span id="DeepLCLI-282"><a href="#DeepLCLI-282"><span class="linenos">282</span></a>                    <span class="k">await</span> <span class="n">page</span><span class="o">.</span><span class="n">wait_for_function</span><span class="p">(</span>
 </span><span id="DeepLCLI-283"><a href="#DeepLCLI-283"><span class="linenos">283</span></a>                        <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
@@ -523,7 +523,7 @@ valid languages of `-T` / `--to`:
 </span><span id="DeepLCLI-322"><a href="#DeepLCLI-322"><span class="linenos">322</span></a>                <span class="k">await</span> <span class="n">output_textbox</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s2">&quot;lang&quot;</span><span class="p">),</span>
 </span><span id="DeepLCLI-323"><a href="#DeepLCLI-323"><span class="linenos">323</span></a>            <span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 </span><span id="DeepLCLI-324"><a href="#DeepLCLI-324"><span class="linenos">324</span></a>
-</span><span id="DeepLCLI-325"><a href="#DeepLCLI-325"><span class="linenos">325</span></a>            <span class="n">res</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">translated_lines</span><span class="p">)</span>
+</span><span id="DeepLCLI-325"><a href="#DeepLCLI-325"><span class="linenos">325</span></a>            <span class="n">res</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">translated_lines</span><span class="p">)</span>
 </span><span id="DeepLCLI-326"><a href="#DeepLCLI-326"><span class="linenos">326</span></a>
 </span><span id="DeepLCLI-327"><a href="#DeepLCLI-327"><span class="linenos">327</span></a>            <span class="k">await</span> <span class="n">browser</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </span><span id="DeepLCLI-328"><a href="#DeepLCLI-328"><span class="linenos">328</span></a>
@@ -651,7 +651,7 @@ Array.from(
                                 <div class="attr variable">
             <span class="name">fr_langs</span><span class="annotation">: ClassVar[set[str]]</span>        =
 <input id="DeepLCLI.fr_langs-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="DeepLCLI.fr_langs-view-value"></label><span class="default_value">{&#39;it&#39;, &#39;en&#39;, &#39;fi&#39;, &#39;cs&#39;, &#39;tr&#39;, &#39;ro&#39;, &#39;ko&#39;, &#39;fr&#39;, &#39;es&#39;, &#39;sl&#39;, &#39;bg&#39;, &#39;zh&#39;, &#39;ar&#39;, &#39;el&#39;, &#39;ja&#39;, &#39;ru&#39;, &#39;sk&#39;, &#39;sv&#39;, &#39;hu&#39;, &#39;lv&#39;, &#39;da&#39;, &#39;de&#39;, &#39;pl&#39;, &#39;pt&#39;, &#39;lt&#39;, &#39;uk&#39;, &#39;id&#39;, &#39;nl&#39;, &#39;et&#39;, &#39;nb&#39;}</span>
+            <label class="view-value-button pdoc-button" for="DeepLCLI.fr_langs-view-value"></label><span class="default_value">{&#39;es&#39;, &#39;ar&#39;, &#39;it&#39;, &#39;ko&#39;, &#39;ja&#39;, &#39;lv&#39;, &#39;pl&#39;, &#39;cs&#39;, &#39;sv&#39;, &#39;uk&#39;, &#39;bg&#39;, &#39;el&#39;, &#39;en&#39;, &#39;lt&#39;, &#39;sl&#39;, &#39;hu&#39;, &#39;et&#39;, &#39;fi&#39;, &#39;zh&#39;, &#39;nb&#39;, &#39;tr&#39;, &#39;fr&#39;, &#39;da&#39;, &#39;ru&#39;, &#39;nl&#39;, &#39;pt&#39;, &#39;ro&#39;, &#39;id&#39;, &#39;sk&#39;, &#39;de&#39;}</span>
 
         
     </div>
@@ -664,7 +664,7 @@ Array.from(
                                 <div class="attr variable">
             <span class="name">to_langs</span>        =
 <input id="DeepLCLI.to_langs-view-value" class="view-value-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-            <label class="view-value-button pdoc-button" for="DeepLCLI.to_langs-view-value"></label><span class="default_value">{&#39;it&#39;, &#39;zh-hant&#39;, &#39;en&#39;, &#39;fi&#39;, &#39;cs&#39;, &#39;pt-pt&#39;, &#39;en-gb&#39;, &#39;en-us&#39;, &#39;tr&#39;, &#39;zh-hans&#39;, &#39;ro&#39;, &#39;ko&#39;, &#39;fr&#39;, &#39;es&#39;, &#39;sl&#39;, &#39;bg&#39;, &#39;zh&#39;, &#39;ar&#39;, &#39;el&#39;, &#39;ja&#39;, &#39;ru&#39;, &#39;sk&#39;, &#39;sv&#39;, &#39;hu&#39;, &#39;lv&#39;, &#39;da&#39;, &#39;de&#39;, &#39;pl&#39;, &#39;pt&#39;, &#39;pt-br&#39;, &#39;lt&#39;, &#39;uk&#39;, &#39;id&#39;, &#39;nl&#39;, &#39;et&#39;, &#39;nb&#39;}</span>
+            <label class="view-value-button pdoc-button" for="DeepLCLI.to_langs-view-value"></label><span class="default_value">{&#39;zh-hant&#39;, &#39;es&#39;, &#39;ar&#39;, &#39;it&#39;, &#39;ko&#39;, &#39;ja&#39;, &#39;lv&#39;, &#39;pl&#39;, &#39;en-us&#39;, &#39;cs&#39;, &#39;sv&#39;, &#39;uk&#39;, &#39;bg&#39;, &#39;en-gb&#39;, &#39;el&#39;, &#39;en&#39;, &#39;lt&#39;, &#39;sl&#39;, &#39;hu&#39;, &#39;et&#39;, &#39;fi&#39;, &#39;zh&#39;, &#39;pt-pt&#39;, &#39;zh-hans&#39;, &#39;nb&#39;, &#39;tr&#39;, &#39;pt-br&#39;, &#39;fr&#39;, &#39;da&#39;, &#39;ru&#39;, &#39;nl&#39;, &#39;pt&#39;, &#39;ro&#39;, &#39;id&#39;, &#39;sk&#39;, &#39;de&#39;}</span>
 
         
     </div>
