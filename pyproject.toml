@@ -39,6 +39,7 @@ dev = [
   "pymarkdownlnt>=0.9.33",
   "pyproject-fmt>=2.11.1",
   "pytest>=9.0.2",
+  "pytest-asyncio>=1.3",
   "pytest-cov>=7",
 ]
 docs = [

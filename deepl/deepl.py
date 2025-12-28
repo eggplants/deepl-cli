@@ -43,38 +43,121 @@ class DeepLCLI:
 
     fr_langs: ClassVar[set[str]] = {
         # "auto",
+        "ace",
+        "af",
+        "an",
         "ar",
+        "as",
+        "ay",
+        "az",
+        "ba",
+        "be",
         "bg",
-        "zh",
+        "bho",
+        "bn",
+        "br",
+        "bs",
+        "ca",
+        "ceb",
+        "ckb",
         "cs",
+        "cy",
         "da",
-        "nl",
-        "en",
-        "et",
-        "fi",
-        "fr",
         "de",
         "el",
+        "en",
+        "eo",
+        "es",
+        "et",
+        "eu",
+        "fa",
+        "fi",
+        "fr",
+        "ga",
+        "gl",
+        "gn",
+        "gom",
+        "gu",
+        "ha",
+        "he",
+        "hi",
+        "hr",
+        "ht",
         "hu",
+        "hy",
         "id",
+        "ig",
+        "is",
         "it",
         "ja",
+        "jv",
+        "ka",
+        "kk",
+        "kmr",
         "ko",
-        "lv",
+        "ky",
+        "la",
+        "lb",
+        "lmo",
+        "ln",
         "lt",
+        "lv",
+        "mai",
+        "mg",
+        "mi",
+        "mk",
+        "ml",
+        "mn",
+        "mr",
+        "ms",
+        "mt",
+        "my",
         "nb",
+        "ne",
+        "nl",
+        "oc",
+        "om",
+        "pa",
+        "pag",
+        "pam",
         "pl",
+        "prs",
+        "ps",
         "pt",
+        "qu",
         "ro",
         "ru",
+        "sa",
+        "scn",
         "sk",
         "sl",
-        "es",
+        "sq",
+        "sr",
+        "st",
+        "su",
         "sv",
+        "sw",
+        "ta",
+        "te",
+        "tg",
+        "tk",
+        "tl",
+        "tn",
         "tr",
+        "ts",
+        "tt",
         "uk",
+        "ur",
+        "uz",
+        "vi",
+        "wo",
+        "xh",
+        "yi",
+        "yue",
+        "zh",
+        "zu",
     }
-    to_langs = fr_langs | {"zh-hans", "zh-hant", "en-us", "en-gb", "pt-pt", "pt-br"} - {
+    to_langs = fr_langs | {"zh-hans", "zh-hant", "en-us", "en-gb", "pt-pt", "pt-br", "es-419"} - {
         "auto",
         "zh",
         "en",
@@ -133,8 +216,7 @@ class DeepLCLI:
         script = self.__sanitize_script(script)
 
         # run in the current thread
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.__translate(script))
+        return asyncio.run(self.__translate(script))
 
     def translate_async(self, script: str) -> Coroutine[Any, Any, str]:
         """Translate script asynchronously.
@@ -201,8 +283,8 @@ class DeepLCLI:
                 raise DeepLCLIPageLoadError(msg) from e
 
             if self.use_dom_submit:
-                # banner prevents clicking on language buttons, close the banner first
-                await page.click("button[data-testid=cookie-banner-strict-accept-all]")
+                with contextlib.suppress(PlaywrightError):
+                    await page.click("button[data-testid=cookie-banner-strict-accept-all]")
                 # we also expect the Chrome extension banner to show up
                 with contextlib.suppress(PlaywrightError):
                     await page.wait_for_function(
@@ -230,7 +312,7 @@ class DeepLCLI:
                     .get_by_test_id(
                         f"translator-lang-option-{self.fr_lang}",
                     )
-                    .dispatch_event("click")
+                    .first.dispatch_event("click")
                 )
                 await page.locator(
                     "button[data-testid=translator-target-lang-btn]",
@@ -240,7 +322,7 @@ class DeepLCLI:
                     .get_by_test_id(
                         f"translator-lang-option-{self.to_lang}",
                     )
-                    .dispatch_event("click")
+                    .first.dispatch_event("click")
                 )
                 # fill in the form of translating script
                 await page.fill(
@@ -255,6 +337,7 @@ class DeepLCLI:
                     () => document.querySelector(
                     'd-textarea[aria-labelledby=translation-target-heading]')?.value?.length > 0
                     """,
+                    timeout=self.timeout,
                 )
             except PlaywrightError as e:
                 msg = f"Time limit exceeded. ({self.timeout} ms)"
@@ -276,7 +359,7 @@ class DeepLCLI:
             # Since the site may not output all lines at once, we wait until each line is finished
             # and then add it to the list of translated lines
             translated_lines = []
-            for line_index in range(line_count - 1):
+            for line_index in range(line_count):
                 try:
                     await page.wait_for_function(
                         f"""
@@ -344,7 +427,7 @@ class DeepLCLI:
     async def __get_browser(self, p: Playwright) -> Browser:
         """Launch browser executable and get playwright browser object."""
         return await p.chromium.launch(
-            headless=True,  # for debug, change into `False`
+            headless=False,
             args=[
                 "--no-sandbox",
                 "--single-process" if os.name != "nt" else "",
