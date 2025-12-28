@@ -5,7 +5,6 @@ import contextlib
 import os
 from collections.abc import Coroutine
 from typing import Any
-from urllib.parse import quote
 
 from install_playwright import install
 from playwright._impl._errors import Error as PlaywrightError
@@ -47,8 +46,6 @@ class DeepLCLI:
         fr_lang: str,
         to_lang: str,
         timeout: int = 15000,
-        *,
-        use_dom_submit: bool = False,
     ) -> None:
         """Initialize DeepLCLI.
 
@@ -76,7 +73,6 @@ class DeepLCLI:
         self.translated_to_lang: str | None = None
         self.max_length = 1500
         self.timeout = timeout
-        self.use_dom_submit = use_dom_submit
 
     def translate(self, script: str) -> str:
         """Translate script.
@@ -112,15 +108,14 @@ class DeepLCLI:
 
         return self.__translate(script)
 
-    async def __translate(self, script: str) -> str:  # noqa: PLR0915
+    async def __translate(self, script: str) -> str:
         """Throw a request."""
         async with async_playwright() as p:
             browser = await self.__get_browser(p)
 
             page = await browser.new_page()
             page.set_default_timeout(self.timeout)
-
-            # skip loading page resources for improving performance
+            await page.set_viewport_size({"width": 1920, "height": 1080})
             excluded_resources = ["image", "media", "font", "other"]
             await page.route(
                 "**/*",
@@ -130,64 +125,57 @@ class DeepLCLI:
             )
 
             url = "https://www.deepl.com/en/translator"
-            if self.use_dom_submit:
-                await page.goto(url)
-            else:
-                script = quote(script, safe="")
-                await page.goto(f"{url}#{self.fr_lang}/{self.to_lang}/{script}")
+            await page.goto(url)
 
-            # Wait for loading to complete
             try:
                 page.get_by_role("main")
             except PlaywrightError as e:
                 msg = f"Maybe Time limit exceeded. ({self.timeout} ms)"
                 raise DeepLCLIPageLoadError(msg) from e
 
-            if self.use_dom_submit:
-                with contextlib.suppress(PlaywrightError):
-                    await page.click("button[data-testid=cookie-banner-strict-accept-all]")
-                # we also expect the Chrome extension banner to show up
-                with contextlib.suppress(PlaywrightError):
-                    await page.wait_for_function(
-                        """
-                        () => document.querySelector('div[data-testid="chrome-extension-toast"]')
-                        """,
-                    )
+            with contextlib.suppress(PlaywrightError):
+                await page.click("button[id=cookie-banner-lax-close-button]")
+                await page.wait_for_function(
+                    """
+                    () => document.querySelector('div[data-testid="chrome-extension-toast"]')
+                    """,
+                )
+                await page.evaluate(
+                    """
+                    document.querySelector(
+                        'div[data-testid="chrome-extension-toast"]',
+                    ).querySelector('button').click()
+                    """,
+                )
 
-                # close the extension banner
-                with contextlib.suppress(PlaywrightError):
-                    await page.evaluate(
-                        """
-                        document.querySelector(
-                            'div[data-testid="chrome-extension-toast"]',
-                        ).querySelector('button').click()
-                        """,
-                    )
+            await page.locator(
+                "button[data-testid=translator-source-lang-btn]",
+            ).dispatch_event("click")
 
-                await page.locator(
-                    "button[data-testid=translator-source-lang-btn]",
-                ).dispatch_event("click")
-                await (
-                    page.get_by_test_id("translator-source-lang-list")
-                    .get_by_test_id(
-                        f"translator-lang-option-{self.fr_lang}",
-                    )
-                    .first.dispatch_event("click")
+            await (
+                page.get_by_test_id("translator-source-lang-list")
+                .get_by_test_id(
+                    f"translator-lang-option-{self.fr_lang}",
                 )
-                await page.locator(
-                    "button[data-testid=translator-target-lang-btn]",
-                ).dispatch_event("click")
-                await (
-                    page.get_by_test_id("translator-target-lang-list")
-                    .get_by_test_id(
-                        f"translator-lang-option-{self.to_lang}",
-                    )
-                    .first.dispatch_event("click")
+                .first.dispatch_event("click")
+            )
+
+            await page.locator(
+                "button[data-testid=translator-target-lang-btn]",
+            ).dispatch_event("click")
+
+            await (
+                page.get_by_test_id("translator-target-lang-list")
+                .get_by_test_id(
+                    f"translator-lang-option-{self.to_lang}",
                 )
-                await page.fill(
-                    "div[aria-labelledby=translation-source-heading]",
-                    script,
-                )
+                .first.dispatch_event("click")
+            )
+
+            await page.fill(
+                "div[aria-labelledby=translation-source-heading]",
+                script,
+            )
 
             try:
                 await page.wait_for_function(
@@ -201,47 +189,34 @@ class DeepLCLI:
                 msg = f"Time limit exceeded. ({self.timeout} ms)"
                 raise DeepLCLIPageLoadError(msg) from e
 
+            # Wait for translation to complete (check that [...] placeholder is gone)
             try:
-                line_count = await page.evaluate(
+                await page.wait_for_function(
+                    """
+                    () => {
+                        const elem = document.querySelector('d-textarea[aria-labelledby=translation-target-heading]');
+                        const text = elem?.value ?? '';
+                        return text.length > 0 && !text.includes('[...]');
+                    }
+                    """,
+                    timeout=self.timeout,
+                )
+            except PlaywrightError as e:
+                msg = f"Translation incomplete after {self.timeout} ms"
+                raise DeepLCLIPageLoadError(msg) from e
+
+            # Get the translated text directly from the value attribute
+            try:
+                res = await page.evaluate(
                     """
                     document.querySelector(
-                        'd-textarea[aria-labelledby=translation-target-heading]',
-                    ).children[0].children.length
+                        'd-textarea[aria-labelledby=translation-target-heading]'
+                    ).value
                     """,
                 )
             except PlaywrightError as e:
-                msg = "Unable to evaluate line count of the translation"
+                msg = "Unable to get translated text"
                 raise DeepLCLIPageLoadError(msg) from e
-
-            translated_lines = []
-            for line_index in range(line_count):
-                try:
-                    await page.wait_for_function(
-                        f"""
-                        () => {{
-                            t = document.querySelector(
-                                'd-textarea[aria-labelledby=translation-target-heading]',
-                            )?.children[0]?.children[{line_index}]?.innerText ?? '';
-                            return t.length > 0 && !t.includes('[...]');
-                        }}
-                        """,
-                    )
-                except PlaywrightError as e:
-                    msg = f"Time limit exceeded for line {line_index}. ({self.timeout} ms)"
-                    raise DeepLCLIPageLoadError(msg) from e
-
-                try:
-                    translated_text = await page.evaluate(
-                        f"""
-                        document.querySelector(
-                            'd-textarea[aria-labelledby=translation-target-heading]'
-                        ).children[0].children[{line_index}].innerText
-                        """,
-                    )
-                    translated_lines.append(translated_text)
-                except PlaywrightError as e:
-                    msg = f"Unable get translated text for line {line_index}"
-                    raise DeepLCLIPageLoadError(msg) from e
 
             input_textbox = page.get_by_role("region", name="Source text").locator(
                 "d-textarea",
@@ -257,8 +232,6 @@ class DeepLCLI:
             self.translated_to_lang = str(
                 await output_textbox.get_attribute("lang"),
             ).split("-")[0]
-
-            res = "\n".join(translated_lines)
 
             await browser.close()
 
