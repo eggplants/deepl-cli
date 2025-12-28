@@ -1,0 +1,43 @@
+[tools]
+python = "latest"
+uv = "latest"
+
+[tasks.ruff]
+description = "Run Ruff"
+run = "uv format"
+
+[tasks.pymarkdown]
+description = "Run PyMarkdownLnt"
+run = "uv run pymarkdown fix --list-files ."
+
+[tasks.ty]
+description = "Run Ty"
+run = "uvx ty check --respect-ignore-files"
+
+[tasks.pytest]
+description = "Run Pytest"
+run = "uv run pytest"
+
+[tasks.pytest-cov]
+description = "Run Pytest with coverage"
+run = "uv run pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=deepl tests/ | tee pytest-coverage.txt"
+
+[tasks.build]
+description = "Build"
+run = "uv build"
+
+[tasks.docs]
+description = "Generate documentation"
+run = "uv run pdoc deepl -o ./docs --docformat google"
+
+[tasks.pyproject-fmt]
+description = "Run pyproject-fmt"
+run = "uv run pyproject-fmt ./pyproject.toml"
+
+[tasks.pre-commit]
+description = "Run checks on pre-commit"
+depends = ["ruff", "ty", "pymarkdown", "pyproject-fmt"]
+
+[tasks.ci]
+description = "Run CI checks"
+depends = ["pre-commit", "pytest-cov"]

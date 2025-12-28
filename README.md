@@ -8,26 +8,18 @@
   <https://badge.fury.io/py/deepl-cli.svg>
   )](
   <https://badge.fury.io/py/deepl-cli>
-)
-
-[![Code Coverage](
+) [![Code Coverage](
   <https://qlty.sh/badges/bafc68a7-d3c7-4f3f-b09b-b86739801231/test_coverage.svg>
   )](
   <https://qlty.sh/gh/eggplants/projects/deepl-cli>
-) [![Test](
-  <https://github.com/eggplants/deepl-cli/actions/workflows/test.yml/badge.svg>
+) [![CI](
+  <https://github.com/eggplants/deepl-cli/actions/workflows/ci.yml/badge.svg>
   )](
   <https://github.com/eggplants/deepl-cli/actions/workflows/test.yml>
-)
-
-[![Maintainability](
+) [![Maintainability](
   <https://qlty.sh/badges/bafc68a7-d3c7-4f3f-b09b-b86739801231/maintainability.svg>
   )](
   <https://qlty.sh/gh/eggplants/projects/deepl-cli>
-) [![pre-commit.ci status](
-  <https://results.pre-commit.ci/badge/github/eggplants/deepl-cli/master.svg>
-  )](
-  <https://results.pre-commit.ci/latest/github/eggplants/deepl-cli/master>
 )
 
 ![image](https://user-images.githubusercontent.com/42153744/159145088-752decf7-8736-44c3-86aa-37fd0cee83df.png)
