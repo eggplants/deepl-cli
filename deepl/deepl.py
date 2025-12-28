@@ -135,7 +135,7 @@ class DeepLCLI:
             response = await resp_info.value
 
             if not response.ok:
-                error_text = await page.inner_text("div")
+                error_text = await page.inner_text("body > main > div > p")
 
                 msg = f"Page loading failed with status code {response.status}: {error_text}"
                 raise DeepLCLIError(msg)
