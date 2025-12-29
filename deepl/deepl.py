@@ -8,7 +8,7 @@ from typing import Any
 
 from install_playwright import install
 from playwright._impl._errors import Error as PlaywrightError
-from playwright.async_api import async_playwright
+from playwright.async_api import ProxySettings, async_playwright
 from playwright.async_api._generated import Browser, Playwright
 
 from deepl.languages import FR_LANGS, TO_LANGS
@@ -46,6 +46,8 @@ class DeepLCLI:
         fr_lang: str,
         to_lang: str,
         timeout: int = 15000,
+        proxy: ProxySettings | None = None,
+
     ) -> None:
         """Initialize DeepLCLI.
 
@@ -53,7 +55,7 @@ class DeepLCLI:
             fr_lang (str): Source language.
             to_lang (str): Target language.
             timeout (int): Timeout in milliseconds. Default is 15000ms.
-            use_dom_submit (bool): Use DOM submit instead of URL. Default is False.
+            proxy (ProxySettings): Use a proxy to access deepl.
 
         Raises:
             DeepLCLIError: If the language is not valid.
@@ -73,6 +75,7 @@ class DeepLCLI:
         self.translated_to_lang: str | None = None
         self.max_length = 1500
         self.timeout = timeout
+        self.proxy = proxy
 
     def translate(self, script: str) -> str:
         """Translate script.
@@ -125,28 +128,23 @@ class DeepLCLI:
             )
 
             url = "https://www.deepl.com/en/translator"
-            await page.goto(url)
+
+            async with page.expect_response(lambda resp: resp.url == url and resp.request.method == "GET") as resp_info:
+                await page.goto(url)
+
+            response = await resp_info.value
+
+            if not response.ok:
+                error_text = await page.inner_text("body > main > div > p")
+
+                msg = f"Page loading failed with status code {response.status}: {error_text}"
+                raise DeepLCLIError(msg)
 
             try:
                 page.get_by_role("main")
             except PlaywrightError as e:
                 msg = f"Maybe Time limit exceeded. ({self.timeout} ms)"
                 raise DeepLCLIPageLoadError(msg) from e
-
-            with contextlib.suppress(PlaywrightError):
-                await page.click("button[id=cookie-banner-lax-close-button]")
-                await page.wait_for_function(
-                    """
-                    () => document.querySelector('div[data-testid="chrome-extension-toast"]')
-                    """,
-                )
-                await page.evaluate(
-                    """
-                    document.querySelector(
-                        'div[data-testid="chrome-extension-toast"]',
-                    ).querySelector('button').click()
-                    """,
-                )
 
             await page.locator(
                 "button[data-testid=translator-source-lang-btn]",
@@ -265,4 +263,5 @@ class DeepLCLI:
                 "--no-zygote",
                 "--window-size=1920,1080",
             ],
+            proxy=self.proxy,
         )
