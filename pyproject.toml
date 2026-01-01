@@ -47,8 +47,6 @@ docs = [
 ]
 
 [tool.hatch.version]
-# tool.hatch.version.source is not listed in official schema.
-# https://github.com/ninoseki/uv-dynamic-versioning/issues/21
 source = "uv-dynamic-versioning"
 
 [tool.hatch.build.targets.sdist]
