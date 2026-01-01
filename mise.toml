@@ -20,7 +20,11 @@ run = "uv run pytest"
 
 [tasks.pytest-cov]
 description = "Run Pytest with coverage"
-run = "uv run pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=deepl tests/ | tee pytest-coverage.txt"
+run = """
+#!/usr/bin/env bash
+set -euxo pipefail
+uv run pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=zutool tests/ | tee pytest-coverage.txt
+"""
 
 [tasks.build]
 description = "Build"
