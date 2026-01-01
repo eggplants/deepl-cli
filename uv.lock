@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.10, <4"
 
 [options]
-exclude-newer = "2025-12-21T10:41:01.058338344Z"
+exclude-newer = "2025-12-25T20:14:33.560307252Z"
 exclude-newer-span = "P7D"
 
 [[package]]
@@ -187,7 +187,7 @@ dev = [
     { name = "pymarkdownlnt", specifier = ">=0.9.33" },
     { name = "pyproject-fmt", specifier = ">=2.11.1" },
     { name = "pytest", specifier = ">=9.0.2" },
-    { name = "pytest-asyncio", specifier = ">=1.3.0" },
+    { name = "pytest-asyncio", specifier = ">=1.3" },
     { name = "pytest-cov", specifier = ">=7" },
 ]
 docs = [{ name = "pdoc", specifier = ">=16" }]
@@ -589,16 +589,16 @@ wheels = [
 
 [[package]]
 name = "pymarkdownlnt"
-version = "0.9.33"
+version = "0.9.34"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "application-properties" },
     { name = "columnar" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/30/15/cb76156751bafceebba839aa3f679940dda4fadee20b8864a4d36a9b1644/pymarkdownlnt-0.9.33.tar.gz", hash = "sha256:4486eb34fed9b66d2e4e91c5b5159b5242b816a7847585aa2a94afc58cc5583d", size = 422332, upload-time = "2025-10-24T03:17:15.291Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/46/13/8c099421a933702706476abfc44b852ab6c8297061e68722ec25aba9cc8b/pymarkdownlnt-0.9.34.tar.gz", hash = "sha256:75057ea5d8527842ae50a4a3f47d6498258766efdcf4a6e1432f1cc96b0ae360", size = 430003, upload-time = "2025-12-21T15:47:15.602Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9c/b1/04c96cbbf8a209ff4059560c2c5c3e4be23926ce397699f09e4551510703/pymarkdownlnt-0.9.33-py3-none-any.whl", hash = "sha256:c5341a6f2539d087f76c88cda2dfc0c39e7632ebae915ea9399a083030951f35", size = 505133, upload-time = "2025-10-24T03:17:14.05Z" },
+    { url = "https://files.pythonhosted.org/packages/35/8e/e7a792bd51d0f873225b1a8b6669218365c25db0c54cf9c996a0a6c5e93a/pymarkdownlnt-0.9.34-py3-none-any.whl", hash = "sha256:ac3814747d670bfd58b660ad0c46c19750f96562c4714c6212e9bc8264eac217", size = 511066, upload-time = "2025-12-21T15:47:14.172Z" },
 ]
 
 [[package]]
