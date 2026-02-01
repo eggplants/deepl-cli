@@ -28,7 +28,7 @@ classifiers = [
 dynamic = [ "version" ]
 
 dependencies = [
-  "install-playwright>=0.1,<0.2",
+  "install-playwright>=0.1,<1.1",
   "playwright>=1.49.1,<2",
 ]
 urls.Repository = "https://github.com/eggplants/deepl-cli"
