@@ -251,7 +251,7 @@ class DeepLCLI:
 
     async def __get_browser(self, p: Playwright) -> Browser:
         """Launch browser executable and get playwright browser object."""
-        install(p.chromium, with_deps=True)
+        install([p.chromium], with_deps=True)
 
         return await p.chromium.launch(
             headless=True,
