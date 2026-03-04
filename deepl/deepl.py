@@ -148,7 +148,7 @@ class DeepLCLI:
 
             await page.locator(
                 "button[data-testid=translator-source-lang-btn]",
-            ).dispatch_event("click")
+            ).click()
 
             await (
                 page.get_by_test_id("translator-source-lang-list")
@@ -170,10 +170,10 @@ class DeepLCLI:
                 .first.dispatch_event("click")
             )
 
-            await page.fill(
-                "div[aria-labelledby=translation-source-heading]",
-                script,
+            await page.click(
+                "div[aria-labelledby=translation-source-heading] d-textarea",
             )
+            await page.keyboard.type(script)
 
             try:
                 await page.wait_for_function(
@@ -187,14 +187,14 @@ class DeepLCLI:
                 msg = f"Time limit exceeded. ({self.timeout} ms)"
                 raise DeepLCLIPageLoadError(msg) from e
 
-            # Wait for translation to complete (check that [...] placeholder is gone)
+            # Wait for translation to complete (check that progress text is empty)
             try:
                 await page.wait_for_function(
                     """
                     () => {
-                        const elem = document.querySelector('d-textarea[aria-labelledby=translation-target-heading]');
-                        const text = elem?.value ?? '';
-                        return text.length > 0 && !text.includes('[...]');
+                        const elem = document.querySelector('#progress-text');
+                        const text = elem?.textContent ?? '';
+                        return text.length == 0;
                     }
                     """,
                     timeout=self.timeout,
@@ -216,13 +216,8 @@ class DeepLCLI:
                 msg = "Unable to get translated text"
                 raise DeepLCLIPageLoadError(msg) from e
 
-            input_textbox = page.get_by_role("region", name="Source text").locator(
-                "d-textarea",
-            )
-            output_textbox = page.get_by_role(
-                "region",
-                name="Translation results",
-            ).locator("d-textarea")
+            input_textbox = page.locator("div[aria-labelledby=translation-source-heading] d-textarea")
+            output_textbox = page.locator("div[aria-labelledby=translation-target-heading] d-textarea")
 
             self.translated_fr_lang = str(
                 await input_textbox.get_attribute("lang"),
@@ -251,7 +246,7 @@ class DeepLCLI:
 
     async def __get_browser(self, p: Playwright) -> Browser:
         """Launch browser executable and get playwright browser object."""
-        install([p.chromium], with_deps=True)
+        install(p.chromium, with_deps=True)
 
         return await p.chromium.launch(
             headless=True,
