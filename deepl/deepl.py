@@ -189,6 +189,7 @@ class DeepLCLI:
 
             # Wait for translation to complete (check that progress text is empty)
             try:
+                await page.wait_for_selector(selector="#progress-text", timeout=self.timeout)
                 await page.wait_for_function(
                     """
                     () => {
