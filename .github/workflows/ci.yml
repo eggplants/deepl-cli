@@ -28,7 +28,7 @@ jobs:
       - uses: jdx/mise-action@6d1e696aa24c1aa1bcc1adea0212707c71ab78a8 # v3.6.1
       - run: uv sync --locked
       - run: mise run ci
-      - uses: MishaKav/pytest-coverage-comment@ae0e8a539a3f310aefb3bfb6a2209778a21fa42b # v1.2.0
+      - uses: MishaKav/pytest-coverage-comment@287292879eaaff04116f36d3eb1a670f6e5df1a4 # v1.7.1
         if: github.event_name == 'pull_request'
         with:
           pytest-coverage-path: ./pytest-coverage.txt
