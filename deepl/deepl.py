@@ -6,7 +6,6 @@ import os
 from collections.abc import Coroutine
 from typing import Any
 
-from install_playwright import install
 from playwright._impl._errors import Error as PlaywrightError
 from playwright.async_api import ProxySettings, async_playwright
 from playwright.async_api._generated import Browser, Playwright
@@ -130,7 +129,7 @@ class DeepLCLI:
             url = "https://www.deepl.com/en/translator"
 
             async with page.expect_response(lambda resp: resp.url == url and resp.request.method == "GET") as resp_info:
-                await page.goto(url)
+                await page.goto(f"{url}#{self.fr_lang}/{self.to_lang}/{script}")
 
             response = await resp_info.value
 
@@ -146,86 +145,30 @@ class DeepLCLI:
                 msg = f"Maybe Time limit exceeded. ({self.timeout} ms)"
                 raise DeepLCLIPageLoadError(msg) from e
 
-            await page.locator(
-                "button[data-testid=translator-source-lang-btn]",
-            ).click()
-
-            await (
-                page.get_by_test_id("translator-source-lang-list")
-                .get_by_test_id(
-                    f"translator-lang-option-{self.fr_lang}",
-                )
-                .first.dispatch_event("click")
-            )
-
-            await page.locator(
-                "button[data-testid=translator-target-lang-btn]",
-            ).dispatch_event("click")
-
-            await (
-                page.get_by_test_id("translator-target-lang-list")
-                .get_by_test_id(
-                    f"translator-lang-option-{self.to_lang}",
-                )
-                .first.dispatch_event("click")
-            )
-
-            await page.click(
-                "div[aria-labelledby=translation-source-heading] d-textarea",
-            )
-            await page.keyboard.type(script)
-
+            # Wait for translation to complete
             try:
                 await page.wait_for_function(
                     """
                     () => document.querySelector(
                     'd-textarea[aria-labelledby=translation-target-heading]')?.value?.length > 0
                     """,
-                    timeout=self.timeout,
                 )
             except PlaywrightError as e:
                 msg = f"Time limit exceeded. ({self.timeout} ms)"
                 raise DeepLCLIPageLoadError(msg) from e
 
-            # Wait for translation to complete (check that progress text is empty)
-            try:
-                await page.wait_for_selector(selector="#progress-text", timeout=self.timeout)
-                await page.wait_for_function(
-                    """
-                    () => {
-                        const elem = document.querySelector('#progress-text');
-                        const text = elem?.textContent ?? '';
-                        return text.length == 0;
-                    }
-                    """,
-                    timeout=self.timeout,
-                )
-            except PlaywrightError as e:
-                msg = f"Translation incomplete after {self.timeout} ms"
-                raise DeepLCLIPageLoadError(msg) from e
+            input_textbox = page.get_by_test_id("translator-source-input")
+            output_textbox = page.get_by_test_id("translator-target-input")
 
-            # Get the translated text directly from the value attribute
-            try:
-                res = await page.evaluate(
-                    """
-                    document.querySelector(
-                        'd-textarea[aria-labelledby=translation-target-heading]'
-                    ).value
-                    """,
-                )
-            except PlaywrightError as e:
-                msg = "Unable to get translated text"
-                raise DeepLCLIPageLoadError(msg) from e
+            # Optional: wait explicitly if still flaky (usually not needed with data-testid)
+            await input_textbox.wait_for(state="visible", timeout=10000)
 
-            input_textbox = page.locator("div[aria-labelledby=translation-source-heading] d-textarea")
-            output_textbox = page.locator("div[aria-labelledby=translation-target-heading] d-textarea")
+            self.translated_fr_lang = str(await input_textbox.get_attribute("lang") or "unknown").split("-")[0]
+            self.translated_to_lang = str(await output_textbox.get_attribute("lang") or "unknown").split("-")[0]
 
-            self.translated_fr_lang = str(
-                await input_textbox.get_attribute("lang"),
-            ).split("-")[0]
-            self.translated_to_lang = str(
-                await output_textbox.get_attribute("lang"),
-            ).split("-")[0]
+            editable = output_textbox.locator('div[contenteditable="true"]')
+            res = await editable.inner_text()
+            res = res.replace("\n\n", "\n")
 
             await browser.close()
 
@@ -247,7 +190,6 @@ class DeepLCLI:
 
     async def __get_browser(self, p: Playwright) -> Browser:
         """Launch browser executable and get playwright browser object."""
-        install([p.chromium], with_deps=True)
 
         return await p.chromium.launch(
             headless=True,
