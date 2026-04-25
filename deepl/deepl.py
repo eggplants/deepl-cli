@@ -47,7 +47,6 @@ class DeepLCLI:
         to_lang: str,
         timeout: int = 15000,
         proxy: ProxySettings | None = None,
-
     ) -> None:
         """Initialize DeepLCLI.
 
@@ -122,9 +121,7 @@ class DeepLCLI:
             excluded_resources = ["image", "media", "font", "other"]
             await page.route(
                 "**/*",
-                lambda route: (
-                    route.abort() if route.request.resource_type in excluded_resources else route.continue_()
-                ),
+                lambda route: route.abort() if route.request.resource_type in excluded_resources else route.continue_(),
             )
 
             url = "https://www.deepl.com/en/translator"

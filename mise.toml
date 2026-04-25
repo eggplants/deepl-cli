@@ -1,5 +1,6 @@
 [tools]
 python = "latest"
+usage = "latest"
 uv = "latest"
 
 [tasks.ruff]
@@ -13,6 +14,7 @@ run = "uv run pymarkdown fix --list-files ."
 [tasks.ty]
 description = "Run Ty"
 run = "uvx ty check --respect-ignore-files"
+depends = ["uv-sync"]
 
 [tasks.pytest]
 description = "Run Pytest"
@@ -45,3 +47,7 @@ depends = ["ruff", "ty", "pymarkdown", "pyproject-fmt"]
 [tasks.ci]
 description = "Run CI checks"
 depends = ["pre-commit", "pytest-cov"]
+
+[tasks.uv-sync]
+description = "Sync UV dependencies"
+run = "uv sync --locked"

@@ -11,7 +11,7 @@ keywords = [
   "deepl",
   "translate",
 ]
-license = { text = "MIT" }
+license = "MIT"
 authors = [ { name = "eggplants", email = "w10776e8w@yahoo.co.jp" } ]
 requires-python = ">=3.10,<4"
 classifiers = [
@@ -26,7 +26,6 @@ classifiers = [
   "Typing :: Typed",
 ]
 dynamic = [ "version" ]
-
 dependencies = [
   "install-playwright>=0.1,<1.1",
   "playwright>=1.49.1,<2",
@@ -46,22 +45,19 @@ docs = [
   "pdoc>=16",
 ]
 
-[tool.hatch.version]
-source = "uv-dynamic-versioning"
-
-[tool.hatch.build.targets.sdist]
-include = [ "deepl" ]
-
-[tool.hatch.build.targets.wheel]
-include = [ "deepl" ]
+[tool.hatch]
+build.targets.sdist.include = [ "deepl" ]
+build.targets.wheel.include = [ "deepl" ]
+version.source = "uv-dynamic-versioning"
 
 [tool.uv]
-preview = true
+python-downloads = "never"
 default-groups = [
   "dev",
   "docs",
 ]
 exclude-newer = "P7D"
+preview = true
 
 [tool.ruff]
 line-length = 120
