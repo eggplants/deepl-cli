@@ -119,13 +119,15 @@ FR_LANGS: Final[set[str]] = {
 }
 
 TO_LANGS: Final[set[str]] = FR_LANGS | {
-    "en-gb",
-    "en-us",
+    "de-CH",
+    "en-GB",
+    "en-US",
     "es-419",
-    "pt-br",
-    "pt-pt",
-    "zh-hans",
-    "zh-hant",
+    "fr-CA",
+    "pt-BR",
+    "pt-PT",
+    "zh-Hans",
+    "zh-Hant",
 } - {
     "auto",
     "en",

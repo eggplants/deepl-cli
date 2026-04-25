@@ -168,7 +168,7 @@ class DeepLCLI:
             )
 
             await page.fill(
-                "div[aria-labelledby=translation-source-heading]",
+                "[data-testid=translator-source-input] div[role=textbox]",
                 script,
             )
 
@@ -213,13 +213,8 @@ class DeepLCLI:
                 msg = "Unable to get translated text"
                 raise DeepLCLIPageLoadError(msg) from e
 
-            input_textbox = page.get_by_role("region", name="Source text").locator(
-                "d-textarea",
-            )
-            output_textbox = page.get_by_role(
-                "region",
-                name="Translation results",
-            ).locator("d-textarea")
+            input_textbox = page.locator("[data-testid=translator-source-input]")
+            output_textbox = page.locator("[data-testid=translator-target-input]")
 
             self.translated_fr_lang = str(
                 await input_textbox.get_attribute("lang"),
