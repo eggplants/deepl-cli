@@ -32,7 +32,7 @@ class DeepLCLI:
 
     ```
     // const fr =
-    // cost to =
+    // const to =
     Array.from(
         document.querySelectorAll(`button[data-testid^='translator-lang-option']`)
     ).map(e=>e.getAttribute('data-testid').split('translator-lang-option-')[1].toLowerCase())
