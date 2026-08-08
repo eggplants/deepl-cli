@@ -46,9 +46,9 @@ docs = [
 ]
 
 [tool.hatch]
-build.targets.sdist.include = [ "deepl" ]
-build.targets.wheel.include = [ "deepl" ]
 version.source = "uv-dynamic-versioning"
+build.targets.wheel.include = [ "deepl" ]
+build.targets.sdist.include = [ "deepl" ]
 
 [tool.uv]
 python-downloads = "never"
