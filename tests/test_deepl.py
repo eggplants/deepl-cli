@@ -4,6 +4,9 @@ import pytest
 
 from deepl import DeepLCLI, DeepLCLIError
 
+# The Russian source below is ~700 chars; a complete Japanese rendering is well over this.
+MIN_LONG_TRANSLATION_LEN = 200
+
 
 def test_en_to_ja() -> None:
     t = DeepLCLI("en", "ja", 100000)
@@ -79,15 +82,10 @@ async def test_translate_async_long_text() -> None:
         .strip()
         .replace("\n", " "),
     )
-    assert (
-        res
-        == dedent(
-            """
-        我ら日本国民は、国会において正当に選出された代表を通じて行動し、自ら及び子孫のために、あらゆる国家との平和的協力の成果と、我が国全体の自由の恩恵を確保し、政府の行為による新たな戦争の恐怖を再び招くことのないよう決意し、国民が主権を有することを宣言し、 本憲法を制定する。
-        国家の統治は、国民の揺るぎない信頼に基づくものであり、その権威は国民から発し、その権限は国民の代表によって行使され、その恩恵は国民が享受する。
-        この人類共通の原則が、本憲法の基礎である。我々は、本憲法に反するすべての憲法、法律、法令、および勅令を廃止する。
-        """
-        )
-        .replace("\n", "")
-        .strip()
-    )
+    # DeepL rewords its output over time, so assert the translation is complete
+    # rather than pinning one exact rendering.
+    assert "[...]" not in res
+    assert res.endswith("。")
+    assert len(res) > MIN_LONG_TRANSLATION_LEN
+    for keyword in ("日本国民", "憲法", "主権", "代表", "自由"):
+        assert keyword in res

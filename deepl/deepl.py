@@ -1,17 +1,54 @@
 """Translate text using DeepL with Playwright."""
 
 import asyncio
-import contextlib
 import os
+import time
 from collections.abc import Coroutine
-from typing import Any
+from typing import Any, TypedDict
 
 from install_playwright import install
 from playwright._impl._errors import Error as PlaywrightError
 from playwright.async_api import ProxySettings, async_playwright
-from playwright.async_api._generated import Browser, Playwright
+from playwright.async_api._generated import Browser, Page, Playwright
 
 from deepl.languages import FR_LANGS, TO_LANGS
+
+TRANSLATOR_URL = "https://www.deepl.com/en/translator"
+
+# DeepL renders the translator as a client-side app; these are the stable hooks it exposes.
+_SOURCE_INPUT = "[data-testid=translator-source-input]"
+_TARGET_INPUT = "[data-testid=translator-target-input]"
+_SOURCE_TEXTBOX = f"{_SOURCE_INPUT} div[role=textbox]"
+_TARGET_OUTPUT = "d-textarea[aria-labelledby=translation-target-heading]"
+
+# Placeholder DeepL shows in the output while a sentence is still being translated.
+_PENDING_MARKER = "[...]"
+
+# The output is streamed, so it is only trusted once it stops changing for this long.
+_POLL_INTERVAL_MS = 500
+
+_EXCLUDED_RESOURCES = frozenset({"image", "media", "font", "other"})
+
+_READ_STATE_JS = f"""
+    () => {{
+        const source = document.querySelector("{_SOURCE_INPUT}");
+        const target = document.querySelector("{_TARGET_INPUT}");
+        const output = document.querySelector("{_TARGET_OUTPUT}");
+        return {{
+            fr_lang: source ? source.getAttribute("lang") : null,
+            to_lang: target ? target.getAttribute("lang") : null,
+            text: output ? output.value : null,
+        }};
+    }}
+"""
+
+
+class _PageState(TypedDict):
+    """Snapshot of the translator widget."""
+
+    fr_lang: str | None
+    to_lang: str | None
+    text: str | None
 
 
 class DeepLCLIError(Exception):
@@ -34,8 +71,9 @@ class DeepLCLI:
     // const fr =
     // const to =
     Array.from(
-        document.querySelectorAll(`button[data-testid^='translator-lang-option']`)
-    ).map(e=>e.getAttribute('data-testid').split('translator-lang-option-')[1].toLowerCase())
+        document.querySelectorAll(`[data-testid^='translator-lang-option']`)
+    ).map(e=>e.getAttribute('data-testid').replace(/^translator-lang-option-/, ''))
+     .filter(e=>!e.endsWith('-pin'))
     // new Set(fr).difference(new Set(to))
     // new Set(to).difference(new Set(fr))
     ```
@@ -114,118 +152,155 @@ class DeepLCLI:
         """Throw a request."""
         async with async_playwright() as p:
             browser = await self.__get_browser(p)
+            try:
+                page = await self.__open_translator(browser)
+                await self.__input_script(page, script)
+                state = await self.__wait_for_translation(page)
+            finally:
+                await browser.close()
 
-            page = await browser.new_page()
-            page.set_default_timeout(self.timeout)
-            await page.set_viewport_size({"width": 1920, "height": 1080})
-            excluded_resources = ["image", "media", "font", "other"]
-            await page.route(
-                "**/*",
-                lambda route: route.abort() if route.request.resource_type in excluded_resources else route.continue_(),
+        self.translated_fr_lang = str(state["fr_lang"]).split("-")[0]
+        self.translated_to_lang = str(state["to_lang"]).split("-")[0]
+
+        return str(state["text"])
+
+    async def __open_translator(self, browser: Browser) -> Page:
+        """Open the translator page with the requested language pair selected.
+
+        The language pair is passed through the URL fragment, which DeepL applies on load.
+        That avoids driving the language dropdowns, which are covered by an anti-bot
+        overlay and only respond once the client-side app has hydrated.
+
+        Args:
+            browser (Browser): Browser to open the page in.
+
+        Returns:
+            Page: The loaded translator page.
+
+        Raises:
+            DeepLCLIError: If the page responds with an error status.
+            DeepLCLIPageLoadError: If the translator does not become usable in time.
+        """
+        page = await browser.new_page()
+        page.set_default_timeout(self.timeout)
+        await page.set_viewport_size({"width": 1920, "height": 1080})
+        await page.route(
+            "**/*",
+            lambda route: route.abort() if route.request.resource_type in _EXCLUDED_RESOURCES else route.continue_(),
+        )
+
+        url = f"{TRANSLATOR_URL}#{self.fr_lang}/{self.to_lang}/"
+
+        def is_document_response(resp: Any) -> bool:  # noqa: ANN401
+            # The fragment is never sent to the server, so it is absent from the response URL.
+            return resp.url.split("#")[0] == TRANSLATOR_URL and resp.request.method == "GET"
+
+        async with page.expect_response(is_document_response) as resp_info:
+            await page.goto(url)
+
+        response = await resp_info.value
+
+        if not response.ok:
+            error_text = await page.inner_text("body > main > div > p")
+
+            msg = f"Page loading failed with status code {response.status}: {error_text}"
+            raise DeepLCLIError(msg)
+
+        try:
+            await page.wait_for_selector(_SOURCE_TEXTBOX, state="visible")
+        except PlaywrightError as e:
+            msg = f"Maybe Time limit exceeded. ({self.timeout} ms)"
+            raise DeepLCLIPageLoadError(msg) from e
+
+        return page
+
+    async def __input_script(self, page: Page, script: str) -> None:
+        """Put the source text into the translator input.
+
+        Args:
+            page (Page): Translator page.
+            script (str): Text to translate.
+
+        Raises:
+            DeepLCLIPageLoadError: If the text cannot be entered.
+        """
+        try:
+            await page.fill(_SOURCE_TEXTBOX, script)
+        except PlaywrightError as e:
+            msg = "Unable to enter the source text"
+            raise DeepLCLIPageLoadError(msg) from e
+
+    async def __wait_for_translation(self, page: Page) -> _PageState:
+        """Wait until the translation is complete and stable.
+
+        DeepL streams the output sentence by sentence, so a non-empty output is not
+        necessarily the final one. Poll until the same output is seen twice in a row.
+
+        Args:
+            page (Page): Translator page.
+
+        Returns:
+            _PageState: The settled state of the translator widget.
+
+        Raises:
+            DeepLCLIPageLoadError: If the translation does not settle in time.
+        """
+        deadline = time.monotonic() + self.timeout / 1000
+        state = await self.__read_state(page)
+        previous: _PageState | None = None
+
+        while time.monotonic() < deadline:
+            if self.__is_translated(state):
+                if previous is not None and previous["text"] == state["text"]:
+                    return state
+                previous = state
+            else:
+                previous = None
+
+            await page.wait_for_timeout(_POLL_INTERVAL_MS)
+            state = await self.__read_state(page)
+
+        raise DeepLCLIPageLoadError(self.__describe_timeout(state))
+
+    async def __read_state(self, page: Page) -> _PageState:
+        """Read the current languages and output text from the translator widget."""
+        try:
+            state: _PageState = await page.evaluate(_READ_STATE_JS)
+        except PlaywrightError as e:
+            msg = "Unable to read the translator state"
+            raise DeepLCLIPageLoadError(msg) from e
+
+        return state
+
+    def __is_translated(self, state: _PageState) -> bool:
+        """Check whether the state holds a complete translation of the requested pair."""
+        text = state["text"]
+
+        return (
+            self.__lang_applied(state["fr_lang"], self.fr_lang)
+            and self.__lang_applied(state["to_lang"], self.to_lang)
+            and bool(text)
+            and _PENDING_MARKER not in str(text)
+        )
+
+    @staticmethod
+    def __lang_applied(actual: str | None, expected: str) -> bool:
+        """Check whether DeepL selected the expected language (it reports e.g. `en-US`)."""
+        return actual is not None and actual.lower() == expected.lower()
+
+    def __describe_timeout(self, state: _PageState) -> str:
+        """Explain why waiting for the translation timed out."""
+        if not self.__lang_applied(state["fr_lang"], self.fr_lang) or not self.__lang_applied(
+            state["to_lang"],
+            self.to_lang,
+        ):
+            return (
+                f"DeepL did not select the requested language pair "
+                f"(wanted {self.fr_lang!r} -> {self.to_lang!r}, "
+                f"got {state['fr_lang']!r} -> {state['to_lang']!r}). ({self.timeout} ms)"
             )
 
-            url = "https://www.deepl.com/en/translator"
-
-            async with page.expect_response(lambda resp: resp.url == url and resp.request.method == "GET") as resp_info:
-                await page.goto(url)
-
-            response = await resp_info.value
-
-            if not response.ok:
-                error_text = await page.inner_text("body > main > div > p")
-
-                msg = f"Page loading failed with status code {response.status}: {error_text}"
-                raise DeepLCLIError(msg)
-
-            try:
-                page.get_by_role("main")
-            except PlaywrightError as e:
-                msg = f"Maybe Time limit exceeded. ({self.timeout} ms)"
-                raise DeepLCLIPageLoadError(msg) from e
-
-            await page.locator(
-                "button[data-testid=translator-source-lang-btn]",
-            ).dispatch_event("click")
-
-            await (
-                page.get_by_test_id("translator-source-lang-list")
-                .get_by_test_id(
-                    f"translator-lang-option-{self.fr_lang}",
-                )
-                .first.dispatch_event("click")
-            )
-
-            await page.locator(
-                "button[data-testid=translator-target-lang-btn]",
-            ).dispatch_event("click")
-
-            await (
-                page.get_by_test_id("translator-target-lang-list")
-                .get_by_test_id(
-                    f"translator-lang-option-{self.to_lang}",
-                )
-                .first.dispatch_event("click")
-            )
-
-            await page.fill(
-                "[data-testid=translator-source-input] div[role=textbox]",
-                script,
-            )
-
-            try:
-                await page.wait_for_function(
-                    """
-                    () => document.querySelector(
-                    'd-textarea[aria-labelledby=translation-target-heading]')?.value?.length > 0
-                    """,
-                    timeout=self.timeout,
-                )
-            except PlaywrightError as e:
-                msg = f"Time limit exceeded. ({self.timeout} ms)"
-                raise DeepLCLIPageLoadError(msg) from e
-
-            # Wait for translation to complete (check that [...] placeholder is gone)
-            try:
-                await page.wait_for_function(
-                    """
-                    () => {
-                        const elem = document.querySelector('d-textarea[aria-labelledby=translation-target-heading]');
-                        const text = elem?.value ?? '';
-                        return text.length > 0 && !text.includes('[...]');
-                    }
-                    """,
-                    timeout=self.timeout,
-                )
-            except PlaywrightError as e:
-                msg = f"Translation incomplete after {self.timeout} ms"
-                raise DeepLCLIPageLoadError(msg) from e
-
-            # Get the translated text directly from the value attribute
-            try:
-                res = await page.evaluate(
-                    """
-                    document.querySelector(
-                        'd-textarea[aria-labelledby=translation-target-heading]'
-                    ).value
-                    """,
-                )
-            except PlaywrightError as e:
-                msg = "Unable to get translated text"
-                raise DeepLCLIPageLoadError(msg) from e
-
-            input_textbox = page.locator("[data-testid=translator-source-input]")
-            output_textbox = page.locator("[data-testid=translator-target-input]")
-
-            self.translated_fr_lang = str(
-                await input_textbox.get_attribute("lang"),
-            ).split("-")[0]
-            self.translated_to_lang = str(
-                await output_textbox.get_attribute("lang"),
-            ).split("-")[0]
-
-            await browser.close()
-
-            return res
+        return f"Time limit exceeded. ({self.timeout} ms)"
 
     def __sanitize_script(self, script: str) -> str:
         """Check command line args and stdin."""
@@ -239,7 +314,7 @@ class DeepLCLI:
             msg = "Script seems to be empty."
             raise DeepLCLIError(msg)
 
-        return script.replace("/", r"\/").replace("|", r"\|")
+        return script
 
     async def __get_browser(self, p: Playwright) -> Browser:
         """Launch browser executable and get playwright browser object."""

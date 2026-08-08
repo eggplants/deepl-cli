@@ -46,7 +46,16 @@ mise run pymarkdown
 ## Translation Limits & Behavior
 
 - Max input: **1500 characters** (`DeepLCLI.max_length`)
-- `auto` source language detection does **not** work via URL path param (tests for it are `@pytest.mark.skip`)
+- The language pair is set via the **URL fragment**
+  (`…/translator#<fr>/<to>/`), not by clicking the dropdowns: DeepL covers the
+  translator card with an anti-bot overlay, and the dropdowns only respond
+  after the client-side app hydrates — clicking them was slow and flaky
+- DeepL **streams** the output, so `deepl.py` polls until the text stops
+  changing and the `[...]` pending marker is gone, and checks the `lang`
+  attributes to confirm the requested pair was actually applied
+- `auto` source detection does **not** work via URL path param (tests for it
+  are `@pytest.mark.skip`); `auto` is not in `FR_LANGS`, so `DeepLCLI.__init__`
+  currently rejects it
 - Language updates: scrape the DeepL language dropdown and run the JS snippet in `deepl.py` docstring to regenerate `languages.py`
 
 ## Testing Notes
