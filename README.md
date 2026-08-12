@@ -10,9 +10,8 @@
   <https://github.com/eggplants/deepl-cli/actions/workflows/test.yml>
 )
 
-![image](https://user-images.githubusercontent.com/42153744/159145088-752decf7-8736-44c3-86aa-37fd0cee83df.png)
 
-- [DeepL Translator](https://www.deepl.com/translator) CLI using [playwright-python](https://github.com/microsoft/playwright-python)
+[DeepL Translator](https://www.deepl.com/translator) CLI using [playwright-python](https://github.com/microsoft/playwright-python)
 
 Note: *This project works without DeepL API key. With DeepL API, use [DeepLcom/deepl-python](https://github.com/DeepLcom/deepl-python)*
 
@@ -26,38 +25,42 @@ pip install deepl-cli
 
 ### CLI
 
-```bash
-deepl -F en -T ja -s <<<'This tool is useful for me.'
-# このツールは私にとって便利だ。
-deepl -F ja -T en -s <<<'このツールは私にとって便利だ。'
-# This tool is useful for me.
+```shellsession
+$ deepl -F en -T ja -s <<<'This tool is useful for me.'
+このツールは私にとって役に立ちます。
 
-curl https://example.com | sed -nr '/^<body>/,/<\/body>/s/<[^>]+>//gp' | tr -d \\n > txt
-deepl -f txt -F en -T ja
-# 例文ドメイン このドメインは、文書の例文に使用するためのものです。事前の調整や許可を得ることなく、このドメインを文献で使用することができます。   詳細はこちら
+$ deepl -F ja -T en-US -s <<<'このツールは私にとって便利だ。'
+This tool is useful to me.
+
+$ curl https://example.com | grep -oE '>[^<]+<' | tr -d '><' | sed '1,2d' > txt
+$ deepl -f txt -F en -T ja
+サンプルドメイン
+このドメインは、許可を得ることなくドキュメントの例で使用するためのものです。本番環境での使用は避けてください。
+詳細はこちら
 ```
 
 ```shellsession
 $ deepl -h
-usage: deepl [-h] (-f PATH | -s) -F FR -T TO [-t MS] [-v] [-V]
+usage: deepl [-h] (-f PATH | -s) -F FR -T TO [-t MS] [--no-headless] [-v] [-V]
 
 DeepL Translator CLI without API Key
 
 options:
-  -h, --help        show this help message and exit
-  -f, --file PATH   source text file to translate (default: None)
-  -s, --stdin       read source text from stdin (default: False)
-  -F, --fr FR       input language (default: None)
-  -T, --to TO       output language (default: None)
-  -t, --timeout MS  timeout interval (default: 5000)
-  -v, --verbose     make output verbose (default: False)
-  -V, --version     show program's version number and exit
+  -h, --help            show this help message and exit
+  -f PATH, --file PATH  source text file to translate (default: None)
+  -s, --stdin           read source text from stdin (default: False)
+  -F FR, --fr FR        input language (default: None)
+  -T TO, --to TO        output language (default: None)
+  -t MS, --timeout MS   timeout interval (default: 5000)
+  --no-headless         show the browser window instead of running it headless (default: False)
+  -v, --verbose         make output verbose (default: False)
+  -V, --version         show program's version number and exit
 
 valid languages of `-F` / --fr`:
-{'cs', 'fr', 'ru', 'hu', 'zh', 'da', 'nl', 'es', 'lv', 'nb', 'de', 'ko', 'it', 'pt', 'pl', 'et', 'ar', 'el', 'en', 'id', 'sv', 'ro', 'ja', 'uk', 'bg', 'sk', 'fi', 'tr', 'sl', 'lt'}
+{'ht', 'ka', 'ml', 'ckb', 'mr', 'ay', 'hr', 'tt', 'ur', 'zh', 'ig', 'hu', 'gl', 'qu', 'tl', 'ln', 'vi', 'bho', 'ga', 'nl', 'scn', 'da', 'fr', 'nb', 'bn', 'mg', 'br', 'mt', 'ceb', 'ts', 'mk', 'ro', 'lmo', 'sl', 'ta', 'az', 'lt', 'sw', 'yi', 'it', 'et', 'st', 'sv', 'mn', 'he', 'gom', 'eu', 'uz', 'pam', 'ar', 'lb', 'te', 'de', 'eo', 'jv', 'ko', 'pa', 'af', 'pl', 'an', 'kmr', 'fa', 'om', 'tr', 'ru', 'tn', 'ha', 'tk', 'ace', 'pt', 'fi', 'sa', 'kk', 'mai', 'xh', 'hy', 'id', 'ps', 'bg', 'cy', 'bs', 'gu', 'el', 'pag', 'my', 'cs', 'ms', 'sr', 'is', 'ba', 'su', 'sq', 'ne', 'ky', 'zu', 'prs', 'yue', 'es', 'oc', 'en', 'sk', 'gn', 'hi', 'as', 'ja', 'ca', 'la', 'lv', 'tg', 'uk', 'mi', 'be', 'wo'}
 
 valid languages of `-T` / `--to`:
-{'cs', 'fr', 'ru', 'hu', 'zh', 'da', 'nl', 'en-gb', 'es', 'lv', 'nb', 'de', 'ko', 'it', 'pt', 'zh-hans', 'pl', 'et', 'pt-br', 'ar', 'el', 'en', 'id', 'sv', 'ro', 'ja', 'uk', 'bg', 'en-us', 'sk', 'zh-hant', 'pt-pt', 'fi', 'tr', 'sl', 'lt'}
+{'ht', 'ka', 'ml', 'ckb', 'mr', 'ay', 'hr', 'tt', 'ur', 'zh', 'ig', 'hu', 'gl', 'qu', 'tl', 'ln', 'vi', 'bho', 'ga', 'nl', 'scn', 'da', 'fr', 'nb', 'bn', 'mg', 'br', 'mt', 'ceb', 'zh-Hans', 'ts', 'mk', 'ro', 'lmo', 'sl', 'ta', 'az', 'lt', 'sw', 'yi', 'it', 'et', 'st', 'sv', 'mn', 'en-US', 'he', 'gom', 'eu', 'uz', 'pam', 'ar', 'lb', 'te', 'de', 'es-419', 'eo', 'jv', 'ko', 'pa', 'af', 'pl', 'de-CH', 'an', 'fr-CA', 'pt-PT', 'kmr', 'fa', 'om', 'tr', 'ru', 'zh-Hant', 'tn', 'ha', 'tk', 'ace', 'pt', 'fi', 'sa', 'pt-BR', 'kk', 'mai', 'xh', 'hy', 'id', 'ps', 'bg', 'cy', 'bs', 'gu', 'el', 'pag', 'en-GB', 'my', 'cs', 'ms', 'sr', 'is', 'ba', 'su', 'sq', 'ne', 'ky', 'zu', 'prs', 'yue', 'es', 'oc', 'en', 'sk', 'gn', 'hi', 'as', 'ja', 'ca', 'la', 'lv', 'tg', 'uk', 'mi', 'be', 'wo'}
 ```
 
 ### Package
@@ -66,7 +69,7 @@ valid languages of `-T` / `--to`:
 from deepl import DeepLCLI
 
 deepl = DeepLCLI("en", "ja")
-deepl.translate("hello") #=> "こんにちわ"
+deepl.translate("hello")  # => "こんにちわ"
 ```
 
 If you use with asyncio, Use `DeepLCLI.translate_async`. See [examples/async.py](https://github.com/eggplants/deepl-cli/blob/master/examples/async.py).

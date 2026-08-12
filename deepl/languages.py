@@ -1,4 +1,21 @@
-"""Language codes supported by DeepL."""
+"""Language codes supported by DeepL.
+
+How to get language list:
+
+1. open language dropdown
+2. run on console:
+
+```js
+// const fr =
+// const to =
+Array.from(
+    document.querySelectorAll(`[data-testid^='translator-lang-option']`)
+).map(e=>e.getAttribute('data-testid').replace(/^translator-lang-option-/, ''))
+    .filter(e=>!e.endsWith('-pin'))
+// new Set(fr).difference(new Set(to))
+// new Set(to).difference(new Set(fr))
+```
+"""
 
 from typing import Final
 

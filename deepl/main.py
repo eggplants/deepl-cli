@@ -165,6 +165,11 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
         default=5000,
     )
     parser.add_argument(
+        "--no-headless",
+        action="store_true",
+        help="show the browser window instead of running it headless",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -189,7 +194,7 @@ def main(test: str | None = None) -> None:
         test (str | None): test string
     """
     args = parse_args(test)
-    t = DeepLCLI(args.fr, args.to, timeout=args.timeout)
+    t = DeepLCLI(args.fr, args.to, timeout=args.timeout, headless=not args.no_headless)
     script = ""
     if args.stdin:
         if sys.stdin is None:

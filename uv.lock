@@ -1,9 +1,9 @@
 version = 1
-revision = 4
+revision = 3
 requires-python = ">=3.10, <4"
 
 [options]
-exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
+exclude-newer = "2026-08-05T10:45:43.90179Z"
 exclude-newer-span = "P7D"
 
 [[package]]
@@ -188,12 +188,28 @@ docs = [
     { name = "pdoc" },
 ]
 
+[package.metadata]
+requires-dist = [
+    { name = "install-playwright", specifier = ">=0.1,<1.1" },
+    { name = "playwright", specifier = ">=1.49.1,<2" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pymarkdownlnt", specifier = ">=0.9.33" },
+    { name = "pyproject-fmt", specifier = ">=2.11.1" },
+    { name = "pytest", specifier = ">=9.0.2" },
+    { name = "pytest-asyncio", specifier = ">=1.3" },
+    { name = "pytest-cov", specifier = ">=7" },
+]
+docs = [{ name = "pdoc", specifier = ">=16" }]
+
 [[package]]
 name = "exceptiongroup"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/50/79/66800aadf48771f6b62f7eb014e352e5d06856655206165d775e675a02c9/exceptiongroup-1.3.1.tar.gz", hash = "sha256:8b412432c6055b0b7d14c310000ae93352ed6754f70fa8f7c34141f91c4e3219", size = 30371, upload-time = "2025-11-21T23:01:54.787Z" }
 wheels = [

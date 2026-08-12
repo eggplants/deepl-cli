@@ -60,24 +60,7 @@ class DeepLCLIPageLoadError(Exception):
 
 
 class DeepLCLI:
-    """Translate text using DeepL with Playwright.
-
-    How to get language list:
-
-    1. open language dropdown
-    2. run on console:
-
-    ```
-    // const fr =
-    // const to =
-    Array.from(
-        document.querySelectorAll(`[data-testid^='translator-lang-option']`)
-    ).map(e=>e.getAttribute('data-testid').replace(/^translator-lang-option-/, ''))
-     .filter(e=>!e.endsWith('-pin'))
-    // new Set(fr).difference(new Set(to))
-    // new Set(to).difference(new Set(fr))
-    ```
-    """
+    """Translate text using DeepL with Playwright."""
 
     def __init__(
         self,
@@ -85,6 +68,8 @@ class DeepLCLI:
         to_lang: str,
         timeout: int = 15000,
         proxy: ProxySettings | None = None,
+        *,
+        headless: bool = True,
     ) -> None:
         """Initialize DeepLCLI.
 
@@ -93,6 +78,8 @@ class DeepLCLI:
             to_lang (str): Target language.
             timeout (int): Timeout in milliseconds. Default is 15000ms.
             proxy (ProxySettings): Use a proxy to access deepl.
+            headless (bool): Run the browser headless. Set to False to watch the
+                translator page in a real browser window. Default is True.
 
         Raises:
             DeepLCLIError: If the language is not valid.
@@ -113,6 +100,7 @@ class DeepLCLI:
         self.max_length = 1500
         self.timeout = timeout
         self.proxy = proxy
+        self.headless = headless
 
     def translate(self, script: str) -> str:
         """Translate script.
@@ -184,10 +172,14 @@ class DeepLCLI:
         page = await browser.new_page()
         page.set_default_timeout(self.timeout)
         await page.set_viewport_size({"width": 1920, "height": 1080})
-        await page.route(
-            "**/*",
-            lambda route: route.abort() if route.request.resource_type in _EXCLUDED_RESOURCES else route.continue_(),
-        )
+        if self.headless:
+            # Skip what is only needed for a human to look at the page.
+            await page.route(
+                "**/*",
+                lambda route: (
+                    route.abort() if route.request.resource_type in _EXCLUDED_RESOURCES else route.continue_()
+                ),
+            )
 
         url = f"{TRANSLATOR_URL}#{self.fr_lang}/{self.to_lang}/"
 
@@ -320,15 +312,20 @@ class DeepLCLI:
         """Launch browser executable and get playwright browser object."""
         install([p.chromium], with_deps=True)
 
+        args = [
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+            "--window-size=1920,1080",
+        ]
+        if self.headless:
+            # These make the headless browser cheaper to start, but a headed
+            # Chromium does not survive them.
+            args += ["--disable-gpu", "--no-zygote"]
+            if os.name != "nt":
+                args.append("--single-process")
+
         return await p.chromium.launch(
-            headless=True,
-            args=[
-                "--no-sandbox",
-                "--single-process" if os.name != "nt" else "",
-                "--disable-dev-shm-usage",
-                "--disable-gpu",
-                "--no-zygote",
-                "--window-size=1920,1080",
-            ],
+            headless=self.headless,
+            args=args,
             proxy=self.proxy,
         )
