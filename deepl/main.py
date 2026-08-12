@@ -162,7 +162,7 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
         type=check_natural,
         help="timeout interval",
         metavar="MS",
-        default=5000,
+        default=100000,
     )
     parser.add_argument(
         "--no-headless",
@@ -185,6 +185,33 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
     if test is None:
         return parser.parse_args()
     return parser.parse_args(test)
+
+
+def warn_unexpected_langs(translated: DeepLCLI, fr_lang: str, to_lang: str) -> None:
+    """Point out a translation DeepL did between other languages than were asked for.
+
+    DeepL detects the source language itself and switches to it, so text that is not in
+    the requested source language comes back translated the other way. Without this the
+    output looks like an ordinary result.
+
+    Args:
+        translated (DeepLCLI): The translator, after translating.
+        fr_lang (str): Requested source language.
+        to_lang (str): Requested target language.
+    """
+
+    def base(lang: str | None) -> str:
+        # DeepL reports regional variants (`en-US`), which are the same language here.
+        return (lang or "").split("-")[0].lower()
+
+    if base(translated.translated_fr_lang) == base(fr_lang) and base(translated.translated_to_lang) == base(to_lang):
+        return
+
+    print(
+        f"warning: DeepL translated {translated.translated_fr_lang} -> {translated.translated_to_lang}, "
+        f"not the requested {fr_lang} -> {to_lang}",
+        file=sys.stderr,
+    )
 
 
 def main(test: str | None = None) -> None:
@@ -214,6 +241,8 @@ def main(test: str | None = None) -> None:
 
     if args.verbose:
         print("\033[1K\033[G", end="", file=sys.stderr, flush=True)
+
+    warn_unexpected_langs(t, args.fr, args.to)
 
     print(res)
 
