@@ -13,9 +13,18 @@ from playwright._impl._errors import Error as PlaywrightError
 from playwright.async_api import ProxySettings, async_playwright
 from playwright.async_api._generated import Browser, Locator, Page, Playwright
 
-from deepl.languages import FR_LANGS, TO_LANGS
+from deepl.languages import AUTO_LANG, FR_LANGS, TO_LANGS
 
 TRANSLATOR_URL = "https://www.deepl.com/en/translator"
+
+# `auto` cannot be named in the URL fragment: DeepL drops a fragment it does not
+# understand as a whole, taking the target language down with it, and falls back to
+# translating into its own default. So an auto source is arranged by pinning some other
+# language and leaving the detection to do what it does to any pinned source anyway —
+# replace it with the language the text is actually in, keeping the target as asked.
+# The stand-in only has to differ from the target, since the text decides the outcome;
+# pinning the target as the source would make DeepL swap the pair instead.
+_AUTO_PLACEHOLDER_LANGS = ("en", "de")
 
 # DeepL renders the translator as a client-side app; these are the stable hooks it exposes.
 _SOURCE_INPUT = "[data-testid=translator-source-input]"
@@ -145,7 +154,8 @@ class DeepLCLI:
         """Initialize DeepLCLI.
 
         Args:
-            fr_lang (str): Source language.
+            fr_lang (str): Source language, or `auto` to let DeepL detect it. The
+                detected language is reported in `translated_fr_lang` afterwards.
             to_lang (str): Target language.
             timeout (int): Timeout in milliseconds. Default is 15000ms.
             proxy (ProxySettings): Use a proxy to access deepl.
@@ -252,7 +262,7 @@ class DeepLCLI:
                 ),
             )
 
-        url = f"{TRANSLATOR_URL}#{self.fr_lang}/{self.to_lang}/"
+        url = f"{TRANSLATOR_URL}#{self.__fragment_fr_lang()}/{self.to_lang}/"
 
         def is_document_response(resp: Any) -> bool:  # noqa: ANN401
             # The fragment is never sent to the server, so it is absent from the response URL.
@@ -578,13 +588,43 @@ class DeepLCLI:
 
         return state
 
+    def __fragment_fr_lang(self) -> str:
+        """Pick the source language to put in the URL fragment.
+
+        Returns:
+            str: The requested source language, or a stand-in for it when DeepL is
+                the one detecting it.
+        """
+        if self.fr_lang != AUTO_LANG:
+            return self.fr_lang
+
+        target = self.to_lang.split("-")[0].lower()
+
+        return next(lang for lang in _AUTO_PLACEHOLDER_LANGS if lang != target)
+
     def __is_translated(self, state: _PageState) -> bool:
         """Check whether the state holds a complete translation of the requested pair."""
         return (
-            self.__lang_applied(state["fr_lang"], self.fr_lang)
+            self.__fr_lang_applied(state["fr_lang"])
             and self.__lang_applied(state["to_lang"], self.to_lang)
             and self.__has_output(state)
         )
+
+    def __fr_lang_applied(self, actual: str | None) -> bool:
+        """Check whether DeepL is translating from the requested source language.
+
+        Args:
+            actual (str | None): The language DeepL is translating from.
+
+        Returns:
+            bool: Whether that is the source language that was asked for.
+        """
+        if self.fr_lang == AUTO_LANG:
+            # DeepL reports the language it detected and never `auto` itself, so
+            # whatever it settled on is the language that was asked for.
+            return actual is not None
+
+        return self.__lang_applied(actual, self.fr_lang)
 
     @staticmethod
     def __has_output(state: _PageState) -> bool:
@@ -608,7 +648,7 @@ class DeepLCLI:
                 f"translated behind that check. ({self.timeout} ms)"
             )
 
-        if not self.__lang_applied(state["fr_lang"], self.fr_lang) or not self.__lang_applied(
+        if not self.__fr_lang_applied(state["fr_lang"]) or not self.__lang_applied(
             state["to_lang"],
             self.to_lang,
         ):

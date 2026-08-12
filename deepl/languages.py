@@ -29,6 +29,10 @@ new Set(fr.sort()).difference(new Set(to.sort())) // FR_ONLY
 
 from typing import Final
 
+# DeepL's own code for the "Detect language" entry at the top of the source dropdown.
+# It is a source language only: there is nothing to detect about the output.
+AUTO_LANG: Final[str] = "auto"
+
 FR_LANGS: Final[set[str]] = {
     "ace",
     "af",

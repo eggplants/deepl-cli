@@ -7,7 +7,7 @@ from pathlib import Path
 from shutil import get_terminal_size
 
 from deepl import __version__
-from deepl.languages import FR_LANGS, TO_LANGS
+from deepl.languages import AUTO_LANG, FR_LANGS, TO_LANGS
 
 from .deepl import DeepLCLI
 
@@ -146,8 +146,8 @@ def parse_args(test: str | None = None) -> argparse.Namespace:
         "-F",
         "--fr",
         type=check_input_lang,
-        help="input language",
-        required=True,
+        help=f"input language ({AUTO_LANG!r} to let DeepL detect it)",
+        default="auto",
     )
     parser.add_argument(
         "-T",
@@ -194,6 +194,9 @@ def warn_unexpected_langs(translated: DeepLCLI, fr_lang: str, to_lang: str) -> N
     the requested source language comes back translated the other way. Without this the
     output looks like an ordinary result.
 
+    Nothing is said about the source language when it was left to DeepL to detect: any
+    language it came back with is the one that was asked for.
+
     Args:
         translated (DeepLCLI): The translator, after translating.
         fr_lang (str): Requested source language.
@@ -204,7 +207,9 @@ def warn_unexpected_langs(translated: DeepLCLI, fr_lang: str, to_lang: str) -> N
         # DeepL reports regional variants (`en-US`), which are the same language here.
         return (lang or "").split("-")[0].lower()
 
-    if base(translated.translated_fr_lang) == base(fr_lang) and base(translated.translated_to_lang) == base(to_lang):
+    fr_as_asked = fr_lang == AUTO_LANG or base(translated.translated_fr_lang) == base(fr_lang)
+
+    if fr_as_asked and base(translated.translated_to_lang) == base(to_lang):
         return
 
     print(

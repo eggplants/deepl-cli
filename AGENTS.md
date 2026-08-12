@@ -53,9 +53,14 @@ mise run pymarkdown
 - DeepL **streams** the output, so `deepl.py` polls until the text stops
   changing and the `[...]` pending marker is gone, and checks the `lang`
   attributes to confirm the requested pair was actually applied
-- `auto` source detection does **not** work via URL path param (tests for it
-  are `@pytest.mark.skip`); `auto` is not in `FR_LANGS`, so `DeepLCLI.__init__`
-  currently rejects it
+- `auto` source detection works, but **not** by naming `auto` in the fragment:
+  DeepL drops a fragment it cannot parse as a whole, target language included.
+  `deepl.py` pins a stand-in source language instead
+  (`_AUTO_PLACEHOLDER_LANGS`, one that is not the target) and lets DeepL's own
+  detection replace it — which is what it does to any pinned source that does
+  not match the text, keeping the target as asked. The source `lang` attribute
+  then reports the *detected* language, never `auto`, so the source check is
+  skipped for `auto`
 - Language updates: scrape the DeepL language dropdown and run the JS snippet in `deepl.py` docstring to regenerate `languages.py`
 
 ## Testing Notes
