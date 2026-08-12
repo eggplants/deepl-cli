@@ -2,18 +2,28 @@
 
 How to get language list:
 
-1. open language dropdown
-2. run on console:
+1. Open input language dropdown and run on console:
 
 ```js
-// const fr =
-// const to =
-Array.from(
-    document.querySelectorAll(`[data-testid^='translator-lang-option']`)
-).map(e=>e.getAttribute('data-testid').replace(/^translator-lang-option-/, ''))
-    .filter(e=>!e.endsWith('-pin'))
-// new Set(fr).difference(new Set(to))
-// new Set(to).difference(new Set(fr))
+const fr = Array.from(document.querySelectorAll(`[data-testid^='translator-lang-option']`))
+  .map(e=>e.getAttribute('data-testid').replace(/^translator-lang-option-/, ''))
+  .filter(e=>!e.endsWith('-pin'))
+```
+
+2. Open output language dropdown and run on console:
+
+```js
+const to = Array.from(document.querySelectorAll(`[data-testid^='translator-lang-option']`))
+  .map(e=>e.getAttribute('data-testid').replace(/^translator-lang-option-/, ''))
+  .filter(e=>!e.endsWith('-pin'))
+```
+
+3. Compare the two lists to find languages that are only in one of them:
+
+```js
+new Set(fr.sort()) // FR_LANGS
+new Set(to.sort()).difference(new Set(fr.sort())) // TO_ONLY
+new Set(fr.sort()).difference(new Set(to.sort())) // FR_ONLY
 ```
 """
 
@@ -25,6 +35,7 @@ FR_LANGS: Final[set[str]] = {
     "an",
     "ar",
     "as",
+    "auto",
     "ay",
     "az",
     "ba",
