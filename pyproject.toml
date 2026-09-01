@@ -9,13 +9,22 @@ readme = "README.md"
 keywords = [
   "cli",
   "deepl",
+  "deepl-translator",
+  "docker",
+  "playwright",
   "translate",
+  "translation",
+  "translator",
 ]
 license = "MIT"
 authors = [ { name = "eggplants", email = "w10776e8w@yahoo.co.jp" } ]
 requires-python = ">=3.10,<4"
 classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: End Users/Desktop",
   "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -23,6 +32,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Topic :: Text Processing :: Linguistic",
+  "Topic :: Utilities",
   "Typing :: Typed",
 ]
 dynamic = [ "version" ]
@@ -30,6 +40,8 @@ dependencies = [
   "install-playwright>=0.1,<1.1",
   "playwright>=1.49.1,<2",
 ]
+urls.Documentation = "https://egpl.dev/deepl-cli/"
+urls.Issues = "https://github.com/eggplants/deepl-cli/issues"
 urls.Repository = "https://github.com/eggplants/deepl-cli"
 scripts.deepl = "deepl.main:main"
 
