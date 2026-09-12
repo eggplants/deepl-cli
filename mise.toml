@@ -8,7 +8,10 @@ uv = "latest"
 
 [tasks.ruff]
 description = "Run Ruff"
-run = "uv format"
+run = [
+  "uv format",
+  "uvx ruff check --fix",
+]
 
 [tasks.pymarkdown]
 description = "Run PyMarkdownLnt"

@@ -76,7 +76,10 @@ line-length = 120
 format.indent-style = "space"
 format.quote-style = "double"
 lint.select = [ "ALL" ]
-lint.ignore = [ "COM812" ]
+lint.ignore = [
+  "COM812",
+  "CPY001", # Missing copyright notice (this project does not use file headers)
+]
 lint.per-file-ignores."examples/*.py" = [
   "D",
   "INP001", # Add an __init__.py.
@@ -87,7 +90,9 @@ lint.per-file-ignores."main.py" = [
 ]
 lint.per-file-ignores."tests/*.py" = [
   "D",
-  "S101", # Use of assert detected
+  "E501",   # Line too long (the fixtures quote whole paragraphs of translated text)
+  "RUF001", # Ambiguous unicode character (the fixtures carry Russian text)
+  "S101",   # Use of assert detected
 ]
 lint.pydocstyle.convention = "google"
 
