@@ -28,7 +28,7 @@ mise run pymarkdown
 | File | Purpose |
 |------|---------|
 | `deepl/deepl.py` | Core `DeepLCLI` class — Playwright scraping logic |
-| `deepl/main.py` | CLI entry point (argparse), registered as `deepl` script |
+| `deepl/cli.py` | CLI entry point (argparse), registered as `deepl` script |
 | `deepl/languages.py` | `FR_LANGS` / `TO_LANGS` sets of valid language codes |
 | `deepl/__init__.py` | Public exports: `DeepLCLI`, `DeepLCLIError`, `DeepLCLIPageLoadError` |
 | `tests/test_deepl.py` | pytest + pytest-asyncio tests |

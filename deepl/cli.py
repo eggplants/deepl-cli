@@ -1,4 +1,4 @@
-"""Main module of deepl CLI."""
+"""Command line entry point for deepl-cli."""
 
 import argparse
 import sys

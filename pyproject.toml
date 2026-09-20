@@ -43,7 +43,7 @@ dependencies = [
 urls.Documentation = "https://egpl.dev/deepl-cli/"
 urls.Issues = "https://github.com/eggplants/deepl-cli/issues"
 urls.Repository = "https://github.com/eggplants/deepl-cli"
-scripts.deepl = "deepl.main:main"
+scripts.deepl = "deepl.cli:main"
 
 [dependency-groups]
 dev = [
@@ -80,13 +80,13 @@ lint.ignore = [
   "COM812",
   "CPY001", # Missing copyright notice (this project does not use file headers)
 ]
+lint.per-file-ignores."deepl/cli.py" = [
+  "T201", # `print` found
+]
 lint.per-file-ignores."examples/*.py" = [
   "D",
   "INP001", # Add an __init__.py.
   "T201",   # `print` found
-]
-lint.per-file-ignores."main.py" = [
-  "T201", # `print` found
 ]
 lint.per-file-ignores."tests/*.py" = [
   "D",
