@@ -237,7 +237,11 @@ def main(test: str | None = None) -> None:
 
     else:
         file_path = Path(args.file)
-        script = file_path.open(mode="r").read().rstrip("\n")
+        try:
+            script = file_path.open(mode="r", encoding="utf-8").read().rstrip("\n")
+        except UnicodeDecodeError as e:
+            print(f"error: cannot decode file {args.file}: {e}", file=sys.stderr)
+            raise SystemExit(1)
 
     if args.verbose:
         print("Translating...", end="", file=sys.stderr, flush=True)

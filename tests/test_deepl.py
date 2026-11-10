@@ -3,6 +3,7 @@ from textwrap import dedent
 import pytest
 
 from deepl import DeepLCLI, DeepLCLIError
+from deepl.cli import main as cli_main
 
 # The Russian source below is ~700 chars; a complete Japanese rendering is well over this.
 MIN_LONG_TRANSLATION_LEN = 200
@@ -11,6 +12,21 @@ MIN_LONG_TRANSLATION_LEN = 200
 def test_en_to_ja() -> None:
     t = DeepLCLI("en", "ja", 100000)
     assert t.translate("hello.") in ("こんにちは", "こんにちは。")
+
+
+def test_file_with_non_utf8_bytes_reports_clean_error(tmp_path, capsys) -> None:
+    """A text file with bytes undecodable as UTF-8 passes the binary check
+    but cannot be read: the CLI must report a clean error, not a traceback.
+    (0x81 is invalid both in UTF-8 and in Windows-1252, so the failure
+    reproduces regardless of locale.)"""
+    bad = tmp_path / "latin1.txt"
+    bad.write_bytes(b"hello \x81 world\n")
+    with pytest.raises(SystemExit) as exc:
+        cli_main(["-f", str(bad), "-T", "ja"])
+    assert exc.value.code == 1
+    err = capsys.readouterr().err
+    assert "Traceback" not in err
+    assert "latin1.txt" in err
 
 
 def test_blank_script() -> None:
